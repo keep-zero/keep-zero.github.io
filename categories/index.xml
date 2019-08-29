@@ -11,5 +11,14 @@
 	<atom:link href="https://keep-zero.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
     
     
+    <item>
+      <title>Test</title>
+      <link>https://keep-zero.github.io/categories/test/</link>
+      <pubDate>Mon, 26 Aug 2019 22:25:12 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/categories/test/</guid>
+      <description></description>
+    </item>
+    
   </channel>
 </rss>

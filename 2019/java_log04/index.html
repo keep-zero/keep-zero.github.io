@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noodp"/>
+  <meta name="author" content="GF.L">
+  
+  
+  
+  <link rel="prev" href="https://keep-zero.github.io/2019/java_log03/" />
+  <link rel="next" href="https://keep-zero.github.io/2019/java_log05/" />
+  <link rel="canonical" href="https://keep-zero.github.io/2019/java_log04/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <title>
+       
+       
+           java日志篇（4）-common-logging | Keep Zero
+       
+  </title>
+  <meta name="title" content="java日志篇（4）-common-logging | Keep Zero">
+    
+  
+  <link rel="stylesheet" href="/font/iconfont.css">
+  <link rel="stylesheet" href="/css/main.min.css">
+
+
+  
+  
+ 
+
+<script type="application/ld+json">
+ "@context" : "http://schema.org",
+    "@type" : "BlogPosting",
+    "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "https:\/\/keep-zero.github.io"
+    },
+    "articleSection" : "posts",
+    "name" : "java日志篇（4）-common-logging",
+    "headline" : "java日志篇（4）-common-logging",
+    "description" : "慢慢来比较快，虚心学技术\n前言：Jakarta Commons-logging（JCL）是apache最早提供的日志的门面接口。它将一些具体的日志组件抽象为接口，实现日志操作的解耦和可插拔，让众多的日志工具有一个共同的操作方式\n 一、common-logging简单使用示例 ①引入common-logging的jar包，最新jar包从官方网站http:\/\/commons.apache.org\/proper\/commons-logging\/download_logging.cgi进行下载，下载后将jar包放到lib中引入项目即可。\n如果是maven项目在pom文件中添加依赖如下：\n\x26lt;!--引入common-logging--\x26gt; \x26lt;dependency\x26gt; \x26lt;groupId\x26gt;commons-logging\x26lt;\/groupId\x26gt; \x26lt;artifactId\x26gt;commons-logging\x26lt;\/artifactId\x26gt; \x26lt;version\x26gt;1.2\x26lt;\/version\x26gt; \x26lt;\/dependency\x26gt;  ②创建common-logging.properties文件,将其放在classpath下，如果是maven项目则将其放在src\/main\/resource目录下，配置内容如下\norg.apache.commons.logging.Log=org.apache.commons.logging.impl.SimpleLog  ③在项目程序中使用logger开发\nimport org.apache.commons.logging.Log; import org.apache.commons.logging.LogFactory; public class CommonsTest { \/\/获取logger private final static Log logger = LogFactory.getLog(CommonsTest.class); public static void main(String[] args) { \/\/使用logger输出日志 logger.trace(\x26quot;TRACE...\x26quot;); logger.debug(\x26quot;DEBUG ...\x26quot;); logger.info(\x26quot;INFO ...\x26quot;); logger.error(\x26quot;ERROR ...\x26quot;); logger.warn(\x26quot;WARN...\x26quot;); } }  运行输出结果：\n[INFO] CommonsTest - INFO ... [ERROR] CommonsTest - ERROR ... [WARN] CommonsTest - WARN...  如上实现第一个简单的common-logging程序，引发以下几个问题",
+    "inLanguage" : "en-us",
+    "author" : "GF.L",
+    "creator" : "GF.L",
+    "publisher": "GF.L",
+    "accountablePerson" : "GF.L",
+    "copyrightHolder" : "GF.L",
+    "copyrightYear" : "2019",
+    "datePublished": "2019-08-30 23:27:16 \x2b0800 CST",
+    "dateModified" : "2019-08-30 23:27:16 \x2b0800 CST",
+    "url" : "https:\/\/keep-zero.github.io\/2019\/java_log04\/",
+    "wordCount" : "353",
+    "keywords" : [ "java","log", "Keep Zero"]
+}
+</script>
+
+</head>
+
+  
+
+
+  <body class="">
+    <div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo">
+        	<a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a>
+        </div>
+        <div class="menu navbar-right">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+<nav class="navbar-mobile" id="nav-mobile" style="display: none">
+     <div class="container">
+        <div class="navbar-header">
+            <div>  <a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a></div>
+            <div class="menu-toggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+     
+          <div class="menu" id="mobile-menu">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+    	 <main class="main">
+          <div class="container">
+      		
+<article class="post-warp" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">java日志篇（4）-common-logging</h1>
+        <div class="post-meta">
+                Written by <a itemprop="name" href="https://keep-zero.github.io" rel="author">GF.L</a> with ♥ 
+                <span class="post-time">
+                on <time datetime=2019-08-30 itemprop="datePublished">August 30, 2019</time>
+                </span>
+                in
+                <i class="iconfont icon-folder"></i>
+                <span class="post-category">
+                        <a href="https://keep-zero.github.io/categories/java-log/"> java-log </a>
+                        
+                </span>
+				
+				<span id="wc" style="font-size: 1rem;text-align: center;">  共400 字|  阅读需时约 2 分|  本文总阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </div>
+    </header>
+    <div class="post-content">
+        
+
+        
+
+        
+        
+     
+          
+          
+          
+
+          
+          
+          
+
+          
+
+<blockquote>
+<p><strong>慢慢来比较快，虚心学技术</strong></p>
+
+<p><em>前言：Jakarta  Commons-logging（JCL）是apache最早提供的日志的门面接口。它将一些具体的日志组件抽象为接口，实现日志操作的解耦和可插拔，让众多的日志工具有一个共同的操作方式</em></p>
+</blockquote>
+
+<h2 id="一-common-logging简单使用示例">一、common-logging简单使用示例</h2>
+
+<p>①引入common-logging的jar包，最新jar包从官方网站<a href="http://commons.apache.org/proper/commons-logging/download_logging.cgi" rel="nofollow noreferrer" target="_blank">http://commons.apache.org/proper/commons-logging/download_logging.cgi</a>进行下载，下载后将jar包放到lib中引入项目即可。</p>
+
+<p>如果是maven项目在pom文件中添加依赖如下：</p>
+
+<pre><code class="language-xml">&lt;!--引入common-logging--&gt;
+&lt;dependency&gt;
+   &lt;groupId&gt;commons-logging&lt;/groupId&gt;
+   &lt;artifactId&gt;commons-logging&lt;/artifactId&gt;
+   &lt;version&gt;1.2&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+
+<p>②创建common-logging.properties文件,将其放在classpath下，如果是maven项目则将其放在src/main/resource目录下，配置内容如下</p>
+
+<pre><code class="language-properties">org.apache.commons.logging.Log=org.apache.commons.logging.impl.SimpleLog
+</code></pre>
+
+<p>③在项目程序中使用logger开发</p>
+
+<pre><code class="language-java">import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+public class CommonsTest {
+
+    //获取logger
+    private final static Log logger = LogFactory.getLog(CommonsTest.class);
+
+    public static void main(String[] args) {
+        //使用logger输出日志
+        logger.trace(&quot;TRACE...&quot;);
+        logger.debug(&quot;DEBUG ...&quot;);
+        logger.info(&quot;INFO ...&quot;);
+        logger.error(&quot;ERROR ...&quot;);
+        logger.warn(&quot;WARN...&quot;);
+    }
+}
+</code></pre>
+
+<p>运行输出结果：</p>
+
+<pre><code class="language-properties">[INFO] CommonsTest - INFO ...
+[ERROR] CommonsTest - ERROR ...
+[WARN] CommonsTest - WARN...
+</code></pre>
+
+<p>如上实现第一个简单的common-logging程序，引发以下几个问题</p>
+
+<p><strong>问题一</strong>：common-logging.properties属性文件中的org.apache.commons.logging.Log和它的值代表了什么？</p>
+
+<p><strong>问题二</strong>：为什么明明代码中写了logger.trace和logger.debug，却没有输出？</p>
+
+<p><strong>问题三</strong>：LogFactory的实现原理是什么？</p>
+
+<p>带着问题去思考学习，效率总是最高的</p>
+
+<h2 id="二-问题探索">二、问题探索</h2>
+
+<h3 id="1-org-apache-commons-logging-log">1.org.apache.commons.logging.Log</h3>
+
+<p>JCL有两个基本的抽象类： Log( 基本记录器 ) 和 LogFactory( 负责创建 Log 实例 )，其中，Log有多个默认实现类，分别是：</p>
+
+<blockquote>
+<p>-org.apache.commons.logging.impl.<strong>Jdk14Logger</strong>　使用JUL。
+-org.apache.commons.logging.impl.<strong>Log4JLogger　</strong>使用Log4J。
+-org.apache.commons.logging.impl.<strong>LogKitLogger　</strong>使用 avalon-Logkit。
+-org.apache.commons.logging.impl.<strong>SimpleLog　</strong>common-logging自带日志实现类。它实现了Log接口，把日志消息都输出到系统错误流System.err 中。
+-org.apache.commons.logging.impl.<strong>NoOpLog　</strong>common-logging自带日志实现类。它实现了Log接口。 其输出日志的方法中不进行任何操作。</p>
+</blockquote>
+
+<p>在common-logging.properties中配置的org.apache.commons.logging.Log参数指定了common-logging将使用哪种日志实现，这也是前言所说的，通过配置实现日志组件的可插拔和解耦，极大增加了灵活性</p>
+
+<h3 id="2-common-logging日志级别">2.common-logging日志级别</h3>
+
+<p>common-logging日志级别从高到低如下：</p>
+
+<blockquote>
+<p>1）<strong>fatal</strong> 非常严重的错误，导致系统中止。期望这类信息能立即显示在状态控制台上。</p>
+
+<p>2）<strong>error</strong> 其它运行期错误或不是预期的条件。期望这类信息能立即显示在状态控制台上。</p>
+
+<p>3）<strong>warn</strong> 使用了不赞成使用的API、非常拙劣使用API, &lsquo;几乎就是&rsquo;错误, 其它运行时不合需要和不合预期的状态但还没必要称为 &ldquo;错误&rdquo;。期望这类信息能立即显示在状态控制台上。</p>
+
+<p>4）<strong>info</strong> 运行时产生的有意义的事件。期望这类信息能立即显示在状态控制台上。</p>
+
+<p>5）<strong>debug</strong> 系统流程中的细节信息。期望这类信息仅被写入log文件中。</p>
+
+<p>6）<strong>trace</strong> 更加细节的信息。期望这类信息仅被写入log文件中。</p>
+</blockquote>
+
+<p>apache建议使用4级，即 <strong>ERROR</strong>、<strong>WARN</strong>、<strong>INFO</strong>、<strong>DEBUG</strong></p>
+
+<p>而当我们在common-logging.properties配置使用的是SimpleLog日志实现，该日志实现默认日志级别是info，所以才会出现简单实例中的输出结果，如何更改SimpleLog的日志级别？</p>
+
+<p>创建simplelog.properties配置文件，放到classpath下，如果是maven则放到src/main/resource目录下,配置内容参考：</p>
+
+<pre><code class="language-properties">org.apache.commons.logging.simplelog.defaultlog=TRACE
+</code></pre>
+
+<p>配置后结果输出如下（bingo）：</p>
+
+<pre><code class="language-properties">[TRACE] CommonsTest - TRACE...
+[DEBUG] CommonsTest - DEBUG ...
+[INFO] CommonsTest - INFO ...
+[ERROR] CommonsTest - ERROR ...
+[WARN] CommonsTest - WARN...
+</code></pre>
+
+<h2 id="3-logfactory实现原理">3.LogFactory实现原理</h2>
+
+<p>LogFactory作为log的工厂存在，使用动态查找机制进行log实例的获取，具体执行步骤如下：</p>
+
+<blockquote>
+<p>①首先在classpath下寻找commons-logging.properties文件。如果找到，则使用其中定义的Log实现类；如果找不到，则在查找是否已定义系统环境变量org.apache.commons.logging.Log，找到则使用其定义的Log实现类；</p>
+
+<p>②查看classpath中是否有Log4j的包，如果发现，则自动使用Log4j作为日志实现类；</p>
+
+<p>③使用JDK自身的日志实现类（JDK1.4以后才有日志实现类）；</p>
+
+<p>④使用commons-logging自己提供的一个简单的日志实现类SimpleLog；</p>
+</blockquote>
+
+<p>上述步骤当LogFactory成功找到一个日志实现之后就会停止</p>
+
+<p>实际上，看源码发现，LogFactory的核心步骤在于discoverLogImplementation方法，源码分析如下：</p>
+
+<pre><code class="language-java"> if (isDiagnosticsEnabled()) {
+            this.logDiagnostic(&quot;Discovering a Log implementation...&quot;);
+        }
+
+        this.initConfiguration();
+        Log result = null;
+        //从common-logging.properties文件中提取org.apache.commons.logging.Log这个变量的value
+        String specifiedLogClassName = this.findUserSpecifiedLogClassName();
+
+        //配置文件中存在该变量则实例化
+        if (specifiedLogClassName != null) {
+            if (isDiagnosticsEnabled()) {
+                this.logDiagnostic(&quot;Attempting to load user-specified log class '&quot; + specifiedLogClassName + &quot;'...&quot;);
+            }
+
+            //核验相应日志对象是否存在
+            result = this.createLogFromClass(specifiedLogClassName, logCategory, true);
+
+            //如果日志对象不存在，则报错
+            if (result == null) {
+                StringBuffer messageBuffer = new StringBuffer(&quot;User-specified log class '&quot;);
+                messageBuffer.append(specifiedLogClassName);
+                messageBuffer.append(&quot;' cannot be found or is not useable.&quot;);
+                this.informUponSimilarName(messageBuffer, specifiedLogClassName, &quot;org.apache.commons.logging.impl.Log4JLogger&quot;);
+                this.informUponSimilarName(messageBuffer, specifiedLogClassName, &quot;org.apache.commons.logging.impl.Jdk14Logger&quot;);
+                this.informUponSimilarName(messageBuffer, specifiedLogClassName, &quot;org.apache.commons.logging.impl.Jdk13LumberjackLogger&quot;);
+                this.informUponSimilarName(messageBuffer, specifiedLogClassName, &quot;org.apache.commons.logging.impl.SimpleLog&quot;);
+                throw new LogConfigurationException(messageBuffer.toString());
+            } else {
+                return result;
+            }
+        } else {
+            //当日志文件中不存在该变量时，按照机制遍历classesToDiscover字符串数组
+
+            if (isDiagnosticsEnabled()) {
+                this.logDiagnostic(&quot;No user-specified Log implementation; performing discovery using the standard supported logging implementations...&quot;);
+            }
+
+            //遍历classesToDiscover字符串数组获取日志实例（动态查找机制）
+            for(int i = 0; i &lt; classesToDiscover.length &amp;&amp; result == null; ++i) {
+                result = this.createLogFromClass(classesToDiscover[i], logCategory, true);
+            }
+
+            //到最后仍旧找不到匹配的日志实例，则抛错
+            if (result == null) {
+                throw new LogConfigurationException(&quot;No suitable Log implementation&quot;);
+            } else {
+                return result;
+            }
+        }
+</code></pre>
+
+<h2 id="三-进阶-common-logging-log4j应用">三、进阶，common-logging+log4j应用</h2>
+
+<p>log4j功能强大，为了解耦和减少依赖，大部分的项目都会使用common-logging+log4j的组合进行开发，使用起来也是十分的简单：</p>
+
+<p>①引入log4j的jar包，最新jar包从官方网站<a href="http://logging.apache.org/log4j/1.2/download.html" rel="nofollow noreferrer" target="_blank">http://logging.apache.org/log4j/1.2/download.html</a>进行下载，下载后将jar包放到lib中引入项目即可。</p>
+
+<p>如果是maven项目在pom文件中添加依赖如下：</p>
+
+<pre><code class="language-xml">&lt;dependency&gt;
+   &lt;groupId&gt;log4j&lt;/groupId&gt;
+   &lt;artifactId&gt;log4j&lt;/artifactId&gt;
+   &lt;version&gt;1.2.17&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+
+<p>②在common-logging.properties文件,将log指向log4j</p>
+
+<pre><code class="language-properties">org.apache.commons.logging.Log=org.apache.commons.logging.impl.Log4JLogger
+</code></pre>
+
+<p>③创建log4j.properties文件，并将文件放在classpath下，如果是maven则放在source/main/resource目录下，简单配置如下：</p>
+
+<pre><code class="language-properties">#配置rootLogger
+log4j.rootLogger=all,appender1
+
+#配置第一个appender
+log4j.appender.appender1=org.apache.log4j.FileAppender
+#配置文件输出样式
+log4j.appender.appender1.layout = org.apache.log4j.PatternLayout
+log4j.appender.appender1.layout.ConversionPattern = [%-5p][%-22d{yyyy/MM/dd HH:mm:ssS}][%l]%n%m%n
+#指定仅记录ERROR以上级别的日志
+log4j.appender.appender1.Threshold = ERROR
+log4j.appender.appender1.ImmediateFlush = TRUE
+#指定将日志累加到日志文件末尾
+log4j.appender.appender1.Append = TRUE
+#指定日志文件
+log4j.appender.appender1.File = ./Common-logging-Modle/log/error.log
+log4j.appender.appender1.Encoding = UTF-8
+</code></pre>
+
+<p>④运行代码不变，结果如下：</p>
+
+<pre><code class="language-properties">error.log
+
+[ERROR][2019/01/31 17:56:13569][com.log.CommonsTest.main(CommonsTest.java:16)]
+ERROR ...
+
+</code></pre>
+
+<h2 id="总结">总结</h2>
+
+<p>1.尽可能将可配置的内容抽离作为配置，而不是在代码中做更改，可以极大增强系统灵活性</p>
+
+<p>2.common-logging的日志级别分为六个，默认级别为info，apache推荐使用四个级别：<strong>ERROR</strong>、<strong>WARN</strong>、<strong>INFO</strong>、<strong>DEBUG</strong></p>
+
+<p>3.common-logging的关键类log有5个基本实现类，分别是org.apache.commons.logging.impl.<strong>Jdk14Logger</strong>，org.apache.commons.logging.impl.<strong>Log4JLogger</strong>，org.apache.commons.logging.impl.<strong>LogKitLogger</strong>，org.apache.commons.logging.impl.<strong>SimpleLog</strong>，org.apache.commons.logging.impl.<strong>NoOpLog</strong></p>
+
+<p>4.LogFactory使用动态查找机制进行日志实例化，执行顺序为：common-logging.properties&mdash;-&gt;系统环境变量&mdash;&mdash;-&gt;log4j&mdash;&gt;jul&mdash;&gt;simplelog&mdash;-&gt;nooplog</p>
+
+<p>参考文档：</p>
+
+<p>【1】官方文档</p>
+
+<p>【2】<a href="https://blog.csdn.net/backbug/article/details/78655664" rel="nofollow noreferrer" target="_blank">https://blog.csdn.net/backbug/article/details/78655664</a></p>
+
+<p>【3】<a href="https://www.jianshu.com/p/b818d9d26d39" rel="nofollow noreferrer" target="_blank">https://www.jianshu.com/p/b818d9d26d39</a></p>
+
+    </div>
+
+    <div class="post-copyright">
+             
+            <p class="copyright-item">
+                <span>Author:</span>
+                <span>GF.L </span>
+                </p>
+            
+           
+             
+            <p class="copyright-item">
+                    <span>Link:</span>
+                    <a href=https://keep-zero.github.io/2019/java_log04/>https://keep-zero.github.io/2019/java_log04/</span>
+            </p>
+            
+             
+            <p class="copyright-item lincese">
+                本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可
+            </p>
+            
+    </div>
+
+  
+    <div class="post-tags">
+        
+            <section>
+            <i class="iconfont icon-tag"></i>Tag(s): 
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/java/">
+                    #java</a></span>
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/log/">
+                    #log</a></span>
+            
+            </section>
+        
+        <section>
+                <a href="javascript:window.history.back();">back</a></span> · 
+                <span><a href="https://keep-zero.github.io">home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+        
+        <a href="https://keep-zero.github.io/2019/java_log03/" class="prev" rel="prev" title="java日志篇（3）-Log4j(log for java)"><i class="iconfont icon-left"></i>&nbsp;java日志篇（3）-Log4j(log for java)</a>
+         
+        
+        <a href="https://keep-zero.github.io/2019/java_log05/" class="next" rel="next" title="java日志篇（5）-logback">java日志篇（5）-logback&nbsp;<i class="iconfont icon-right"></i></a>
+        
+    </div>
+
+    <div class="post-comment">
+          
+                 
+          
+    </div>
+</article>
+          </div>
+		   </main>
+      <footer class="footer">
+    <div class="copyright">
+        &copy;
+        
+        <span itemprop="copyrightYear">2011 - 2019</span>
+        
+        <span class="with-love">
+    	 <i class="iconfont icon-love"></i> 
+        </span>
+         
+            <span class="author" itemprop="copyrightHolder"><a href="https://keep-zero.github.io">GF.L</a> | </span> 
+         
+
+         
+		  <span>Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow">Hugo</a> & <a href="https://github.com/liuzc/leaveit" target="_blank" rel="external nofollow">LeaveIt</a></span> 
+		<span id="busuanzi_container_site_pv">
+			本站访问量：<span id="busuanzi_value_site_pv"></span>次
+		</span>
+		&nbsp;
+		<span id="busuanzi_container_site_uv">
+			您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者
+		</span>
+    </div>
+</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    <script src="/js/vendor_no_gallery.min.js" async=""></script>
+    
+  
+
+
+
+     </div>
+  </body>
+</html>

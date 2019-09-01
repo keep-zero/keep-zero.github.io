@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>java-react on Keep Zero</title>
+    <link>https://keep-zero.github.io/categories/java-react/</link>
+    <description>Recent content in java-react on Keep Zero</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 31 Aug 2019 12:23:16 +0800</lastBuildDate>
+    
+	<atom:link href="https://keep-zero.github.io/categories/java-react/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>java学习笔记-反射(3)-动态代理</title>
+      <link>https://keep-zero.github.io/2019/java_react03/</link>
+      <pubDate>Sat, 31 Aug 2019 12:23:16 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/java_react03/</guid>
+      <description>慢慢来比较快，虚心学技术
+ 代理模式  代理是基本的设计模式之一，它是为了提供额外的或不同的操作，而插入的用来代替实际对象的对象，简单来说，代理通常充当着中间人的角色
+ 代理的特征是代理类与委托类有同样的接口，我们通过访问实际对象时是通过代理对象来访问的，代理类实际上不实现任何服务功能，通过调用实际对象（委托类）的方法实现功能，这样设计可以为方法实现更多的额外操作，比如日志记录，时间判断等与实际功能无关，但是能够完善程序的操作。
+java中，有两种代理方式：
+①静态代理：由程序员创建代理类或特定工具自动生成源代码再对其编译。在程序运行前代理类的.class文件就已经存在了。
+②动态代理：代理类在程序运行时运用反射机制动态创建而成
+静态代理 静态代理定义如上，下面是静态代理的简单实现，在调用委托类方法前后，记录相关日志
+①首先，创建统一委托接口（Person）
+public interface Person { void sayHi(); }  ②创建基本委托类Student实现Person接口
+public class Student implements Person { private String name; public Student(){ super(); } public Student(String name){ super(); this.name = name; } @Override public void sayHi() { try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); } System.out.println(this.name+&amp;quot;说:hi!!!!&amp;quot;); } }  ③创建代理类StudentsProxy，与Student一样实现Person的接口，只不过代理类会将实际委托对象引入作为操作对象（个人理解StudentsProxy更像一个传声筒，只不过这个传声筒可以做的事情更多而已）
+public class StudentsProxy implements Person { private static Logger logger= LoggerFactory.</description>
+    </item>
+    
+    <item>
+      <title>java学习笔记-反射(2)-ClassLoader</title>
+      <link>https://keep-zero.github.io/2019/java_react02/</link>
+      <pubDate>Sat, 31 Aug 2019 12:20:47 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/java_react02/</guid>
+      <description>慢慢来比较快，虚心学技术
+前言：在Java中的反射机制是指在运行状态中，对于任意一个类都能够知道这个类所有的属性和方法；并且对于任意一个对象，都能够调用它的任意一个方法；这种动态获取信息以及动态调用对象方法的功能成为Java语言的反射机制。
+ 概念 ClassLoader：类的加载器，用来把类(class)装载进 JVM
+java装载类的方式有两种：
+①隐式装载：程序在运行过程中当碰到通过new 等方式生成对象时，隐式调用类装载器加载对应的类到jvm中
+②显式装载：通过Class.forName()等方式动态显式加载需要的类【如上一篇文章所示】
+ClassLoader层级 java的类装载器有如下几种：
+①Bootstrp ClassLoader: 引导类装载器，用C++语言编写，它是在Java虚拟机启动后初始化的，它主要负责加载%JAVA_HOME%/jre/lib,-Xbootclasspath参数指定的路径以及%JAVA_HOME%/jre/classes中的类。java中获取时名称为：
+②ExtClassLoader：扩展类装载器，负责装载jdk home/lib/ext目录下的jar包
+③AppClassLoader ：系统类装载器，最常用的类装载器。负责装载classpath路径下的类文件
+三种类装载器的有层级关系，层级关系如下：
+Bootstrp ClassLoader是ExtClassLoader的父级类装载器
+ExtClassLoader是AppClassLoader的父级类装载器
+主要方法 ClassLoader.getSystemClassLoader()&amp;mdash;&amp;mdash;&amp;mdash;获取系统类加载器
+classLoader.getParent()&amp;mdash;&amp;mdash;&amp;mdash;&amp;ndash;获取加载器的父级类加载器
+class.getClassLoader()&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;获取当前类的加载器
+//获取系统类加载器 ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader(); System.out.println(&amp;quot;systemClassLoader :&amp;quot;+systemClassLoader); //获取扩展类加载器 ClassLoader extentionClassLoader = systemClassLoader.getParent(); System.out.println(&amp;quot;extentionClassLoader :&amp;quot;+extentionClassLoader); //试图获取引导类加载器（无法获取） ClassLoader bootstapClassLoader = extentionClassLoader.getParent(); System.out.println(&amp;quot;bootstapClassLoader :&amp;quot;+bootstapClassLoader); //测试当前类由哪个类加载器进行加载（系统类加载器）: BaseEntity baseEntity = new BaseEntity(); ClassLoader classLoader = baseEntity.getClass().getClassLoader(); System.out.println(&amp;quot;程序内定义的类由：&amp;quot;+classLoader+&amp;quot; 进行加载&amp;quot;); classLoader = Integer.class.getClassLoader(); //如果为空则代表是引导类，无法获取 System.out.println(&amp;quot;系统Integer由：&amp;quot;+classLoader+&amp;quot; 进行加载&amp;quot;);  运行结果：</description>
+    </item>
+    
+    <item>
+      <title>java学习笔记-反射(1)-Class</title>
+      <link>https://keep-zero.github.io/2019/java_react01/</link>
+      <pubDate>Sat, 31 Aug 2019 11:54:20 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/java_react01/</guid>
+      <description>慢慢来比较快，虚心学技术
+前言：在Java中的反射机制是指在运行状态中，对于任意一个类都能够知道这个类所有的属性和方法；并且对于任意一个对象，都能够调用它的任意一个方法；这种动态获取信息以及动态调用对象方法的功能成为Java语言的反射机制。
+ 反射 反射的概念（是什么）： java中的反射&amp;mdash;&amp;mdash;相当于对象的镜子，对象在照镜子时可以获取自身的信息，比如：属性，方法和构造器，实现接口等，而且这面镜子还可以直接调用执行java对象的方法
+反射的用处（有什么用）： 1.当接收到别人传过来的类时，可以进行解析
+2.当只有类名时，可以获取到对象的完整信息，从而执行相应处理
+多用于可配置和动态代理
+java反射涉及的几个类： java.lang. Class：反射的核心类，可以获取类的属性，方法等信息
+java.lang.ClassLoader:类的加载器，用来把类(class)装载进 JVM
+java.lang.reflect.Field ：类的成员变量，用来获取和设置类的属性
+java.lang.reflect.Method：类的方法，用来获取类中方法的信息或调用类的方法
+java.lang.reflect.Modifier：类的修饰符工具，可以用来判断类中属性或者方法的修饰级别
+为方便后续学习，事先创建一个基本类
+public class BaseEntity { private String name; private Integer age; public BaseEntity(){ super(); } public BaseEntity(String name,Integer age){ super(); this.name = name; this.age = age; } private void addAge(String name,Integer age){ if(this.name.equals(name)){ this.age+=age; }else{ System.out.println(&amp;quot;名称不符，请核验&amp;quot;); } } }  Class类 class是一个用来描述类的类，封装了当前对象所对应的类信息，我们可以通过该类获取目标对象的属性，方法等信息,还可以根据class类创建目标对象实例
+获取Class类 1.通过类名获取 : 类名.class
+Class clazz = BaseEntity.</description>
+    </item>
+    
+  </channel>
+</rss>

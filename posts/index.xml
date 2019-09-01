@@ -6,18 +6,630 @@
     <description>Recent content in Posts on Keep Zero</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 26 Aug 2019 22:25:12 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 01 Sep 2019 14:38:02 +0800</lastBuildDate>
     
 	<atom:link href="https://keep-zero.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>MyFirst</title>
-      <link>https://keep-zero.github.io/2019/myfirst/</link>
-      <pubDate>Mon, 26 Aug 2019 22:25:12 +0800</pubDate>
+      <title>《Spring实战》-第十四章：保护方法（Security）（2）-使用表达式增强方法保护</title>
+      <link>https://keep-zero.github.io/2019/spring_action14_02/</link>
+      <pubDate>Sun, 01 Sep 2019 14:38:02 +0800</pubDate>
       
-      <guid>https://keep-zero.github.io/2019/myfirst/</guid>
-      <description> 测试文章而已 test  ceshi </description>
+      <guid>https://keep-zero.github.io/2019/spring_action14_02/</guid>
+      <description>慢来比较快，虚心学技术
+ 前一篇文章中，我们通过使用@Secured和@RolesAllowed两个注解实现了简单有效的基于角色的方法权限控制，但是有时候，我们并不是单纯的针对角色身份进行限制就可以的，还需要使用某些逻辑进行限制，所以Spring Security提供了四个注解帮助我们更细粒地去控制方法访问地权限，这些注解地参数都是SPEL表达式 使用这几个注解之前，我们需要先将@EnableGlobalMethodSecurity()的prePostEnabled属性设置为true，如同前述，也可以同时使用securedEnabled和jsr250Enabled
+@Configuration @EnableGlobalMethodSecurity(prePostEnabled = true) public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration { }  首先测试使用addUser接口
+@Override public User addUser(User user) { System.out.println(&amp;quot;添加用户&amp;quot;); return this.baseDao.save(user); }  使用dba登录，访问/user/userForm,访问用户信息填写页面
+提交表单，返回调用成功
+ 使用@PreAuthorize实现方法前校验，此处我们使用SPEL表达式限定addUser方法必须在访问者具备ROLE_ADMIN身份，且传入参数user的age属性值必须大于50的情况下才可以访问
+@Override @PreAuthorize(&amp;quot;hasRole(&#39;ROLE_ADMIN&#39;) AND #user.age&amp;gt;50&amp;quot;) public User addUser(User user) { System.out.println(&amp;quot;添加用户&amp;quot;); return this.baseDao.save(user); }   首先使用dba用户进行访问，访问受限
+再使用admin进行访问，参数正确，允许访问：
+填写错误参数，年龄age填写为40，访问受限：
+控制成功
+ 使用@PostAuthorize实现方法后校验,为了方便校验，Spring Security在SPEL中提供了returnObject代表方法返回对象，此处我们限制仅当方法返回的结果的userName属性为“admin”时才可以放行
+@Override @PostAuthorize(&amp;quot;returnObject.userName==&#39;admin&#39;&amp;quot;) public User addUser(User user) { System.out.println(&amp;quot;添加用户&amp;quot;); return this.baseDao.save(user); }   首先提交userName为dba的用户，访问受限</description>
+    </item>
+    
+    <item>
+      <title>《Spring实战》-第十四章：保护方法（Security）（1）-使用注解保护方法</title>
+      <link>https://keep-zero.github.io/2019/spring_action14_01/</link>
+      <pubDate>Sun, 01 Sep 2019 11:53:04 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/spring_action14_01/</guid>
+      <description>慢来比较快，虚心学技术
+尽管Spring Security为我们提供了Web层的安全保护，我们依旧有可能会疏忽而导致用户通过正常访问路径访问到不应该访问的方法，所以除了在web层实施保护以外，我们还需要给底层的方法施加保护层。这样就能保证如果用户不具备权限的话，就无法执行相应的逻辑
+ Spring Security 提供了三种不同的安全注解：
+ Spring Security 自带的 @Secured 注解； JSR-250 的 @RolesAllowed 注解； 表达式驱动的注解，包括 @PreAuthorize 、 @PostAuthorize 、 @PreFilter 和 @PostFilter 。  其中，@Secured 和 @RolesAllowed 方案非常类似，能够基于用户所授予的权限限制对方法的访问
+基础环境：(详细配置解释请参考第九章文章)
+&amp;lt;!--定义spring版本信息--&amp;gt; &amp;lt;properties&amp;gt; &amp;lt;org.springframework.version&amp;gt;5.1.3.RELEASE&amp;lt;/org.springframework.version&amp;gt; &amp;lt;spring.security.version&amp;gt;5.1.3.RELEASE&amp;lt;/spring.security.version&amp;gt; &amp;lt;/properties&amp;gt; &amp;lt;dependencies&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;junit&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;junit&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;4.12&amp;lt;/version&amp;gt; &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;!-- servlet --&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;javax.servlet&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;javax.servlet-api&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;3.1.0&amp;lt;/version&amp;gt; &amp;lt;scope&amp;gt;provided&amp;lt;/scope&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;!-- jstl --&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;jstl&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;jstl&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;1.2&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;!--lombok引入，用于精简代码，bean类使用注解默认携带setter和getter方法等--&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.projectlombok&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;lombok&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;1.18.4&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;!-- Spring基础框架引入 --&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.</description>
+    </item>
+    
+    <item>
+      <title>《Spring实战》-第十三章：缓存数据（2）-在方法上使用缓存</title>
+      <link>https://keep-zero.github.io/2019/spring_action13_02/</link>
+      <pubDate>Sun, 01 Sep 2019 11:52:59 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/spring_action13_02/</guid>
+      <description>慢来比较快，虚心学技术
+ Spring 的缓存抽象在很大程度上是围绕切面构建的。在 Spring 中启用缓存时，会创建一个切面，它触发一个或更多的 Spring 的缓存注解，Spring提供的缓存注解主要有以下几个： Ⅰ、填充缓存 由上述注解可知，@Cacheable和@CachePut注解可以往缓存填充内容，两者的共有属性有： 在最简单的情况下，在 @Cacheable 和 @CachePut 的这些属性中，只需使用 value 属性指定一个或多个缓存即可
+上一篇文章中我们介绍了Spring整合Redis的过程，我们依旧使用Redis缓存了解Spring对缓存的抽象
+我们事先编写一个BaseDao作为操作基准
+@Component public class BaseDao { /** * 根据id获取信息 **/ @Cacheable(value = &amp;quot;myCache&amp;quot;) public String findOne(Integer id){ System.out.println(&amp;quot;执行findOne方法。。。。&amp;quot;); return &amp;quot;我是BaseDao&amp;quot;+id; } /** * 根据id更改信息 **/ @CachePut(value = &amp;quot;myCache&amp;quot;) public String save(Integer id){ System.out.println(&amp;quot;执行save方法。。。。。&amp;quot;); return &amp;quot;BaseDao&amp;quot;+id; } /** * 根据id移除信息 **/ @CacheEvict(value = &amp;quot;myCache&amp;quot;) public void remove(Integer id){ System.out.println(&amp;quot;执行remove方法。。。。。&amp;quot;); } }  编写测试类：</description>
+    </item>
+    
+    <item>
+      <title>《Spring实战》-第十三章：缓存数据（1）-Spring对缓存的支持</title>
+      <link>https://keep-zero.github.io/2019/spring_action13_01/</link>
+      <pubDate>Sun, 01 Sep 2019 11:52:45 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/spring_action13_01/</guid>
+      <description>慢来比较快，虚心学技术
+缓存（ Caching ）可以存储经常会用到的信息，这样每次需要的时候，这些信息都是立即可用的。我们将会了解到 Spring 的缓存抽象。尽管 Spring 自身并没有实现缓存解决方案，但是它对缓存功能提供了声明式的支持，能够与多种流行的缓存实现进行集成
+ Ⅰ、开启缓存支持  注解开启：@EnableCaching 配置开启： cache:annotation-driven  两种开启方法的工作方式是相同的。它们都会创建一个切面（ aspect ）并触发Spring 缓存注解的切点（ pointcut ）。根据所使用的注解以及缓存的状态，这个切面会从缓存中获取数据，将数据添加到缓存之中或者从缓存中移除某个值。
+import org.springframework.cache.annotation.EnableCaching; @Configuration @EnableCaching public class CacheConfig { }  &amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot;?&amp;gt; &amp;lt;beans xmlns=&amp;quot;http://www.springframework.org/schema/beans&amp;quot; xmlns:xsi=&amp;quot;http://www.w3.org/2001/XMLSchema-instance&amp;quot; xmlns:cache=&amp;quot;http://www.springframework.org/schema/cache&amp;quot; xsi:schemaLocation=&amp;quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd&amp;quot;&amp;gt; &amp;lt;!--启用缓存注解功能，这个是必须的，否则注解不会生效--&amp;gt; &amp;lt;!--有一个cache-manager属性用来指定当前所使用的CacheManager对应的bean的名称，默认是cacheManager--&amp;gt; &amp;lt;cache:annotation-driven/&amp;gt; &amp;lt;/beans&amp;gt;  Ⅱ、配置缓存管理器 缓存管理器：是 Spring 缓存抽象的核心，它能够与多个流行的缓存实现进行集成
+Spring内置了多个缓存管理器：
+ SimpleCacheManager NoOpCacheManager ConcurrentMapCacheManager&amp;mdash;&amp;mdash;&amp;mdash;-默认使用的缓存管理器 CompositeCacheManager EhCacheCacheManager&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;-较常用 RedisCacheManager （来自于 Spring Data Redis 项目）&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;ndash;较常用 GemfireCacheManager （来自于 Spring Data GemFire 项目）  1、配置ConcurrentMapCacheManager ①注解配置</description>
+    </item>
+    
+    <item>
+      <title>《Spring实战》-第十二章：Spring与NoSQL</title>
+      <link>https://keep-zero.github.io/2019/spring_action12/</link>
+      <pubDate>Sun, 01 Sep 2019 11:52:39 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/spring_action12/</guid>
+      <description>慢来比较快，虚心学技术
+ 随着非关系型数据库（NoSQL数据库）概念的流行，Spring也开始提供非关系型数据库的支持，Spring主要提供以下几种非关系型数据库的支持：
+ MongoDB &amp;mdash;&amp;ndash;文档数据库，不是通用的数据库，它们所擅长解决的是一个很小的问题集 Neo4j &amp;mdash;&amp;mdash;&amp;mdash;&amp;ndash;图数据库。 Redis &amp;mdash;&amp;mdash;&amp;mdash;&amp;ndash;键值对数据库  现如今用的比较多的NoSQL数据库是Redis数据库，我们以Spring整合Redis数据库为例了解Spring对NoSQL的支持
+一、Spring Data Redis体系结构分析 Spring-data-redis提供了在srping应用中通过简单的配置访问redis服务，对reids底层开发包(Jedis, JRedis, and RJC)进行了高度封装，RedisTemplate提供了redis各种操作、异常处理及序列化，支持发布订阅，并对spring 3.1 cache进行了实现。
+ 连接到 Redis  Redis 连接工厂会生成到 Redis 数据库服务器的连接。 Spring Data Redis 为四种 Redis 客户端实现提供了连接工厂：
+ JedisConnectionFactory&amp;mdash;&amp;mdash;&amp;mdash;-最为常用
+ SrpConnectionFactory
+ LettuceConnectionFactory
+ JredisConnectionFactory
+ 操作Redis
+  RedisTemplate对应不同需求封装了如下操作：
+opsForValue()&amp;mdash;&amp;mdash;普通键值对操作 opsForList()&amp;mdash;&amp;mdash;&amp;mdash;ArrayList键值对操作 opsForSet()&amp;mdash;&amp;mdash;&amp;mdash;HashSet键值对操作 opsForHash()&amp;mdash;&amp;mdash;HashMap键值对操作
+二、Spring 整合使用Spring Data Redis ①引入依赖
+&amp;lt;!--引入Spring Data Redis--&amp;gt; &amp;lt;!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-redis --&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.springframework.data&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;spring-data-redis&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;2.1.5.RELEASE&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;!</description>
+    </item>
+    
+    <item>
+      <title>《Spring实战》-第十一章：利用对象-关系映射持久化数据（Spring整合Spring Data ）</title>
+      <link>https://keep-zero.github.io/2019/spring_action11_03/</link>
+      <pubDate>Sun, 01 Sep 2019 11:52:25 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/spring_action11_03/</guid>
+      <description>慢来比较快，虚心学技术
+ Ⅰ、Spring Data JPA简介 Spring-Data:Spring 的一个子项目。用于简化数据库访问，支持NoSQL 和 关系数据存储。其主要目标是使数据库的访问变得方便快捷。
+Spring-data系列产品：
+Spring Data Common:提供共享的基础框架，适合各个子项目使用，支持跨数据库持久化 Spring Data JDBC:提供对关系数据库的访问，而无需处理JPA的复杂性 Spring Data JDBC Extensions:支持 Oracle RAD、高级队列和高级数据类型 Spring Data JPA:简化创建 JPA 数据访问层和跨存储的持久层功能 Spring Data Mongodb:提供对文档数据库的支持 Spring Data Redis:提供对键值对数据库的支持
+其中，Spring-data-jpa是 Spring 基于 ORM 框架、JPA 规范的基础上封装的一套 JPA 应用框架，底层使用了 Hibernate 的 JPA 技术实现，可使开发者用极简的代码即可实现对数据的访问和操作。它提供了包括增删改查等在内的常用功能，且易于扩展。
+简单来说，其目的在于简化Spring未简化的持久层业务工作，开发者仅需要完成的是声明持久层接口，其余则由Spring Data JPA来完成。
+Ⅱ、Spring Data JPA架构体系分析 如上所述，我们知道Spring Data JPA依赖于接口即可实现持久层操作，那么了解它提供的核心接口类，即可开始我们的使用：
+Repository：最顶层的接口，是一个空的接口，目的是为了统一所有Repository的类型，且能让组件扫描的时候自动识别 Specification：Spring Data JPA提供的一个查询规范，要做复杂的查询，只需围绕这个规范来设置查询条件 CrudRepository接口：提供了CRUD的基本功能 PagingAndSortingRepository分页排序接口：封装了查询分页和排序的功能 JpaRepository接口：PagingAndSortingRepository和QueryByExampleExecutor的子接口，除了提供CRUD的功能之外，还额外提供了分页和排序、过滤等功能 ** JpaSpecificationExecutor接口**：提供了对JPA Criteria查询（动态查询）的支持
+以下分析部分源码： ①Repository
+T：要操作的实体类类型
+ID:实体类的主键类型class</description>
+    </item>
+    
+    <item>
+      <title>《Spring实战》-第十一章：利用对象-关系映射持久化数据（Spring整合Hibernate）</title>
+      <link>https://keep-zero.github.io/2019/spring_action11_02/</link>
+      <pubDate>Sun, 01 Sep 2019 11:52:21 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/spring_action11_02/</guid>
+      <description>慢来比较快，虚心学技术
+ Ⅰ、Hibernate架构体系分析 先来了解一下Hibernate的框架体系，下图为官方Hibernate简要体系结构：
+Hibernate通过持久化对象Persistent Objects（PO）对数据库进行操作，底层数据库操作 对于应用程序来说是透明的，应用程序无需关心JDBC操作，底层数据库连接、数据库访问实现、事务控制，而是直接以面向对象方式进行持久层的操作。
+Hibernate详细的框架体系如下：
+ SessionFactory:是依赖于ConnectionProvider的会话和客户端工厂。 它拥有数据的二级缓存(可选)。 org.hibernate.SessionFactory接口提供了工厂方法来获取Session的对象。（实现了EntityManagerFactory接口） Session:应用程序与持久层之间交互操作的一个单线程对象。所有的持久化对象必须在Session管理下才能进行持久化操作。它底层封装了JDBC连接，是Transaction工厂。(实现了EntityManager接口) 持久化对象（PO）：系统创建的POJO实例，一旦与特定的Session关联，并对应数据表的指定记录，该对象就处于持久化状态。 事务（Transaction）：代表一次原子操作，Hibernate事务是对底层具体的JDBC，JTA以及CORBA事务的抽象。 连接提供者（ConnectionProvider）：生成JDBC连接的工厂，通过抽象将应用程序与底层的DataSource或DriverManager隔离开。 事务工厂(TransactionFactory)：它是一个事务工厂，是一个可选项。  如下是一次数据库请求操作的执行过程：
+①应用程序调用Configuration读取配置文件（映射文件和hibernate.propertise），并据此生成SessionFactory工厂对象。
+②SessionFactory生产Session操作对象，通过Session对象对数据库执行CRUD操作，同时生成Transaction对象
+③如果Session执行操作正常，Transaction提交事务将结果真正生成至数据库，如果操作异常，则执行事务回滚
+Ⅱ、Spring整合使用Hibernate ①引入依赖：
+&amp;lt;dependencies&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;junit&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;junit&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;4.12&amp;lt;/version&amp;gt; &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;!--logback日志实现引入--&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;ch.qos.logback&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;logback-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;1.1.7&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;ch.qos.logback&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;logback-access&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;1.1.7&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;ch.qos.logback&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;logback-classic&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;1.1.7&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;!--slf4j日志门面引入--&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.slf4j&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;slf4j-api&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;1.7.7&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;!--引入alibaba的数据库连接池--&amp;gt; &amp;lt;!-- https://mvnrepository.com/artifact/com.alibaba/druid --&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;com.alibaba&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;druid&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;1.1.10&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;!--引入Spring支持--&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.springframework&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;spring-jdbc&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${org.springframework.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;!</description>
+    </item>
+    
+    <item>
+      <title>《Spring实战》-第十一章：利用对象-关系映射持久化数据</title>
+      <link>https://keep-zero.github.io/2019/spring_action11_01/</link>
+      <pubDate>Sun, 01 Sep 2019 11:52:10 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/spring_action11_01/</guid>
+      <description>慢慢来比较快，虚心学技术
+ 原文链接：《Spring实战》-第十一章：利用对象-关系映射持久化数据
+一、什么是对象-关系映射（ORM）/为什么需要对象-关系映射 先来了解几个概念：
+ 瞬时状态：在程序运行的时候，有些数据保存在内存中，当程序退出后，这些数据就不复存在了，称这些数据的状态是瞬时的。 持久状态：数据以文件形式保存在辅存中，这样，程序退出后，数据依然存在，这种状态称之为持久的。 持久化 ：即在程序中的瞬时状态和持久状态之间转换的机制。  实际上，我们通常所说的持久化，一般指的持久化数据到数据库中。
+在数据持久化的世界里面，传统的dao已经很难满足开发的需求，或者显得过于臃肿耦合，程序代码中存在大量的问号字符串（SQL语句）。那么，使用对象-关系映射将对象属性映射到数据库表的列字段，从而实现操作对象以操作数据记录，简化代码就很有必要了，同时我们还需要学习用到几个特性：
+ 延迟加载（ Lazy loading ）：随着我们的对象关系变得越来越复杂，有时候我们并不希望立即获取完整的对象间关系。举一个典型的例子，假设我们在查询一组 PurchaseOrder 对象，而每个对象中都包含一个 LineItem 对象集合。如果我们只关心 PurchaseOrder 的属性，那查询出 LineItem 的数据就毫无意义。而且这可能是开销很大的操作。延迟加载允许我们只在需要的时候获取数据。 预先抓取（ Eager fetching ）：这与延迟加载是相对的。借助于预先抓取，我们可以使用一个查询获取完整的关联对象。如果我们需要 PurchaseOrder 及其关联的 LineItem 对象，预先抓取的功能可以在一个操作中将它们全部从数据库中取出来，节省了多次查询的成本。 级联（ Cascading ）：有时，更改数据库中的表会同时修改其他表。回到我们订购单的例子中，当删除 Order 对象时，我们希望同时在数据库中删除关联的 LineItem 。  一些可用框架提供了上述服务，这些服务的通用名称是对象 / 关系映射（ object-relational mapping ， ORM ）。在持久层使用 ORM 工具，可
+以节省数千行的代码和大量的开发时间。 ORM 工具能够把你的注意力从容易出错的 SQL 代码转向如何实现应用程序的真正需求。
+二、Spring对ORM框架的支持与扩展 Spring对多个持久化框架的集成提供了支持，这些框架包括 Hibernate：可能是最常用的ORM框架，是一个全自动的orm框架，hibernate可以自动生成SQL语句，自动执行，使得Java程序员可以随心所欲的使用对象编程思维来操纵数据库。
+iBATIS：Apache推出的一种轻量级的对象关系映射(ORM)框架
+Java数据对象（ Java Data Objects ， JDO ）： 是一个应用程序接口(API)，它是Java程序员能够间接地访问数据库，也就是说，不需使用直接的结构化查询语言(SQL)语句。JDO是作为Java数据库连接(JDBC)的一个补充来介绍的，而JDBC是一个支持使用SOL语句对流行的数据库程序进行访问的接口。有了 JDO，程序员就可以使用类来定义数据对象，然后支撑程序就会根据类的定义来管理对给定数据库的实际的数据访问了。　Java持久化 API （ Java Persistence API ， JPA ）：JAVA 持久化API，是EJB 3.</description>
+    </item>
+    
+    <item>
+      <title>《Spring实战》-第十章:Spring和JDBC</title>
+      <link>https://keep-zero.github.io/2019/spring_action10/</link>
+      <pubDate>Sun, 01 Sep 2019 11:51:57 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/spring_action10/</guid>
+      <description>慢慢来比较快，虚心学技术
+数据访问操作：初始化数据访问框架、打开连接、处理各种异常和关闭连接，任何一步出现异常都有可能导致损坏或删除企业数据库珍贵数据
+ 详细文章请移步：CSDN-《Spring实战》-第十章:Spring和JDBC
+一、Spring 的数据访问哲学 ①松耦合 为了避免持久化的逻辑分散到应用的各个组件中，最好将数据访问的功能放到一个或多个专注于此项任务的组件中。这样的组件通常称为数据访问对象（ data access object ， DAO ）或 Repositor
+为了避免应用与特定的数据访问策略耦合在一起，编写良好的 Repository 应该以接口的方式暴露功能。图 10.1 展现了设计数据访问层的合理方式
+接口是实现松耦合代码的关键，并且应将其用于应用程序的各个层，而不仅仅是持久化层
+②Spring 数据访问异常 JDBC对于所有的数据访问问题都会抛出 SQLException ，可能导致抛出 SQLException 的常见问题包括：
+ 应用程序无法连接数据库 要执行的查询存在语法错误； 查询中所使用的表和 / 或列不存在； 试图插入或更新的数据违反了数据库约束  可见JDBC对于数据访问异常的处理十分粗糙，他并不会告诉你具体问题出现在哪里，而是讲所有问题都指向SQLException。所以很多持久化框架如Hibernate等都会提供自身的数据访问异常类，以供使用。但是如果我们在应用层次中引入了持久化框架的异常，很显然会紧紧的耦合在一起，违反了松耦合的约定。故而，Spring提供了自身一系列的异常类。
+然而，Spring所提供的异常都是继承自非检查型异常，所以并不需要强制开发人员必须catch。
+二、Spring 数据访问模板化 模板方法模式（设计模式）：模板方法定义过程的主要框架，模板方法将过程中与特定实现相关的部分委托给接口，而这个接口的不同实现定义了过程中的具体行为
+Spring将数据访问分为可变（模板）和不可变（固定）两部分：模板（ template ）和回调（ callback ）
+* Spring 的模板类处理数据访问的固定部分 —— 事务控制、管理资源以及处理异常。 * 应用程序相关的数据访问 —— 语句、绑定参数以及整理结果集 —— 在回调的实现中处理。
+模板：Spring为了兼容多个持久化框架，提供了一系列的模板类
+jca.cci.core.CciTemplate====JCA CCI 连接
+jdbc.core.JdbcTemplate====JDBC 连接
+jdbc.core.namedparam.NamedParameterJdbcTemplate====支持命名参数的 JDBC 连接 jdbc.core.simple.SimpleJdbcTemplate====通过 Java 5 简化后的 JDBC 连接（ Spring 3.</description>
+    </item>
+    
+    <item>
+      <title>《Spring实战》-第九章:Spring Web应用安全（Spring Security）</title>
+      <link>https://keep-zero.github.io/2019/spring_action09/</link>
+      <pubDate>Sat, 31 Aug 2019 23:21:28 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/spring_action09/</guid>
+      <description>慢慢来比较快，虚心学技术
+ 安全性是绝大多数应用系统中的一个重要切面（ aspect ），之所以说是切面，是因为安全性是超越应用程序功能的一个关注点。应用系统的绝大部分内容都不应该参与到与自己相关的安全性处理中。尽管我们可以直接在应用程序中编写安全性功能相关的代码（这种情况并不少见），但更好的方式还是将安全性相关的关注点与应用程序本身的关注点进行分离
+一、什么是Spring Security? 一种基于 Spring AOP 和 Servlet 规范中的 Filter 实现的安全框架。 Spring Security 提供了完整的安全性解决方案，它能够在 Web 请求级别和方法调用级别处理身份认证和授权
+Spring Security 从两个角度来解决安全性问题。
+ 它使用 Servlet 规范中的 Filter 保护 Web 请求并限制 URL 级别的访问。 Spring Security 还能够使用 Spring AOP 保护方法调用 —— 借助于对象代理和使用通知，能够确保只有具备适当权限的用户才能访问安全保护的方法  Spring Security的核心是 用户认证（Authentication）和用户授权（Authorization）
+二、Spring Security基本组成 Spring Security 被分成了 11 个模块 ACL:支持通过访问控制列表（ access control list ， ACL ）为域对象提供安全性 切面（ Aspects ）:一个很小的模块，当使用 Spring Security 注解时，会使用基于 AspectJ 的切面，而不是使用标准的 Spring AOP CAS 客户端（ CAS Client ）：提供与 Jasig 的中心认证服务（ Central Authentication Service ， CAS ）进行集成的功能 配置（ Configuration ）:包含通过 XML 和 Java 配置 Spring Security 的功能支持 核心（ Core ）:提供 Spring Security 基本库 加密（ Cryptography ）:提供了加密和密码编码的功能 LDAP:支持基于 LDAP 进行认证 OpenID:支持使用 OpenID 进行集中式认证 Remoting:提供了对 Spring Remoting 的支持 标签库（ Tag Library ）:Spring Security 的 JSP 标签库 Web:提供了 Spring Security 基于 Filter 的 Web 安全性支持</description>
+    </item>
+    
+    <item>
+      <title>《Spring实战》-第七章:SpringMVC的高级技术</title>
+      <link>https://keep-zero.github.io/2019/spring_action07/</link>
+      <pubDate>Sat, 31 Aug 2019 23:21:13 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/spring_action07/</guid>
+      <description>慢慢来比较快，虚心学技术
+ 一、SpringMVC配置的替代方案 Ⅰ、注册Filter SpingMVC的AbstractAnnotationConfigDispatcherServletInitializer提供了十分方便的注册过滤器的方法，通过重载getServletFilters()方法将我们自定义的过滤器注册到上下文中
+如下代码：
+public class SpittrWebAppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer { private final Logger logger = LoggerFactory.getLogger(this.getClass()); /*AbstractAnnotationConfigDispatcherServletInitializer 会同时创 建 DispatcherServlet 和 ContextLoaderListener 。 GetServlet-ConfigClasses() 方法返回的带有 @Configuration 注解的 类将会用来定义 DispatcherServlet 应用上下文中的 bean 。 getRootConfigClasses() 方法返回的带有 @Configuration 注解的类将 会用来配置 ContextLoaderListener 创建的应用上下文中的 bean 。*/ @Override protected Class&amp;lt;?&amp;gt;[] getRootConfigClasses() { return new Class[]{RootConfig.class}; } @Override protected Class&amp;lt;?&amp;gt;[] getServletConfigClasses() { return new Class[]{WebConfig.class}; } @Override protected String[] getServletMappings() { logger.debug(&amp;quot;DispatcherServlet获取匹配的前端控制器。。。。。。&amp;quot;); return new String[]{&amp;quot;/&amp;quot;}; } /** * 注册过滤器 */ @Override protected Filter[] getServletFilters() { //将自定义过滤器实例数组返回 return new Filter[]{new MyFilter()}; } } /** * 过滤器类 */ public class MyFilter implements Filter { private Logger logger = LoggerFactory.</description>
+    </item>
+    
+    <item>
+      <title>《Spring实战》-第六章:渲染视图（表达式，标签库，模板）</title>
+      <link>https://keep-zero.github.io/2019/spring_action06/</link>
+      <pubDate>Sat, 31 Aug 2019 23:21:07 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/spring_action06/</guid>
+      <description>慢慢来比较快，虚心学技术
+前言：视图解析器可以将逻辑视图名转换成物理实现
+ 一、视图解析器 Spring提供了13个基本的视图解析器，能够将逻辑视图名转换为物理实现，如上一篇中提到的InternalResourceViewResolver。
+此处我们只了解其中几个比较常用的视图解析器：
+ FreeMarkerViewResolver：将视图解析为 FreeMarker 模板 InternalResourceViewResolver：将视图解析为Web应用的内部资源 TilesViewResolver：将视图解析为 Apache Tile 定义，其中 tile ID 与视图名称相同。注意有两个不同的TilesViewResolver实现，分别对应于 Tiles 2.0 和Tiles 3.0 ThymeleafViewResolver： 将逻辑视图名称解析为 Thymeleaf 模板视图  使用不同的解析器可以实现将视图解析成不同类型的内容展现
+二、具体视图解析器分析Demo Ⅰ、创建JSP视图 基础实现如上一章《Spring实战》-第五章:Web中的Spring（SpringMVC注解实现） )所述，InternalResourceViewResolver还支持将逻辑视图名转换成JstlView，我们只需要修改其viewClass为org.springframework.web.servlet.view.JstlView.class即可
+@Bean public ViewResolver viewResolver(){ InternalResourceViewResolver resourceViewResolver = new InternalResourceViewResolver(); resourceViewResolver.setPrefix(&amp;quot;/WEB-INF/view/&amp;quot;); resourceViewResolver.setSuffix(&amp;quot;.jsp&amp;quot;); resourceViewResolver.setExposeContextBeansAsAttributes(true); resourceViewResolver.setViewClass(org.springframework.web.servlet.view.JstlView.class); return resourceViewResolver; }  Ⅱ、使用Apache Tile视图定义布局 如果一个应用多个视图需要使用很多重复性的内容，如头部，尾部等，或许我们会一个个的去复制使用，但是一旦做了任何更改，将需要同步进行多次更改，效率是很低的。
+Apache Tiles是一个JavaEE应用的页面布局框架。Tiles框架提供了一种模板机制，可以为某一类页面定义一个通用的模板，该模板定义了页面的整体布局。布局由可以复用的多个块组成，每个页面可以有选择性的重新定义块而达到组件的复用。
+SpringMVC结合Tile使用，案例如下：
+引入tiles支持jar包：
+&amp;lt;!--tiles--&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.apache.tiles&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;tiles-jsp&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;3.0.5&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  ①创建TilesConfig配置类，同时定义视图解析器TilesViewResolver
+@Configuration @EnableAspectJAutoProxy @ComponentScan(basePackages = {&amp;quot;com.</description>
+    </item>
+    
+    <item>
+      <title>《Spring实战》-第五章：Web中的Spring（SpringMVC注解实现）</title>
+      <link>https://keep-zero.github.io/2019/spring_action05/</link>
+      <pubDate>Sat, 31 Aug 2019 22:43:02 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/spring_action05/</guid>
+      <description>慢慢来比较快，虚心学技术
+前言：前面我们学习了关于Spring核心的IOC和AOP知识，除此之外，以此为基础，Spring的MVC框架还经常被用于Web开发（SpringMVC）
+ 一、什么是SpringMVC框架？ 在了解SpringMVC之前，我们先回顾一下Spring基础架构：
+Spring MVC 是Spring的一部分，基于模型 - 视图 - 控制器（ Model-View-Controller ， MVC ）模式实现，它能够帮你构建像 Spring 框架那样灵活和松耦合的 Web 应用程序。在实际开发中，接收浏览器的请求响应，对数据进行处理，然后返回页面进行显示。
+二、SpringMVC组成以及运行原理 Ⅰ、SpringMVC的组成  DispatcherServlet：前端控制器 （SpringMVC的核心）&amp;mdash;&amp;ndash;相当于MVC中的C，作为中心调用其他组件，降低其他组件之间的耦合性 HandlerMapping：处理器映射器 &amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;-根据用户请求找到对应路径的处理器（相当于处理器的名单） HandlAdapter：处理器适配器 &amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;ndash;调用执行处理器方法（适配器模式的应用） Handler：处理器 &amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;ndash;处理用户请求的类，相当于传统意义上的Servlet ViewResolver：视图解析器 &amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;处理返回结果，将处理器适配器返回的数据模型转换成具体视图，并进行渲染输出（实际上就是将处理器返回的名称补充成具体的路径也就是一个视图，同时从数据模型中提取数据进行填充） View：视图 &amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;视图是数据最终需要展现给客户的地方，Spring支持多种类型的视图：jstlVies,freemarkerView等，最常用的是JSP和使用模板实现的html等  Ⅱ、SpringMVC请求响应流程 ①用户发起请求，携带请求信息到前端控制器进行调度
+②前端控制器（DispatcherServlet）调用处理器映射器，根据请求信息从处理器映射器中找到访问路径的目标处理器
+③前端控制器（DispatcherServlet）根据得到的目标处理器映射，调用处理器适配器方法（处理器适配器将处理器方法包装成适配器模式）
+④处理器适配器（HandlerAdapter）调用处理器（Handler）相应功能方法，并将结果返回给前端控制器
+⑤前端控制器（DispatcherServlet）根据得到的数据结果和目标视图名称，调用视图解析器（ViewResolver）返回目标视图完整路径
+⑥前端控制器（DispatcherServlet）根据得到的视图路径，对目标视图（view）进行渲染（数据填充等），得到目标视图
+⑦前端控制器（DispatcherServlet）将目标视图展现给用户
+从上述流程可以看到，SpringMVC的功能流转是围绕前端控制器（DispatcherServlet）实现的，这样的好处是使得各个组件之间的耦合性大大降低，各个组件只做自己应该做的事情。其实这是大部分框架想要实现的目标。
+分析DispatcherServlet，从Spring官网查看到的结构图如下：
+从结构图可以看到，DispatcherServlet包含了两个Web应用上下文，用于独立控制，其中：
+ Servlet WebApplicationContext:管理用于网络请求的处理器适配器，视图解析器，处理器映射器和处理器 Root WebApplicationContext：管理基本的数据库操作类，业务逻辑类等Bean  通过两个应用上下文管理基本Bean和网络Bean，互不干扰，但是其中管理的Bean之间可以互相使用
+三、SpringMVC的简单使用（注解方式） 首先我们应该先引入Spring对WebMvc的支持，maven引入如下：
+&amp;lt;!--引入网络Servlet支持--&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;javax.servlet&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;javax.servlet-api&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;3.1.0&amp;lt;/version&amp;gt; &amp;lt;scope&amp;gt;provided&amp;lt;/scope&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;!--引入SpringMVC--&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.springframework&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;spring-webmvc&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${org.springframework.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  ①创建DispatcherServlet类，继承并重载AbstractAnnotationConfigDispatcherServletInitializer类的三个方法：</description>
+    </item>
+    
+    <item>
+      <title>《Spring实战》-第四章：面向切面编程（AOP）</title>
+      <link>https://keep-zero.github.io/2019/spring_action04/</link>
+      <pubDate>Sat, 31 Aug 2019 22:42:57 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/spring_action04/</guid>
+      <description>慢慢来比较快，虚心学技术
+前言：DI （依赖注入）有助于应用对象之间的解耦，而 AOP（面向切面编程） 可以实现横切关注点与它们所影响的对象之间的解耦
+ 一、什么是面向切面编程 Ⅰ、横切关注点：在软件开发中，散布于应用中多处的功能被称为横切关注点（ cross-cutting concern ）【比如说日志，安全和事务管理等】。通常来讲，这些横切关注点从概念上是与应用的业务逻辑相分离的（但是往往会直接嵌入到应用的业务逻辑之中）。把这些横切关注点与业务逻辑相分离正是面向切面编程（ AOP ）所要解决的问题。
+Ⅱ、切面：横切关注点可以被模块化为特殊的类，这些类被称为切面（ aspect ）。
+Ⅲ、AOP术语
+①通知（ Advice ）：切面的工作被称为通知。通知描述切面的工作，同时决定切面何时工作【定义了切面工作做什么，什么时候做】
+ 前置通知（ Before ）：在目标方法被调用之前调用通知功能； 后置通知（ After ）：在目标方法完成之后调用通知，此时不会关心方法的输出是什么； 返回通知（ After-returning ）：在目标方法成功执行之后调用通知； 异常通知（ After-throwing ）：在目标方法抛出异常后调用通知； 环绕通知（ Around ）：通知包裹了被通知的方法，在被通知的方法调用之前和调用之后执行自定义的行为  ②连接点（ Join point ）：触发切面工作的点，比如方法执行，异常抛出等行为
+③切点（ Poincut ）：决定切面工作的地方，比如某个方法等【定义了切面工作在哪里做】
+④切面（ Aspect ）：通知和切点的结合【面】
+⑤引入（ Introduction ）：允许我们向现有的类添加新方法或属性
+⑥织入（ Weaving ）：把切面应用到目标对象并创建新的代理对象的过程【切面在指定的连接点被织入到目标对象中】
+ 通知包含了需要用于多个应用对象的横切行为；连接点是程序执行过程中能够应用通知的所有点；切点定义了通知被应用的具体位置（在哪些连接点）。其中关键的概念是切点定义了哪些连接点会得到通知
+ Ⅳ、Spring对AOP的支持【 Spring AOP 构建在动态代理基础之上，因此， Spring 对 AOP 的支持局限于方法拦截。】
+ 基于代理的经典 Spring AOP ； 纯 POJO 切面； @AspectJ 注解驱动的切面； 注入式 AspectJ 切面（适用于 Spring 各版本）。  二、面向切面编程实现 1、定义切点： Spring支持通过AspectJ的切点表达式语言来定义 Spring 切面，同时增加通过bean的id指定bean的写法。</description>
+    </item>
+    
+    <item>
+      <title>《Spring实战》-第三章：Bean的高级装配(总目录)</title>
+      <link>https://keep-zero.github.io/2019/spring_action03_06/</link>
+      <pubDate>Sat, 31 Aug 2019 22:35:43 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/spring_action03_06/</guid>
+      <description>慢慢来比较快，虚心学技术
+ 《Spring实战》-第三章：Bean的高级装配（1）-环境Profile
+《Spring实战》-第三章：Bean的高级装配（2）-条件化Bean
+《Spring实战》-第三章：Bean的高级装配（3）-处理自动装配Bean的歧义性
+《Spring实战》-第三章：Bean的高级装配（4）-Bean的作用域
+《Spring实战》-第三章：Bean的高级装配（5）-运行时值注入</description>
+    </item>
+    
+    <item>
+      <title>《Spring实战》-第三章：Bean的高级装配（5）-运行时值注入</title>
+      <link>https://keep-zero.github.io/2019/spring_action03_05/</link>
+      <pubDate>Sat, 31 Aug 2019 22:02:20 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/spring_action03_05/</guid>
+      <description>慢慢来比较快，虚心学技术
+ 当我们讨论依赖注入的时候，多数注意的都是将一个bena作为属性或构造器参数注入到另一个bean中。但是有时候我们也需要关注如何将值注入到方法参数或者属性中去，在前面的文章中，我们所了解的注入都是在系统初始化的时候就已经写死的值，可是有时候我们也需要在运行时才确定需要注入的值，Spring提供了两种运行时注入的方式：
+ 属性占位符（ Property placeholder ）。 Spring 表达式语言（ SpEL ）  一、属性占位符 在Spring中，最简单直接的外部值注入方式是属性占位符，通过读取外部属性文件的值并注入到bean中。此处涉及@PropertySource注解和之前提到的Enviroment对象
+ @PropertySource：将目标路径的属性文件引入当前环境 Enviroment对象：封装了当前环境的属性，用于读取环境中的属性  如，我们现在创建一个属性文件application.properties和一个基本类BeseBean，一个JavaConfig配置类，并将application.properties对应的属性值传入BaseBean中
+#application.properties properties.name=Properties name  //BaseBean.class public class BaseBean { private String name=&amp;quot;BaseBean&amp;quot;; } //BaseConfig.class @Configuration @PropertySource(&amp;quot;classpath:application.properties&amp;quot;) public class BeanConfig { @Autowired Environment environment; //定义bean并将环境中key为properties.name注入到BaseBean的构造函数参数中 @Bean public BaseBean baseBean(){ return new BaseBean(environment.getProperty(&amp;quot;properties.name&amp;quot;)); } } //测试类： @RunWith(SpringJUnit4ClassRunner.class) @ContextConfiguration(loader = AnnotationConfigContextLoader.class,classes = {BeanConfig.class}) public class AppBaseConfigTest { @Autowired private BaseBean baseBean; @Test public void getBean(){ System.</description>
+    </item>
+    
+    <item>
+      <title>《Spring实战》-第三章：Bean的高级装配（4）-Bean的作用域</title>
+      <link>https://keep-zero.github.io/2019/spring_action03_04/</link>
+      <pubDate>Sat, 31 Aug 2019 22:02:17 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/spring_action03_04/</guid>
+      <description>慢慢来比较快，虚心学技术
+1、什么是Bean的作用域？  默认情况下，Spring容器装配的Bean都是单例的，也就是说，不管什么情况下，在同一应用中通过Spring容器获取的都是同一个对象，也就导致了这个对象携带了很多可变的属性，有时候会很不方便。
+比如：我们通过ApplicationContext先后获取BaseBean进行设值和取值，可以看到他们是同一个对象
+@Component public class BaseBean { private String name=&amp;quot;BaseBean&amp;quot;; } public class ScopeTest { public static void main(String[] args) { ApplicationContext applicationContext = new AnnotationConfigApplicationContext(ComponentConfig.class); //从Spring容器获取BaseBean并进行属性设置 BaseBean baseBean = applicationContext.getBean(BaseBean.class); baseBean.setName(&amp;quot;My Name&amp;quot;); //从Spring容器获取BaseBean并进行属性比对 BaseBean baseBean1 = applicationContext.getBean(BaseBean.class); System.out.println(baseBean.equals(baseBean1)); System.out.println(baseBean1.getName()); } } 测试结果： true My Name  Spring中Bean的作用域分为四种：
+ 单例（ Singleton ）：在整个应用中，只创建 bean 的一个实例。 请求（ Rquest ）：在 Web 应用中，为每个请求创建一个 bean 实例 会话（ Session ）：在 Web 应用中，为每个会话创建一个 bean 实例。 原型（ Prototype ）：每次注入或者通过 Spring 应用上下文获取的时候，都会创建一个新的 bean 实例。  2、如何限制Bean的作用域？ Ⅰ、在自动化配置中，我们通过@Scope结合@Component注解限制被注解Bean的作用域</description>
+    </item>
+    
+    <item>
+      <title>《Spring实战》-第三章：Bean的高级装配（3）-处理自动装配Bean的歧义性</title>
+      <link>https://keep-zero.github.io/2019/spring_action03_03/</link>
+      <pubDate>Sat, 31 Aug 2019 22:02:13 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/spring_action03_03/</guid>
+      <description>慢慢来比较快，虚心学技术
+ 1、什么是自动装配Bean的歧义性 当一个接口存在多个实现类或一个类存在多个bena定义的时候，如果使用自动装配，Spring将无法明确应该使用哪一个Bean进行装配注入，这时候就会报 NoUniqueBeanDefinitionException 的异常，这就是自动装配Bean的歧义性
+如现有一个接口BaseService，该接口有两个实现类：BaseServiceImpl1和BaseServiceImpl2，还有一个基本类BaseBean
+//基本类 @Component public class BaseBean { private String name=&amp;quot;BaseBean&amp;quot;; public void setName(String name){ this.name = name; } } //接口 public interface BaseService { void update(); } //接口实现类1 @Component public class BaseServiceImpl1 implements BaseService { @Autowired private BaseBean baseBean; @Override public void update() { System.out.println(&amp;quot;BaseServiceImpl1 &amp;quot;+baseBean.getName()); } } //接口实现类2 @Component public class BaseServiceImpl2 implements BaseService { @Autowired private BaseBean baseBean; @Override public void update() { System.</description>
+    </item>
+    
+    <item>
+      <title>《Spring实战》-第三章：Bean的高级装配（2）-条件化Bean</title>
+      <link>https://keep-zero.github.io/2019/spring_action03_02/</link>
+      <pubDate>Sat, 31 Aug 2019 22:01:31 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/spring_action03_02/</guid>
+      <description>慢慢来比较快，虚心学技术
+ 1、什么是条件化Bean 在第一节中说到的profile限定了特殊环境下的Bean装载，但是有时候只根据环境进行Bean装配的选择并不一定能满足我们的需求，所以Spring4提供了更加细化的条件话配置Bean，用于对特定条件才可以进行装配的Bean进行配置
+2、怎么条件化配置Bean 条件化配置Bean主要依赖于一个注解和一个接口：
+@Conditional(MathIsProd.class)&amp;mdash;条件判断注解
+Condition接口&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;-@Conditional中的条件类必须实现的接口，提供了match方法，进行条件逻辑的编写
+系统进行Bean装配时，遇到@Conditional会先对其所包含的条件类执行match方法，如果方法返回为true，则对该bean进行装配，如果方法返回为false，则不对该bean进行装配
+简单实现：利用@Conditional间接实现@Profile(&amp;ldquo;prod&amp;rdquo;)功能
+//基本类 @Component public class BaseBean { private String name=&amp;quot;BaseBean&amp;quot;; public void setName(String name){ this.name = name; } } //接口 public interface BaseService { void update(); } //接口实现类1 @Component public class BaseServiceImpl1 implements BaseService { @Autowired private BaseBean baseBean; @Override public void update() { System.out.println(&amp;quot;BaseServiceImpl1 &amp;quot;+baseBean.getName()); } } //接口实现类2 @Component public class BaseServiceImpl2 implements BaseService { @Autowired private BaseBean baseBean; @Override public void update() { System.</description>
+    </item>
+    
+    <item>
+      <title>《Spring实战》-第三章：Bean的高级装配（1）-环境Profile</title>
+      <link>https://keep-zero.github.io/2019/spring_action03_01/</link>
+      <pubDate>Sat, 31 Aug 2019 22:01:21 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/spring_action03_01/</guid>
+      <description>慢慢来比较快，虚心学技术
+ 1.为什么需要profile？ 实际开发中，生产环境和开发环境通常都不会是同一个，最明显的例子就是，生产环境（正式环境）的数据库和开发环境的数据库一般都是不一样的。那么为了方便配置的转换，Spring提供了profile关键字进行统一的环境配置，通过profile配置我们可以快速的切换整个应用的环境，而不需要从代码层面进行重新构建
+那么，使用profile的目的是为了更方便的配置不同的环境，指定某些具体的类或组件的作用域
+注：每个bean或组件都有默认的作用域default，如果没有限定作用域，则这些bean都会被装配，如果指定了作用域，则只有处在相应作用域（环境）中时才会被装配
+2.怎么配置profile？ JavaConfig显式装配或者自动装配可以通过注解@Profile进行环境限制，比如：
+Ⅰ、自动化装配，我们将类DataSource的作用域限定为只有当环境为“prod”才被装配，结合@Component注解和@Profile注解实现
+代码1.1 @Component @Profile(&amp;quot;prod&amp;quot;) public class DataSource { /** * 定义名称 */ private String name; public DataSource(){ super(); } public DataSource(String name){ this.name = name; } }  Ⅱ、JavaConfig显式配置，有两种实现方式
+ 第一种：在指定多个配置类，在配置类上指定作用域，其内所定义的所有Bean只能在该作用域下被装配，进行环境统一配置
+代码1.2 //1.创建一个配置类DevConfig，并将其作用域设置为dev，则其内定义的Bean只有在环境为dev的时候才可以被装载 @Configuration @Profile(value = &amp;quot;dev&amp;quot;) public class DevConfig { //定义一个name属性为Dev DataSource的Bean @Bean public DataSource dataSource(){ return new DataSource(&amp;quot;Dev DataSource&amp;quot;); } } //2.创建一个配置类ProdConfig，并将其作用域设置为prod，则其内定义的Bean只有在环境为prod的时候才可以被装载 @Configuration @Profile(value = &amp;quot;prod&amp;quot;) public class ProdConfig { //定义一个name属性为Dev DataSource的Bean @Bean public DataSource dataSource(){ return new DataSource(&amp;quot;Prod DataSource&amp;quot;); } } //3.</description>
+    </item>
+    
+    <item>
+      <title>《Spring实战》-第二章：Bean的装配（总目录）</title>
+      <link>https://keep-zero.github.io/2019/spring_action02_05/</link>
+      <pubDate>Sat, 31 Aug 2019 14:19:55 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/spring_action02_05/</guid>
+      <description>慢慢来比较快，虚心学技术
+*前言：*创建应用对象之间协作关系的行为通常称为装配（ wiring ），这也是依赖注入（ DI ）的本质
+Spring提供三种Bean装配机制：
+ 在 XML 中进行显式配置。 在 Java 中进行显式配置 隐式的 bean 发现机制和自动装配   目录  《Spring实战》-第二章：Bean的装配（1）-XML显式装配 《Spring实战》-第二章：Bean的装配（2）-JavaConfig显式装配 《Spring实战》-第二章：Bean的装配（3）-自动化装配 《Spring实战》-第二章：Bean的装配（4）-混合导入装配机制  小结 1.在本章中，我们看到了在 Spring 中装配 bean 的三种主要方式：自动化配置、基于 Java 的显式配置以及基于 XML 的显式配置。不管你采用什么方式，这些技术都描述了 Spring 应用中的组件以及这些组件之间的关系
+2.本章中最后都用到了将多个javaConfig或多个XML配置统一到一个文件中进行管理的技术，这样有利于进行配置管理(UCM，既统一配置文件管理，也就是所有配置文件统一加载、统一读取。)</description>
+    </item>
+    
+    <item>
+      <title>《Spring实战》-第二章：Bean的装配（4）-混合导入装配机制</title>
+      <link>https://keep-zero.github.io/2019/spring_action02_04/</link>
+      <pubDate>Sat, 31 Aug 2019 14:18:45 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/spring_action02_04/</guid>
+      <description>慢慢来比较快，虚心学技术
+*前言：*创建应用对象之间协作关系的行为通常称为装配（ wiring ），这也是依赖注入（ DI ）的本质
+Spring提供三种Bean装配机制：
+ 在 XML 中进行显式配置。 在 Java 中进行显式配置 隐式的 bean 发现机制和自动装配   在典型的 Spring 应用中，我们可能会同时使用自动化和显式配置,幸好在 Spring 中，这些配置方案都不是互斥的
+Ⅰ、在 JavaConfig 中引用 XML 配置 ①将所有的bean放到一个config中配置显得十分臃肿，可以将其中的类拆分开来进行独立配置，然后使用@Import在总配置类中引入目标配置类进行统一配置
+public class CDConfig { @Bean public CDBean cdBean(){ return new CDBean(); } @Bean public CDPlayer cdPlayer(){ return new CDPlayerImpl(cdBean()); } }  如将上述的CDConfig拆分成两个,同时创建统一配置类将两个配置类引入，实现依赖注入（因为拆分后，cdBean不存在于CDPlayerConfig中，故改用直接注入方式）
+@Configuration//标明CDBean配置 public class CDBeanConfig { @Bean public CDBean cdBean(){ return new CDBean(); } } @Configuration//标明CDPlayer配置 public class CDPlayerConfig { //此处的cdBean必须与CDBeanConfig中配置的方法cdBean同名或与@Bean指定的id同名，否则注入失败 @Bean public CDPlayer cdPlayer(CDBean cdBean){ return new CDPlayerImpl(cdBean); } } @Configuration//标明全局配置 @Import(value = {CDBeanConfig.</description>
+    </item>
+    
+    <item>
+      <title>《Spring实战》-第二章：Bean的装配（3）-自动化装配</title>
+      <link>https://keep-zero.github.io/2019/spring_action02_03/</link>
+      <pubDate>Sat, 31 Aug 2019 14:16:49 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/spring_action02_03/</guid>
+      <description>慢慢来比较快，虚心学技术
+*前言：*创建应用对象之间协作关系的行为通常称为装配（ wiring ），这也是依赖注入（ DI ）的本质
+Spring提供三种Bean装配机制：
+ 在 XML 中进行显式配置。 在 Java 中进行显式配置 隐式的 bean 发现机制和自动装配   一、什么是自动化装配？ 很显然，通过前两篇文章的描述，我们可以发现，Spring的配置方式可以很简洁，也可以也很复杂，JavaConfig配置方式使用大量的注解替代了XML中的配置，那么，基于JavaConfig的基础之上，是否可以再次封装或简化配置呢？
+Spring实现了纯注解配置的自动化隐式装配，所谓的隐式装配就是不需要像XML和JavaConfig一样去为每一个Bean创建节点或再配置类中为每个Bean做注解，而是通过一些特殊的注解实现控制
+其中包含两个概念：
+ 组件扫描（ component scanning ）： Spring 会自动发现应用上下文中所创建的 bean 。 自动装配（ autowiring ）： Spring 自动满足 bean 之间的依赖。【DI】  二、如何实现自动化装配 ⅰ.四个基本注解： @Autowired ：标记于属性，方法等，自动装配的关键注解，依赖注入的表现，该注解可以自动寻找并从Spring容器中提取使用该注解的bean并注入到对应的属性中去
+@Component ：标记于类，标明当前类是一个可被扫描的组件
+@ComponentScan ：标记于配置类，开启组件注解扫描
+@Configuration ：标记于配置类，标明当前类是一个配置类
+ⅱ.基本实现： ①定义基本接口CDPlayer
+public interface CDPlayer { /** * 定义方法播放CD * @param * * @return void * * @author lai.</description>
+    </item>
+    
+    <item>
+      <title>《Spring实战》-第二章：Bean的装配（2）-JavaConfig显式装配</title>
+      <link>https://keep-zero.github.io/2019/spring_action02_02/</link>
+      <pubDate>Sat, 31 Aug 2019 14:14:45 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/spring_action02_02/</guid>
+      <description>慢慢来比较快，虚心学技术
+*前言：*创建应用对象之间协作关系的行为通常称为装配（ wiring ），这也是依赖注入（ DI ）的本质
+Spring提供三种Bean装配机制：
+ 在 XML 中进行显式配置。 在 Java 中进行显式配置 隐式的 bean 发现机制和自动装配   一、为什么使用JavaConfig显式配置？ 相比于XML显式配置，javaConfig显然是更好的方案
+ Ⅰ.本就是java代码，便于重构管理 Ⅱ.类型安全，更为强大 Ⅲ.配置方便，简洁  二、怎么配置？ java显式配置：类似于XML配置模式，显式配置每个Bean的名称
+在实现之前我们需要了解一下几个基本注解：
+@Autowired ：标记于属性，方法等，自动装配的关键注解，依赖注入的表现，该注解可以自动寻找并从Spring容器中提取使用该注解的bean并注入到对应的属性中去
+@Bean:该注解用于配置类中，注明某方法是装配方法，方法名就是装配的Bean名称(javaConfig显式配置的核心注解)
+@Configuration ：标记于配置类，标明当前类是一个配置类
+① 与上一篇文章一样，基础类代码不变。
+public class CDBean { /** * 定义CD名 */ private String title=&amp;quot;The World!&amp;quot;; /** * 定义CD作者 */ private String author=&amp;quot;Mr.D&amp;quot;; }  ② CDPlayerImp类增加CDPlayerImpl(CDBean cdBean)构造方法，方便后续注入
+public class CDPlayerImpl implements CDPlayer { private CDBean cdBean; public CDPlayerImpl() { super(); } public CDPlayerImpl(CDBean cdBean) { super(); this.</description>
+    </item>
+    
+    <item>
+      <title>《Spring实战》-第二章：Bean的装配（1）-XML显式装配</title>
+      <link>https://keep-zero.github.io/2019/spring_action02_01/</link>
+      <pubDate>Sat, 31 Aug 2019 12:39:38 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/spring_action02_01/</guid>
+      <description>慢慢来比较快，虚心学技术
+*前言：*创建应用对象之间协作关系的行为通常称为装配（ wiring ），这也是依赖注入（ DI ）的本质
+Spring提供三种Bean装配机制：
+ 在 XML 中进行显式配置。 在 Java 中进行显式配置 隐式的 bean 发现机制和自动装配   *原文连接：https://blog.csdn.net/Laiguanfu/article/details/88046259
+本文简单讲解Spring中使用xml方式进行显式配置装配Bean的步骤和内容分析
+使用xml进行Bean的装配是Spring最原始也是持续时间最长的装配方式，该配置文件使用作为根节点，配置处于应用内的Bean。
+一、简单使用 本文使用最简单的配置，只为记录xml显式装配bean的实现，maven引用如下（其中${org.springframework.version}可替换成任意版本）：
+&amp;lt;!--spring框架引入--&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.springframework&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;spring-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${org.springframework.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.springframework&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;spring-context&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${org.springframework.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.springframework&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;spring-test&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;${org.springframework.version}&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  ①编写基础类CDBean代码
+public class CDBean { /** * 定义CD名 */ private String title; /** * 定义CD作者 */ private String author; }  ②编写接口类CDPlayer
+public interface CDPlayer { /** * 定义方法播放CD * @param * * @return void * * @author xxx 2019/2/27 * @version 1.</description>
+    </item>
+    
+    <item>
+      <title>《Spring实战》-第一章-Spring初识</title>
+      <link>https://keep-zero.github.io/2019/spring_action01/</link>
+      <pubDate>Sat, 31 Aug 2019 12:29:26 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/spring_action01/</guid>
+      <description>慢慢来比较快，虚心学技术
+前言：学习了解一个新的事物，需要先思考三个问题，是什么？有什么用？怎么用？
+ 1.Spring是什么？  Spring 是一个开源框架，最早由 Rod Johnson 创建，并在《 Expert One-on-One ： J2EE Design and Development 》 （ http://amzn.com/076454385 ）这本著作中进行了介绍。 Spring 是为了解决企业级应用开发的复杂性而创建的，使用 Spring 可以让简单的JavaBean 实现之前只有 EJB 才能完成的事情。但 Spring 不仅仅局限于服务器端开发，任何 Java 应用都能在简单性、可测试性和松耦合等方面从Spring 中获益
+ 2.Spring有什么用？ spring的根本目标是：简化java开发，那么，spring是怎么简化java开发的呢？
+spring开发遵循四个关键策略：
+ 基于 POJO 的轻量级和最小侵入性编程( Spring 不会强迫你实现 Spring 规范的接口-或继承 Spring 规范的类) 通过依赖注入和面向接口实现松耦合(依赖注入:DI) 基于切面和惯例进行声明式编程(面向切面编程AOP) 通过切面和模板减少样板式代码（如数据库操作等）  3.Spring怎么用？ 要思考Spring怎么用，乃是后续章节的篇幅，需要首先了解Spring包含了什么，才能更好的学习使用Spring
+Spring的模块组成如下：
+ Spring核心容器  管理着 Spring 应用中 bean 的创建、配置和管理.
+|&amp;mdash;&amp;mdash;Spring bean 工厂+应用上下文
+|&amp;mdash;&amp;mdash;企业服务，例如 E-mail 、 JNDI 访问、 EJB 集成和调度</description>
+    </item>
+    
+    <item>
+      <title>java学习笔记-反射(3)-动态代理</title>
+      <link>https://keep-zero.github.io/2019/java_react03/</link>
+      <pubDate>Sat, 31 Aug 2019 12:23:16 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/java_react03/</guid>
+      <description>慢慢来比较快，虚心学技术
+ 代理模式  代理是基本的设计模式之一，它是为了提供额外的或不同的操作，而插入的用来代替实际对象的对象，简单来说，代理通常充当着中间人的角色
+ 代理的特征是代理类与委托类有同样的接口，我们通过访问实际对象时是通过代理对象来访问的，代理类实际上不实现任何服务功能，通过调用实际对象（委托类）的方法实现功能，这样设计可以为方法实现更多的额外操作，比如日志记录，时间判断等与实际功能无关，但是能够完善程序的操作。
+java中，有两种代理方式：
+①静态代理：由程序员创建代理类或特定工具自动生成源代码再对其编译。在程序运行前代理类的.class文件就已经存在了。
+②动态代理：代理类在程序运行时运用反射机制动态创建而成
+静态代理 静态代理定义如上，下面是静态代理的简单实现，在调用委托类方法前后，记录相关日志
+①首先，创建统一委托接口（Person）
+public interface Person { void sayHi(); }  ②创建基本委托类Student实现Person接口
+public class Student implements Person { private String name; public Student(){ super(); } public Student(String name){ super(); this.name = name; } @Override public void sayHi() { try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); } System.out.println(this.name+&amp;quot;说:hi!!!!&amp;quot;); } }  ③创建代理类StudentsProxy，与Student一样实现Person的接口，只不过代理类会将实际委托对象引入作为操作对象（个人理解StudentsProxy更像一个传声筒，只不过这个传声筒可以做的事情更多而已）
+public class StudentsProxy implements Person { private static Logger logger= LoggerFactory.</description>
+    </item>
+    
+    <item>
+      <title>java学习笔记-反射(2)-ClassLoader</title>
+      <link>https://keep-zero.github.io/2019/java_react02/</link>
+      <pubDate>Sat, 31 Aug 2019 12:20:47 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/java_react02/</guid>
+      <description>慢慢来比较快，虚心学技术
+前言：在Java中的反射机制是指在运行状态中，对于任意一个类都能够知道这个类所有的属性和方法；并且对于任意一个对象，都能够调用它的任意一个方法；这种动态获取信息以及动态调用对象方法的功能成为Java语言的反射机制。
+ 概念 ClassLoader：类的加载器，用来把类(class)装载进 JVM
+java装载类的方式有两种：
+①隐式装载：程序在运行过程中当碰到通过new 等方式生成对象时，隐式调用类装载器加载对应的类到jvm中
+②显式装载：通过Class.forName()等方式动态显式加载需要的类【如上一篇文章所示】
+ClassLoader层级 java的类装载器有如下几种：
+①Bootstrp ClassLoader: 引导类装载器，用C++语言编写，它是在Java虚拟机启动后初始化的，它主要负责加载%JAVA_HOME%/jre/lib,-Xbootclasspath参数指定的路径以及%JAVA_HOME%/jre/classes中的类。java中获取时名称为：
+②ExtClassLoader：扩展类装载器，负责装载jdk home/lib/ext目录下的jar包
+③AppClassLoader ：系统类装载器，最常用的类装载器。负责装载classpath路径下的类文件
+三种类装载器的有层级关系，层级关系如下：
+Bootstrp ClassLoader是ExtClassLoader的父级类装载器
+ExtClassLoader是AppClassLoader的父级类装载器
+主要方法 ClassLoader.getSystemClassLoader()&amp;mdash;&amp;mdash;&amp;mdash;获取系统类加载器
+classLoader.getParent()&amp;mdash;&amp;mdash;&amp;mdash;&amp;ndash;获取加载器的父级类加载器
+class.getClassLoader()&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;获取当前类的加载器
+//获取系统类加载器 ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader(); System.out.println(&amp;quot;systemClassLoader :&amp;quot;+systemClassLoader); //获取扩展类加载器 ClassLoader extentionClassLoader = systemClassLoader.getParent(); System.out.println(&amp;quot;extentionClassLoader :&amp;quot;+extentionClassLoader); //试图获取引导类加载器（无法获取） ClassLoader bootstapClassLoader = extentionClassLoader.getParent(); System.out.println(&amp;quot;bootstapClassLoader :&amp;quot;+bootstapClassLoader); //测试当前类由哪个类加载器进行加载（系统类加载器）: BaseEntity baseEntity = new BaseEntity(); ClassLoader classLoader = baseEntity.getClass().getClassLoader(); System.out.println(&amp;quot;程序内定义的类由：&amp;quot;+classLoader+&amp;quot; 进行加载&amp;quot;); classLoader = Integer.class.getClassLoader(); //如果为空则代表是引导类，无法获取 System.out.println(&amp;quot;系统Integer由：&amp;quot;+classLoader+&amp;quot; 进行加载&amp;quot;);  运行结果：</description>
+    </item>
+    
+    <item>
+      <title>java学习笔记-反射(1)-Class</title>
+      <link>https://keep-zero.github.io/2019/java_react01/</link>
+      <pubDate>Sat, 31 Aug 2019 11:54:20 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/java_react01/</guid>
+      <description>慢慢来比较快，虚心学技术
+前言：在Java中的反射机制是指在运行状态中，对于任意一个类都能够知道这个类所有的属性和方法；并且对于任意一个对象，都能够调用它的任意一个方法；这种动态获取信息以及动态调用对象方法的功能成为Java语言的反射机制。
+ 反射 反射的概念（是什么）： java中的反射&amp;mdash;&amp;mdash;相当于对象的镜子，对象在照镜子时可以获取自身的信息，比如：属性，方法和构造器，实现接口等，而且这面镜子还可以直接调用执行java对象的方法
+反射的用处（有什么用）： 1.当接收到别人传过来的类时，可以进行解析
+2.当只有类名时，可以获取到对象的完整信息，从而执行相应处理
+多用于可配置和动态代理
+java反射涉及的几个类： java.lang. Class：反射的核心类，可以获取类的属性，方法等信息
+java.lang.ClassLoader:类的加载器，用来把类(class)装载进 JVM
+java.lang.reflect.Field ：类的成员变量，用来获取和设置类的属性
+java.lang.reflect.Method：类的方法，用来获取类中方法的信息或调用类的方法
+java.lang.reflect.Modifier：类的修饰符工具，可以用来判断类中属性或者方法的修饰级别
+为方便后续学习，事先创建一个基本类
+public class BaseEntity { private String name; private Integer age; public BaseEntity(){ super(); } public BaseEntity(String name,Integer age){ super(); this.name = name; this.age = age; } private void addAge(String name,Integer age){ if(this.name.equals(name)){ this.age+=age; }else{ System.out.println(&amp;quot;名称不符，请核验&amp;quot;); } } }  Class类 class是一个用来描述类的类，封装了当前对象所对应的类信息，我们可以通过该类获取目标对象的属性，方法等信息,还可以根据class类创建目标对象实例
+获取Class类 1.通过类名获取 : 类名.class
+Class clazz = BaseEntity.</description>
+    </item>
+    
+    <item>
+      <title>java日志篇（6）-slf4j</title>
+      <link>https://keep-zero.github.io/2019/java_log06/</link>
+      <pubDate>Sat, 31 Aug 2019 00:13:46 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/java_log06/</guid>
+      <description>慢慢来比较快，虚心学技术
+前言：SLF4J的全称是Simple Logging Facade for Java，即简单日志门面。日志门面不具备具体日志实现，只做两件事: * 提供日志接口 * 提供获取具体日志对象的方法
+所以，slf4j使得系统日志得到一个统一的输出方式，灵活替换日志实现
+ 一、slf4j简单使用介绍 ①使用slf4j需要引入slf4j的api jar包，最新jar包从官网https://www.slf4j.org/download.html下载，如果是maven项目，在pom文件中引入如下：
+&amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.slf4j&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;slf4j-api&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;1.7.7&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  ②引入日志实现，slf4j不提供日志实现，如使用jul则不用引入，logback与log4j需要引入日志实现的jar包，简单使用默认使用jul
+③代码使用
+import org.slf4j.Logger; import org.slf4j.LoggerFactory; /** * 简单日志获取 */ public class SimpleTest { public static void main(String[] args) { //获取logger对象 Logger logger = LoggerFactory.getLogger(SimpleTest.class); logger.info(&amp;quot;info.....&amp;quot;); logger.debug(&amp;quot;debug...&amp;quot;); logger.error(&amp;quot;error...&amp;quot;); logger.warn(&amp;quot;warn...&amp;quot;); }  ④输出结果如下
+2019-02-04 16:48:43.703 INFO SimpleTest.SimpleTest - info..... 2019-02-04 16:48:43.703 DEBUG SimpleTest.SimpleTest - debug... 2019-02-04 16:48:43.703 ERROR SimpleTest.</description>
+    </item>
+    
+    <item>
+      <title>java日志篇（5）-logback</title>
+      <link>https://keep-zero.github.io/2019/java_log05/</link>
+      <pubDate>Sat, 31 Aug 2019 00:08:47 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/java_log05/</guid>
+      <description>慢慢来比较快，虚心学技术
+前言:Logback是由log4j创始人设计的又一个开源日志组件。logback当前分成三个模块：logback-core,logback-classic和logback-access。 logback-core :其它两个模块的基础模块 logback-classic:log4j的一个改良版本（此外logback-classic完整实现SLF4J API使你可以很方便地更换成其它日志系统如log4j或JDK14 Logging） logback-access:访问模块与Servlet容器集成提供通过Http来访问日志的功能
+ 一、logback+slf4j简单使用示例 ①获取logback的jar包，最新jar包从官网https://logback.qos.ch/download.html下载，将其放在lib包目录下，并引入项目中；如果是maven项目，在pom文件中引入如下：
+&amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;ch.qos.logback&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;logback-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;1.1.7&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;ch.qos.logback&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;logback-access&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;1.1.7&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;ch.qos.logback&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;logback-classic&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;1.1.7&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  ②获取slf4j的jar包，因为logback完整实现了slf4j的接口，所以需要依赖于slf4j实现功能。最新jar包从官网https://www.slf4j.org/download.html下载，如果是maven项目，在pom文件中引入如下：
+&amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.slf4j&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;slf4j-api&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;1.7.7&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  ③代码编写
+package SimpleTest; import org.slf4j.Logger; import org.slf4j.LoggerFactory; /** * 简单日志获取 */ public class SimpleTest { public static void main(String[] args) { //获取logger对象 Logger logger = LoggerFactory.getLogger(SimpleTest.class); logger.info(&amp;quot;info.....&amp;quot;); logger.debug(&amp;quot;debug...&amp;quot;); logger.error(&amp;quot;error...&amp;quot;); logger.warn(&amp;quot;warn...&amp;quot;); } }  ④执行结果</description>
+    </item>
+    
+    <item>
+      <title>java日志篇（4）-common-logging</title>
+      <link>https://keep-zero.github.io/2019/java_log04/</link>
+      <pubDate>Fri, 30 Aug 2019 23:27:16 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/java_log04/</guid>
+      <description>慢慢来比较快，虚心学技术
+前言：Jakarta Commons-logging（JCL）是apache最早提供的日志的门面接口。它将一些具体的日志组件抽象为接口，实现日志操作的解耦和可插拔，让众多的日志工具有一个共同的操作方式
+ 一、common-logging简单使用示例 ①引入common-logging的jar包，最新jar包从官方网站http://commons.apache.org/proper/commons-logging/download_logging.cgi进行下载，下载后将jar包放到lib中引入项目即可。
+如果是maven项目在pom文件中添加依赖如下：
+&amp;lt;!--引入common-logging--&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;commons-logging&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;commons-logging&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;1.2&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  ②创建common-logging.properties文件,将其放在classpath下，如果是maven项目则将其放在src/main/resource目录下，配置内容如下
+org.apache.commons.logging.Log=org.apache.commons.logging.impl.SimpleLog  ③在项目程序中使用logger开发
+import org.apache.commons.logging.Log; import org.apache.commons.logging.LogFactory; public class CommonsTest { //获取logger private final static Log logger = LogFactory.getLog(CommonsTest.class); public static void main(String[] args) { //使用logger输出日志 logger.trace(&amp;quot;TRACE...&amp;quot;); logger.debug(&amp;quot;DEBUG ...&amp;quot;); logger.info(&amp;quot;INFO ...&amp;quot;); logger.error(&amp;quot;ERROR ...&amp;quot;); logger.warn(&amp;quot;WARN...&amp;quot;); } }  运行输出结果：
+[INFO] CommonsTest - INFO ... [ERROR] CommonsTest - ERROR ... [WARN] CommonsTest - WARN...  如上实现第一个简单的common-logging程序，引发以下几个问题</description>
+    </item>
+    
+    <item>
+      <title>java日志篇（3）-Log4j(log for java)</title>
+      <link>https://keep-zero.github.io/2019/java_log03/</link>
+      <pubDate>Fri, 30 Aug 2019 23:03:40 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/java_log03/</guid>
+      <description>慢慢来比较快，虚心学技术
+前言：Log4j是Apache的一个开源项目，通过使用Log4j，我们可以控制日志信息输送的目的地是控制台、文件、GUI组件，甚至是套接口服务器、NT的事件记录器、UNIX Syslog守护进程等；我们也可以控制每一条日志的输出格式；通过定义每一条日志信息的级别，我们能够更加细致地控制日志的生成过程。最令人感兴趣的就是，这些可以通过一个配置文件来灵活地进行配置，而不需要修改应用的代码。
+ 一、Log4j基本使用示例 import org.apache.log4j.Level; import org.apache.log4j.Logger; public class Log4JTest { public static void main(String arg[]){ //获取根logger Logger rootLogger = Logger.getRootLogger(); //获取当前对象为名的logger Logger logger = Logger.getLogger(Log4JTest.class); rootLogger.info(&amp;quot;root-info&amp;quot;); logger.info(&amp;quot;Log4j-INFO&amp;quot;); logger.error(&amp;quot;Log4j-ERROR&amp;quot;); logger.debug(&amp;quot;Log4j-DEBUG&amp;quot;); rootLogger.debug(&amp;quot;root-debug&amp;quot;); logger.warn(&amp;quot;Log4j-WARN&amp;quot;); } }  log4j.properties(与Log4JTest.java同级目录)
+#配置rootLogger log4j.rootLogger=info,appender1,logFile,appender2 #配置第一个appender log4j.appender.appender1=org.apache.log4j.ConsoleAppender #指定该appender输出所有DEBUG以上的日志 log4j.appender.appender1.Threshold=DEBUG #选择比较方便的的日志输出格式-包含日志产生的时间、线程、类别等等信息 log4j.appender.appender1.layout=org.apache.log4j.TTCCLayout #配置第二个appender log4j.appender.appender2=org.apache.log4j.ConsoleAppender #指定该appender输出所有WARN以上的日志 log4j.appender.appender2.Threshold=WARN #指定该appender通过控制台的err输出日志 log4j.appender.appender2.Target=System.err #配置该appender的输出格式 log4j.appender.appender2.layout = org.apache.log4j.PatternLayout #其中 %d表示日志时间点的日期或时间，默认格式为 ISO8601，也可以在其后指定格， # %l表示输出日志事件的发生位置，包括类目名、发生的线程，以及行数。 # %-5p 输出日志信息优先级,占5个字符 # %m 输出代码中指定的消息,产生的日志具体信息 # %n 输出一个回车换行符 log4j.</description>
+    </item>
+    
+    <item>
+      <title>java日志篇（2）-JUL(java.util.logging)</title>
+      <link>https://keep-zero.github.io/2019/java_log02/</link>
+      <pubDate>Fri, 30 Aug 2019 22:51:25 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/java_log02/</guid>
+      <description>慢慢来比较快，虚心学技术
+原文链接:java日志篇（2)&amp;ndash;JUL(java.util.logging)
+前言：之所以未按照前一篇文章 java日志篇（1）-日志概述所描述的日志发展史进行文章编写，是因为JUL是jdk自带的日志实现，其他日志实现原理大同小异，理解起来也是相对简单，如有兴趣可先去看看上一篇文章
+ JUL是什么？ JUL是jdk自带的一个日志实现，使用简单，控制灵活，如果是小型系统或者测试程序，显然JUL会是比log4j等更好的选择
+JUL基本使用 使用java.util.logging.Logger的静态方法getLogger(loggerName)来获取或创建一个日志logger
+import java.io.IOException; import java.util.logging.*; public class JULTest { public static Logger log = Logger.getLogger(&amp;quot;TestLog&amp;quot;); //获取日志对象 public static void main(String[] args) throws IOException { log.info(&amp;quot;info&amp;quot;); //信息日志 log.warning(&amp;quot;warning&amp;quot;); //警告日志 log.log(Level.SEVERE,&amp;quot;server&amp;quot;); //严重日志 log.fine(&amp;quot;fine&amp;quot;); } }  使用日志我们可以使用默认的等级实现方法进行输出：如log.info(&amp;rdquo;****&amp;ldquo;)等，也可以使用特定的等级进行输出：如log.log(等级，输出信息)
+如上代码输出日志结果如下：
+一月 14, 2019 9:20:32 下午 JULTest main 信息: info 一月 14, 2019 9:20:32 下午 JULTest main 警告: warning 一月 14, 2019 9:20:32 下午 JULTest main 严重: server  JUL使用分析 一、Logger 为什么log.</description>
+    </item>
+    
+    <item>
+      <title>java日志篇（1）-日志概述</title>
+      <link>https://keep-zero.github.io/2019/java_log01/</link>
+      <pubDate>Thu, 29 Aug 2019 22:52:46 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/java_log01/</guid>
+      <description>慢慢来比较快，虚心学技术
+  原文链接： java日志篇（1）-日志概述
+ 日志  在应用程序中添加日志记录总的来说基于三个目的：
+监视代码中变量的变化情况，周期性的记录到文件中供其他应用进行统计分析工作；
+跟踪代码运行时轨迹，作为日后审计的依据；
+担当集成开发环境中的调试器的作用，向文件或控制台打印代码的调试信息
+ 概念理解 日志门面：一般采取facade设计模式（*外观设计模式*：*外观模式定义了一个高层的功能，为子系统中的多个模块协同的完成某种功能需求提供简单的对外功能调用方式，使得这一子系统更加容易被外部使用*）设计的一组接口应用。
+日志实现：接口的实现
+发展历史  转载：
+1996年早期，欧洲安全电子市场项目组决定编写它自己的程序跟踪API(Tracing API)。经过不断的完善，这个API终于成为一个十分受欢迎的Java日志软件包，即Log4j。后来Log4j成为Apache基金会项目中的一员。期间Log4j近乎成了Java社区的日志标准。据说Apache基金会还曾经建议Sun引入Log4j到java的标准库中，但Sun拒绝了。
+2002年Java1.4发布，Sun推出了自己的日志库JUL(Java Util Logging),其实现基本模仿了Log4j的实现。在JUL出来以前，Log4j就已经成为一项成熟的技术，使得Log4j在选择上占据了一定的优势。
+接着，Apache推出了Jakarta Commons Logging，JCL只是定义了一套日志接口(其内部也提供一个Simple Log的简单实现)，支持运行时动态加载日志组件的实现，也就是说，在你应用代码里，只需调用Commons Logging的接口，底层实现可以是Log4j，也可以是Java Util Logging。
+后来(2006年)，Ceki Gülcü不适应Apache的工作方式，离开了Apache。然后先后创建了Slf4j(日志门面接口，类似于Commons Logging)和Logback(Slf4j的实现)两个项目，并回瑞典创建了QOS公司，QOS官网上是这样描述Logback的：The Generic，Reliable Fast&amp;amp;Flexible Logging Framework(一个通用，可靠，快速且灵活的日志框架)。
+现今，Java日志领域被划分为两大阵营：Commons Logging阵营和Slf4j阵营。
+Commons Logging在Apache大树的笼罩下，有很大的用户基数。但有证据表明，形式正在发生变化。2013年底有人分析了GitHub上30000个项目，统计出了最流行的100个Libraries，可以看出Slf4j的发展趋势更好
+ 时间线： 由上所述可得目前主要的日志门面包括：Apache Commons-Logging、slf4j,主要的日志实现包括：log4j、jul,logback
+一般而言，使用日志实现即可实现一些简单程序需求，但是为了避免直接依赖日志实现儿导致耦合过密，一般会使用日志门面+日志实现的方式开发，其中，最经典的搭配是：Commons-logging+log4j，而虽然slf4j适配所有目前的日志实现，兼容性极强，但是最为适配的还是：SLF4j+logback 的组合，毕竟logback天然支持slf4j
+日志原理简述 日志实现五花八门，但是大道至简，其本质应属一致，日志实现底层基本组成如下：
+Loggers：Logger负责捕捉事件并将其发送给合适的Appender。
+Appenders：也被称为Handlers，负责从Logger中取出日志消息并将消息发送出去，比如发送到控制台、文件、网络上的其他日志服务或操作系统日志等
+Layouts：也被称为Formatters，它负责对日志事件中的数据进行转换和格式化。Layouts决定了数据在一条日志记录中的最终形式。
+实现如下：
+当Logger记录一个事件时，它将事件转发给适当的Appender。然后Appender使用Layout来对日志记录进行格式化，并将其发送给控制台、文件或者其它目标位置。另外，Filters可以让你进一步指定一个Appender是否可以应用在一条特定的日志记录上。在日志配置中，Filters并不是必需的，但可以让你更灵活地控制日志消息的流动。
+总结 1.日志实现与日志门面结合实现日志系统的功能
+2.日志是java开发很重要的工具，其在不断发展中也在不断地解耦和抽象化，使得日志系统更加强大便捷
+3.日志组件有logger、handler、formatters组成，利用这几个基本组件能实现很多不同的日志功能
+备注：多参考前辈总结，如有冒犯，还望担待
+如有贻误，还请评论讨论，多谢</description>
     </item>
     
   </channel>

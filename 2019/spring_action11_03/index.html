@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noodp"/>
+  <meta name="author" content="GF.L">
+  
+  
+  
+  <link rel="prev" href="https://keep-zero.github.io/2019/spring_action11_02/" />
+  <link rel="next" href="https://keep-zero.github.io/2019/spring_action12/" />
+  <link rel="canonical" href="https://keep-zero.github.io/2019/spring_action11_03/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <title>
+       
+       
+           《Spring实战》-第十一章：利用对象-关系映射持久化数据（Spring整合Spring Data ） | Keep Zero
+       
+  </title>
+  <meta name="title" content="《Spring实战》-第十一章：利用对象-关系映射持久化数据（Spring整合Spring Data ） | Keep Zero">
+    
+  
+  <link rel="stylesheet" href="/font/iconfont.css">
+  <link rel="stylesheet" href="/css/main.min.css">
+
+
+  
+  
+ 
+
+<script type="application/ld+json">
+ "@context" : "http://schema.org",
+    "@type" : "BlogPosting",
+    "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "https:\/\/keep-zero.github.io"
+    },
+    "articleSection" : "posts",
+    "name" : "《Spring实战》-第十一章：利用对象-关系映射持久化数据（Spring整合Spring Data ）",
+    "headline" : "《Spring实战》-第十一章：利用对象-关系映射持久化数据（Spring整合Spring Data ）",
+    "description" : "慢来比较快，虚心学技术\n Ⅰ、Spring Data JPA简介 Spring-Data:Spring 的一个子项目。用于简化数据库访问，支持NoSQL 和 关系数据存储。其主要目标是使数据库的访问变得方便快捷。\nSpring-data系列产品：\nSpring Data Common:提供共享的基础框架，适合各个子项目使用，支持跨数据库持久化 Spring Data JDBC:提供对关系数据库的访问，而无需处理JPA的复杂性 Spring Data JDBC Extensions:支持 Oracle RAD、高级队列和高级数据类型 Spring Data JPA:简化创建 JPA 数据访问层和跨存储的持久层功能 Spring Data Mongodb:提供对文档数据库的支持 Spring Data Redis:提供对键值对数据库的支持\n其中，Spring-data-jpa是 Spring 基于 ORM 框架、JPA 规范的基础上封装的一套 JPA 应用框架，底层使用了 Hibernate 的 JPA 技术实现，可使开发者用极简的代码即可实现对数据的访问和操作。它提供了包括增删改查等在内的常用功能，且易于扩展。\n简单来说，其目的在于简化Spring未简化的持久层业务工作，开发者仅需要完成的是声明持久层接口，其余则由Spring Data JPA来完成。\nⅡ、Spring Data JPA架构体系分析 如上所述，我们知道Spring Data JPA依赖于接口即可实现持久层操作，那么了解它提供的核心接口类，即可开始我们的使用：\nRepository：最顶层的接口，是一个空的接口，目的是为了统一所有Repository的类型，且能让组件扫描的时候自动识别 Specification：Spring Data JPA提供的一个查询规范，要做复杂的查询，只需围绕这个规范来设置查询条件 CrudRepository接口：提供了CRUD的基本功能 PagingAndSortingRepository分页排序接口：封装了查询分页和排序的功能 JpaRepository接口：PagingAndSortingRepository和QueryByExampleExecutor的子接口，除了提供CRUD的功能之外，还额外提供了分页和排序、过滤等功能 ** JpaSpecificationExecutor接口**：提供了对JPA Criteria查询（动态查询）的支持\n以下分析部分源码： ①Repository\nT：要操作的实体类类型\nID:实体类的主键类型class",
+    "inLanguage" : "en-us",
+    "author" : "GF.L",
+    "creator" : "GF.L",
+    "publisher": "GF.L",
+    "accountablePerson" : "GF.L",
+    "copyrightHolder" : "GF.L",
+    "copyrightYear" : "2019",
+    "datePublished": "2019-09-01 11:52:25 \x2b0800 CST",
+    "dateModified" : "2019-09-01 11:52:25 \x2b0800 CST",
+    "url" : "https:\/\/keep-zero.github.io\/2019\/spring_action11_03\/",
+    "wordCount" : "724",
+    "keywords" : [ "java","spring","spring-action", "Keep Zero"]
+}
+</script>
+
+</head>
+
+  
+
+
+  <body class="">
+    <div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo">
+        	<a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a>
+        </div>
+        <div class="menu navbar-right">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+<nav class="navbar-mobile" id="nav-mobile" style="display: none">
+     <div class="container">
+        <div class="navbar-header">
+            <div>  <a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a></div>
+            <div class="menu-toggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+     
+          <div class="menu" id="mobile-menu">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+    	 <main class="main">
+          <div class="container">
+      		
+<article class="post-warp" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">《Spring实战》-第十一章：利用对象-关系映射持久化数据（Spring整合Spring Data ）</h1>
+        <div class="post-meta">
+                Written by <a itemprop="name" href="https://keep-zero.github.io" rel="author">GF.L</a> with ♥ 
+                <span class="post-time">
+                on <time datetime=2019-09-01 itemprop="datePublished">September 1, 2019</time>
+                </span>
+                in
+                <i class="iconfont icon-folder"></i>
+                <span class="post-category">
+                        <a href="https://keep-zero.github.io/categories/spring/"> spring </a>
+                        
+                </span>
+				
+				<span id="wc" style="font-size: 1rem;text-align: center;">  共800 字|  阅读需时约 4 分|  本文总阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </div>
+    </header>
+    <div class="post-content">
+        
+
+        
+
+        
+        
+     
+          
+          
+          
+
+          
+          
+          
+
+          
+
+<blockquote>
+<p><strong>慢来比较快，虚心学技术</strong></p>
+</blockquote>
+
+<h2 id="ⅰ-spring-data-jpa简介"><strong>Ⅰ、Spring Data JPA简介</strong></h2>
+
+<p><strong>Spring-Data</strong>:Spring 的一个子项目。用于简化数据库访问，支持NoSQL 和 关系数据存储。其主要目标是使数据库的访问变得方便快捷。</p>
+
+<p>Spring-data系列产品：</p>
+
+<p><strong>Spring Data Common</strong>:提供共享的基础框架，适合各个子项目使用，支持跨数据库持久化
+<strong>Spring Data JDBC</strong>:提供对关系数据库的访问，而无需处理JPA的复杂性
+<strong>Spring Data JDBC Extensions</strong>:支持 Oracle RAD、高级队列和高级数据类型
+<strong>Spring Data JPA</strong>:简化创建 JPA 数据访问层和跨存储的持久层功能
+<strong>Spring Data Mongodb</strong>:提供对文档数据库的支持
+<strong>Spring Data Redis</strong>:提供对键值对数据库的支持</p>
+
+<p>其中，Spring-data-jpa是 Spring 基于 ORM 框架、JPA 规范的基础上封装的<strong>一套 JPA 应用框架</strong>，<strong>底层使用了 Hibernate 的 JPA 技术实现</strong>，可使开发者用极简的代码即可实现对数据的访问和操作。它提供了包括增删改查等在内的常用功能，且易于扩展。</p>
+
+<p><strong>简单来说，其目的在于简化Spring未简化的持久层业务工作，开发者仅需要完成的是声明持久层接口，其余则由Spring Data JPA来完成</strong>。</p>
+
+<h2 id="ⅱ-spring-data-jpa架构体系分析"><strong>Ⅱ、Spring Data JPA架构体系分析</strong></h2>
+
+<p>如上所述，我们知道Spring Data JPA依赖于接口即可实现持久层操作，那么了解它提供的核心接口类，即可开始我们的使用：</p>
+
+<p><strong>Repository</strong>：最顶层的接口，是一个空的接口，目的是为了统一所有Repository的类型，且能让组件扫描的时候自动识别
+<strong>Specification</strong>：Spring Data JPA提供的一个查询规范，要做复杂的查询，只需围绕这个规范来设置查询条件
+<strong>CrudRepository接口</strong>：提供了CRUD的基本功能
+<strong>PagingAndSortingRepository分页排序接口</strong>：封装了查询分页和排序的功能
+<strong>JpaRepository接口</strong>：<strong>PagingAndSortingRepository</strong>和QueryByExampleExecutor的子接口，除了提供CRUD的功能之外，还额外提供了分页和排序、过滤等功能
+** JpaSpecificationExecutor接口**：提供了对JPA Criteria查询（动态查询）的支持</p>
+
+<p>以下分析部分源码：
+①Repository</p>
+
+<p><strong>T：要操作的实体类类型</strong></p>
+
+<p><strong>ID:实体类的主键类型class</strong></p>
+
+<pre><code class="language-java">@Indexed
+public interface Repository&lt;T, ID&gt; {
+}
+</code></pre>
+
+<p>②CrudRepository</p>
+
+<pre><code class="language-java">@NoRepositoryBean
+public interface CrudRepository&lt;T, ID&gt; extends Repository&lt;T, ID&gt; {
+
+    //保存一个实体记录，返回保存后的实体
+    &lt;S extends T&gt; S save(S var1);
+
+    //保存传入的实体列表，返回保存后的实体列表
+    &lt;S extends T&gt; Iterable&lt;S&gt; saveAll(Iterable&lt;S&gt; var1);
+
+    //根据主键查询实体，返回封装实体信息的对象
+    Optional&lt;T&gt; findById(ID var1);
+
+    //根据主键查询数据库是否已存在该记录，返回boolean值
+    boolean existsById(ID var1);
+
+    //获取数据表所有记录，返回实体列表
+    Iterable&lt;T&gt; findAll();
+
+    //根据主键列表获取对应实体记录，返回实体列表
+    Iterable&lt;T&gt; findAllById(Iterable&lt;ID&gt; var1);
+
+    //统计数据表记录总数
+    long count();
+
+    //根据主键删除记录
+    void deleteById(ID var1);
+
+    //根据对象删除记录
+    void delete(T var1);
+
+    //根据传入的对象列表删除记录
+    void deleteAll(Iterable&lt;? extends T&gt; var1);
+
+    //清空数据表
+    void deleteAll();
+}
+</code></pre>
+
+<p>③PagingAndSortingRepository</p>
+
+<pre><code class="language-java">@NoRepositoryBean
+public interface PagingAndSortingRepository&lt;T, ID&gt; extends CrudRepository&lt;T, ID&gt; {
+    //获取数据表所有记录并根据传入的Sort对象进行排序，返回实体列表
+    Iterable&lt;T&gt; findAll(Sort var1);
+
+    //获取数据表所有记录并根据传入的分页对象进行分页排序，返回实体列表
+    Page&lt;T&gt; findAll(Pageable var1);
+}
+</code></pre>
+
+<p>④JpaSpecificationExecutor</p>
+
+<pre><code class="language-java">public interface JpaSpecificationExecutor&lt;T&gt; {
+    //根据传入的条件对象查询某个实体，返回实体
+    Optional&lt;T&gt; findOne(@Nullable Specification&lt;T&gt; var1);
+
+    //根据传入的条件对象查询符合条件的实体，返回实体列表
+    List&lt;T&gt; findAll(@Nullable Specification&lt;T&gt; var1);
+
+    //根据传入的条件对象和分页对象查询符合条件的实体，返回实体分页列表
+    Page&lt;T&gt; findAll(@Nullable Specification&lt;T&gt; var1, Pageable var2);
+
+    //根据传入的条件对象查询实体并根据Sort对象排序，返回实体列表
+    List&lt;T&gt; findAll(@Nullable Specification&lt;T&gt; var1, Sort var2);
+
+    //根据传入的条件对象查询符合条件的实体个数，返回个数
+    long count(@Nullable Specification&lt;T&gt; var1);
+}
+</code></pre>
+
+<p>⑤JpaRepository</p>
+
+<pre><code class="language-java">@NoRepositoryBean
+public interface JpaRepository&lt;T, ID&gt; extends PagingAndSortingRepository&lt;T, ID&gt;, QueryByExampleExecutor&lt;T&gt; {
+    //获取数据表所有记录，返回实体列表
+    List&lt;T&gt; findAll();
+    //获取数据表所有记录并根据Sort对象进行排序，返回实体列表
+    List&lt;T&gt; findAll(Sort var1);
+
+    //根据主键列表获取对应实体记录，返回实体列表
+    List&lt;T&gt; findAllById(Iterable&lt;ID&gt; var1);
+
+    //保存传入的实体列表，返回保存后的实体列表
+    &lt;S extends T&gt; List&lt;S&gt; saveAll(Iterable&lt;S&gt; var1);
+
+    //清除session缓存
+    void flush();
+
+    //保存并清除session缓存
+    &lt;S extends T&gt; S saveAndFlush(S var1);
+
+    //根据传入的实体对象批量删除数据表记录
+    void deleteInBatch(Iterable&lt;T&gt; var1);
+
+    //清空数据库表
+    void deleteAllInBatch();
+
+    //根据主键获取实体，返回实体
+    T getOne(ID var1);
+
+    //根据传入的Example对象获取符合条件的实体，返回实体列表
+    &lt;S extends T&gt; List&lt;S&gt; findAll(Example&lt;S&gt; var1);
+
+    //根据传入的Example对象获取符合条件的实体并根据Sort对象进行排序，返回实体列表
+    &lt;S extends T&gt; List&lt;S&gt; findAll(Example&lt;S&gt; var1, Sort var2);
+}
+</code></pre>
+
+<h2 id="ⅲ-spring整合使用sring-data-jpa"><strong>Ⅲ、Spring整合使用Sring Data JPA</strong></h2>
+
+<p>① 引入依赖</p>
+
+<pre><code class="language-xml">&lt;dependencies&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;junit&lt;/groupId&gt;
+        &lt;artifactId&gt;junit&lt;/artifactId&gt;
+        &lt;version&gt;4.12&lt;/version&gt;
+        &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+
+    &lt;!--logback日志实现引入--&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;ch.qos.logback&lt;/groupId&gt;
+        &lt;artifactId&gt;logback-core&lt;/artifactId&gt;
+        &lt;version&gt;1.1.7&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;ch.qos.logback&lt;/groupId&gt;
+        &lt;artifactId&gt;logback-access&lt;/artifactId&gt;
+        &lt;version&gt;1.1.7&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;ch.qos.logback&lt;/groupId&gt;
+        &lt;artifactId&gt;logback-classic&lt;/artifactId&gt;
+        &lt;version&gt;1.1.7&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;!--slf4j日志门面引入--&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.slf4j&lt;/groupId&gt;
+        &lt;artifactId&gt;slf4j-api&lt;/artifactId&gt;
+        &lt;version&gt;1.7.7&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;!--引入alibaba的数据库连接池--&gt;
+    &lt;!-- https://mvnrepository.com/artifact/com.alibaba/druid --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.alibaba&lt;/groupId&gt;
+        &lt;artifactId&gt;druid&lt;/artifactId&gt;
+        &lt;version&gt;1.1.10&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;!--引入Spring支持--&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-jdbc&lt;/artifactId&gt;
+        &lt;version&gt;${org.springframework.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;!--引入Spring事务--&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-tx&lt;/artifactId&gt;
+        &lt;version&gt;${org.springframework.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;!--引入Spring对ORM框架的支持依赖--&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-orm&lt;/artifactId&gt;
+        &lt;version&gt;${org.springframework.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;!--引入jpa支持--&gt;
+    &lt;!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-jpa --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.data&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-data-jpa&lt;/artifactId&gt;
+        &lt;version&gt;2.1.4.RELEASE&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;!--引入Hibernate对象管理器--&gt;
+    &lt;!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-entitymanager --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.hibernate&lt;/groupId&gt;
+        &lt;artifactId&gt;hibernate-entitymanager&lt;/artifactId&gt;
+        &lt;version&gt;5.4.1.Final&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;!--引入数据库驱动--&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;mysql&lt;/groupId&gt;
+        &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;
+</code></pre>
+
+<p>②配置jpa</p>
+
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+       xmlns:context=&quot;http://www.springframework.org/schema/context&quot; xmlns:tx=&quot;http://www.springframework.org/schema/tx&quot;
+       xmlns:aop=&quot;http://www.springframework.org/schema/aop&quot; xmlns:jpa=&quot;http://www.springframework.org/schema/data/jpa&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd&quot;&gt;
+
+    &lt;!--开启注解--&gt;
+    &lt;context:annotation-config/&gt;
+
+    &lt;!--配置组件扫描范围--&gt;
+    &lt;context:component-scan base-package=&quot;com.my.spring&quot;&gt;&lt;/context:component-scan&gt;
+
+    &lt;!-- 导入资源文件 --&gt;
+    &lt;context:property-placeholder location=&quot;classpath:datasource.properties&quot;/&gt;
+
+    &lt;!--配置数据库连接池--&gt;
+    &lt;bean class=&quot;com.alibaba.druid.pool.DruidDataSource&quot; id=&quot;dataSource&quot;&gt;
+        &lt;property name=&quot;driverClassName&quot; value=&quot;${jdbc.driver}&quot;&gt;&lt;/property&gt;
+        &lt;property name=&quot;url&quot; value=&quot;${jdbc.url}&quot;&gt;&lt;/property&gt;
+        &lt;property name=&quot;username&quot; value=&quot;${jdbc.username}&quot;&gt;&lt;/property&gt;
+        &lt;property name=&quot;password&quot; value=&quot;${jdbc.password}&quot;&gt;&lt;/property&gt;
+        &lt;property name=&quot;maxActive&quot; value=&quot;${druid.maxActive}&quot;&gt;&lt;/property&gt;
+        &lt;property name=&quot;maxWait&quot; value=&quot;${druid.maxWait}&quot;&gt;&lt;/property&gt;
+        &lt;property name=&quot;timeBetweenEvictionRunsMillis&quot; value=&quot;${druid.timeBetweenEvictionRunsMillis}&quot;&gt;&lt;/property&gt;
+    &lt;/bean&gt;
+
+    &lt;!--配置JPA的持久化实现厂商类--&gt;
+    &lt;bean id=&quot;jpaVendorAdapter&quot; class=&quot;org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter&quot;&gt;
+        &lt;!-- 自动检查注解的实体和数据表，如果数据库不存在的标，会根据实体自动生成 --&gt;
+        &lt;property name=&quot;generateDdl&quot; value=&quot;true&quot; /&gt;
+        &lt;property name=&quot;database&quot; value=&quot;HSQL&quot; /&gt;
+    &lt;/bean&gt;
+
+    &lt;!--配置Jpa Entity Manager--&gt;
+    &lt;bean id=&quot;entityManagerFactory&quot; class=&quot;org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean&quot; lazy-init=&quot;false&quot;&gt;
+        &lt;!--注入数据库--&gt;
+        &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot; /&gt;
+
+        &lt;!-- 指定Jpa持久化实现厂商类,这里以Hibernate为例 --&gt;
+        &lt;property name=&quot;jpaVendorAdapter&quot; ref=&quot;jpaVendorAdapter&quot;&gt;&lt;/property&gt;
+
+        &lt;!-- 指定Entity实体类包路径，使用注解方式进行映射 --&gt;
+        &lt;property name=&quot;packagesToScan&quot; value=&quot;com.my.spring.bean&quot; /&gt;
+
+        &lt;!-- 指定JPA属性；如Hibernate中指定是否显示SQL的是否显示、方言等 --&gt;
+        &lt;property name=&quot;jpaProperties&quot;&gt;
+            &lt;props&gt;
+                &lt;!-- 命名规则 My_NAME-&gt;MyName --&gt;
+                &lt;prop key=&quot;hibernate.ejb.naming_strategy&quot;&gt;org.hibernate.cfg.DefaultComponentSafeNamingStrategy&lt;/prop&gt;
+                &lt;!-- 打印sql语句 --&gt;
+                &lt;prop key=&quot;hibernate.show_sql&quot;&gt;true&lt;/prop&gt;
+                &lt;prop key=&quot;hibernate.dialect&quot;&gt;org.hibernate.dialect.MySQL5Dialect&lt;/prop&gt;
+            &lt;/props&gt;
+        &lt;/property&gt;
+    &lt;/bean&gt;
+    &lt;!--配置jpa的方言对象--&gt;
+    &lt;bean id=&quot;jpaDialect&quot; class=&quot;org.springframework.orm.jpa.vendor.HibernateJpaDialect&quot; /&gt;
+
+    &lt;!-- 配置Spring声明式事务 --&gt;
+    &lt;bean id=&quot;transactionManager&quot; class=&quot;org.springframework.orm.jpa.JpaTransactionManager&quot;&gt;
+        &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot;&gt;&lt;/property&gt;
+        &lt;property name=&quot;entityManagerFactory&quot; ref=&quot;entityManagerFactory&quot;&gt;&lt;/property&gt;
+    &lt;/bean&gt;
+
+    &lt;!--开启注解事务--&gt;
+    &lt;tx:annotation-driven transaction-manager=&quot;transactionManager&quot;/&gt;
+
+    &lt;!-- 重要配置：启用扫描并自动创建代理的功能 --&gt;
+    &lt;jpa:repositories base-package=&quot;com.my.spring&quot; transaction-manager-ref=&quot;transactionManager&quot; entity-manager-factory-ref=&quot;entityManagerFactory&quot; /&gt;
+&lt;/beans&gt;
+</code></pre>
+
+<p>③编写实体类</p>
+
+<pre><code class="language-java">@Entity//指定当前实体类需要被扫描
+@Table(name = &quot;basebean&quot;)//指定当前实体类映射到数据库表名
+public class BaseBean {
+
+    @Id//当前字段为主键字段
+    @GeneratedValue(strategy = GenerationType.IDENTITY)//指定id自增
+    private Integer id;
+
+    private String name;
+
+    private Integer age;
+}
+</code></pre>
+
+<p>④编写Repository接口,继承CrudRepository接口，获得默认接口</p>
+
+<pre><code class="language-java">public interface BaseRepository extends CrudRepository&lt;BaseBean,Integer&gt;{
+}
+</code></pre>
+
+<p>⑤编写Service和Service实现类</p>
+
+<pre><code class="language-java">public interface BaseService {
+    /**
+     *  保存记录
+     * @param baseBean
+     * @return
+     */
+    void save(BaseBean baseBean);
+
+    /**
+     * 获取所有记录
+     * @return
+     */
+    List&lt;BaseBean&gt; findAll();
+
+    /**
+     * 获取指定id记录
+     * @param id
+     * @return
+     */
+    BaseBean findOne(Integer id);
+}
+
+@Component
+public class BaseServiceImpl implements BaseService {
+
+    @Autowired
+    private BaseRepository baseRepository;
+
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class)
+    public void save(BaseBean baseBean) {
+        this.baseRepository.save(baseBean);
+    }
+
+    @Override
+    public List&lt;BaseBean&gt; findAll() {
+        Iterable&lt;BaseBean&gt; iterable = this.baseRepository.findAll();
+        if(null!=iterable){
+            return (List&lt;BaseBean&gt;) iterable;
+        }
+
+        return null;
+    }
+
+    @Override
+    public BaseBean findOne(Integer id) {
+        Optional&lt;BaseBean&gt; optional = this.baseRepository.findById(id);
+        if(null!=optional){
+            return optional.get();
+        }
+        return null;
+
+    }
+}
+</code></pre>
+
+<p>⑥编写测试类</p>
+
+<pre><code class="language-java">@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {&quot;classpath:application.xml&quot;})//以application.xml为配置环境文件
+public class JPATest {
+
+    @Autowired
+    private BaseService baseService;
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    @Test
+    public void testJPA() {
+        String[] beanDefinitionNames = applicationContext.getBeanDefinitionNames();
+        for (String beanDefinitionName : beanDefinitionNames){
+            System.out.println(beanDefinitionName);
+        }
+    }
+
+    @Test
+    public void testSave(){
+        BaseBean baseBean = new BaseBean();
+        baseBean.setName(&quot;jpa bean&quot;);
+        baseBean.setAge(50);
+        this.baseService.save(baseBean);
+    }
+
+    @Test
+    public void testFindAll(){
+        List&lt;BaseBean&gt; list = this.baseService.findAll();
+        if(null==list||list.isEmpty()){
+            System.err.println(&quot;空表&quot;);
+        }else{
+            for (BaseBean baseBean : list){
+                System.err.println(baseBean.toString());
+            }
+        }
+    }
+}
+</code></pre>
+
+<p>运行测试，测试结果：</p>
+
+<p>testJPA()</p>
+
+<pre><code class="language-properties">org.springframework.context.annotation.internalConfigurationAnnotationProcessor
+org.springframework.context.annotation.internalAutowiredAnnotationProcessor
+org.springframework.context.annotation.internalCommonAnnotationProcessor
+org.springframework.context.annotation.internalPersistenceAnnotationProcessor
+org.springframework.context.event.internalEventListenerProcessor
+org.springframework.context.event.internalEventListenerFactory
+baseServiceImpl
+org.springframework.context.support.PropertySourcesPlaceholderConfigurer#0
+dataSource
+jpaVendorAdapter
+entityManagerFactory
+jpaDialect
+transactionManager
+org.springframework.transaction.config.internalTransactionalEventListenerFactory
+org.springframework.aop.config.internalAutoProxyCreator
+org.springframework.transaction.annotation.AnnotationTransactionAttributeSource#0
+org.springframework.transaction.interceptor.TransactionInterceptor#0
+org.springframework.transaction.config.internalTransactionAdvisor
+org.springframework.data.jpa.repository.config.JpaRepositoryConfigExtension#0
+emBeanDefinitionRegistrarPostProcessor
+jpaMappingContext
+jpaContext
+org.springframework.data.jpa.util.JpaMetamodelCacheCleanup
+baseRepository
+</code></pre>
+
+<p>testSave()</p>
+
+<pre><code class="language-sql">insert into basebean (age, name) values (?, ?)
+</code></pre>
+
+<p>testFindAll()</p>
+
+<pre><code class="language-properties">BaseBean(id=1, name=jpa bean, age=50)
+</code></pre>
+
+    </div>
+
+    <div class="post-copyright">
+             
+            <p class="copyright-item">
+                <span>Author:</span>
+                <span>GF.L </span>
+                </p>
+            
+           
+             
+            <p class="copyright-item">
+                    <span>Link:</span>
+                    <a href=https://keep-zero.github.io/2019/spring_action11_03/>https://keep-zero.github.io/2019/spring_action11_03/</span>
+            </p>
+            
+             
+            <p class="copyright-item lincese">
+                本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可
+            </p>
+            
+    </div>
+
+  
+    <div class="post-tags">
+        
+            <section>
+            <i class="iconfont icon-tag"></i>Tag(s): 
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/java/">
+                    #java</a></span>
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/spring/">
+                    #spring</a></span>
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/spring-action/">
+                    #spring-action</a></span>
+            
+            </section>
+        
+        <section>
+                <a href="javascript:window.history.back();">back</a></span> · 
+                <span><a href="https://keep-zero.github.io">home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+        
+        <a href="https://keep-zero.github.io/2019/spring_action11_02/" class="prev" rel="prev" title="《Spring实战》-第十一章：利用对象-关系映射持久化数据（Spring整合Hibernate）"><i class="iconfont icon-left"></i>&nbsp;《Spring实战》-第十一章：利用对象-关系映射持久化数据（Spring整合Hibernate）</a>
+         
+        
+        <a href="https://keep-zero.github.io/2019/spring_action12/" class="next" rel="next" title="《Spring实战》-第十二章：Spring与NoSQL">《Spring实战》-第十二章：Spring与NoSQL&nbsp;<i class="iconfont icon-right"></i></a>
+        
+    </div>
+
+    <div class="post-comment">
+          
+                 
+          
+    </div>
+</article>
+          </div>
+		   </main>
+      <footer class="footer">
+    <div class="copyright">
+        &copy;
+        
+        <span itemprop="copyrightYear">2011 - 2019</span>
+        
+        <span class="with-love">
+    	 <i class="iconfont icon-love"></i> 
+        </span>
+         
+            <span class="author" itemprop="copyrightHolder"><a href="https://keep-zero.github.io">GF.L</a> | </span> 
+         
+
+         
+		  <span>Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow">Hugo</a> & <a href="https://github.com/liuzc/leaveit" target="_blank" rel="external nofollow">LeaveIt</a></span> 
+		<span id="busuanzi_container_site_pv">
+			本站访问量：<span id="busuanzi_value_site_pv"></span>次
+		</span>
+		&nbsp;
+		<span id="busuanzi_container_site_uv">
+			您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者
+		</span>
+    </div>
+</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    <script src="/js/vendor_no_gallery.min.js" async=""></script>
+    
+  
+
+
+
+     </div>
+  </body>
+</html>

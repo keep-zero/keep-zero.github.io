@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noodp"/>
+  <meta name="author" content="GF.L">
+  
+  
+  
+  <link rel="prev" href="https://keep-zero.github.io/2019/java_log01/" />
+  <link rel="next" href="https://keep-zero.github.io/2019/java_log03/" />
+  <link rel="canonical" href="https://keep-zero.github.io/2019/java_log02/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <title>
+       
+       
+           java日志篇（2）-JUL(java.util.logging) | Keep Zero
+       
+  </title>
+  <meta name="title" content="java日志篇（2）-JUL(java.util.logging) | Keep Zero">
+    
+  
+  <link rel="stylesheet" href="/font/iconfont.css">
+  <link rel="stylesheet" href="/css/main.min.css">
+
+
+  
+  
+ 
+
+<script type="application/ld+json">
+ "@context" : "http://schema.org",
+    "@type" : "BlogPosting",
+    "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "https:\/\/keep-zero.github.io"
+    },
+    "articleSection" : "posts",
+    "name" : "java日志篇（2）-JUL(java.util.logging)",
+    "headline" : "java日志篇（2）-JUL(java.util.logging)",
+    "description" : "慢慢来比较快，虚心学技术\n原文链接:java日志篇（2)\x26ndash;JUL(java.util.logging)\n前言：之所以未按照前一篇文章 java日志篇（1）-日志概述所描述的日志发展史进行文章编写，是因为JUL是jdk自带的日志实现，其他日志实现原理大同小异，理解起来也是相对简单，如有兴趣可先去看看上一篇文章\n JUL是什么？ JUL是jdk自带的一个日志实现，使用简单，控制灵活，如果是小型系统或者测试程序，显然JUL会是比log4j等更好的选择\nJUL基本使用 使用java.util.logging.Logger的静态方法getLogger(loggerName)来获取或创建一个日志logger\nimport java.io.IOException; import java.util.logging.*; public class JULTest { public static Logger log = Logger.getLogger(\x26quot;TestLog\x26quot;); \/\/获取日志对象 public static void main(String[] args) throws IOException { log.info(\x26quot;info\x26quot;); \/\/信息日志 log.warning(\x26quot;warning\x26quot;); \/\/警告日志 log.log(Level.SEVERE,\x26quot;server\x26quot;); \/\/严重日志 log.fine(\x26quot;fine\x26quot;); } }  使用日志我们可以使用默认的等级实现方法进行输出：如log.info(\x26rdquo;****\x26ldquo;)等，也可以使用特定的等级进行输出：如log.log(等级，输出信息)\n如上代码输出日志结果如下：\n一月 14, 2019 9:20:32 下午 JULTest main 信息: info 一月 14, 2019 9:20:32 下午 JULTest main 警告: warning 一月 14, 2019 9:20:32 下午 JULTest main 严重: server  JUL使用分析 一、Logger 为什么log.",
+    "inLanguage" : "en-us",
+    "author" : "GF.L",
+    "creator" : "GF.L",
+    "publisher": "GF.L",
+    "accountablePerson" : "GF.L",
+    "copyrightHolder" : "GF.L",
+    "copyrightYear" : "2019",
+    "datePublished": "2019-08-30 22:51:25 \x2b0800 CST",
+    "dateModified" : "2019-08-30 22:51:25 \x2b0800 CST",
+    "url" : "https:\/\/keep-zero.github.io\/2019\/java_log02\/",
+    "wordCount" : "576",
+    "keywords" : [ "java","log", "Keep Zero"]
+}
+</script>
+
+</head>
+
+  
+
+
+  <body class="">
+    <div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo">
+        	<a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a>
+        </div>
+        <div class="menu navbar-right">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+<nav class="navbar-mobile" id="nav-mobile" style="display: none">
+     <div class="container">
+        <div class="navbar-header">
+            <div>  <a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a></div>
+            <div class="menu-toggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+     
+          <div class="menu" id="mobile-menu">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+    	 <main class="main">
+          <div class="container">
+      		
+<article class="post-warp" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">java日志篇（2）-JUL(java.util.logging)</h1>
+        <div class="post-meta">
+                Written by <a itemprop="name" href="https://keep-zero.github.io" rel="author">GF.L</a> with ♥ 
+                <span class="post-time">
+                on <time datetime=2019-08-30 itemprop="datePublished">August 30, 2019</time>
+                </span>
+                in
+                <i class="iconfont icon-folder"></i>
+                <span class="post-category">
+                        <a href="https://keep-zero.github.io/categories/java-log/"> java-log </a>
+                        
+                </span>
+				
+				<span id="wc" style="font-size: 1rem;text-align: center;">  共600 字|  阅读需时约 3 分|  本文总阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </div>
+    </header>
+    <div class="post-content">
+        
+
+        
+
+        
+        
+     
+          
+          
+          
+
+          
+          
+          
+
+          
+
+<blockquote>
+<p><strong>慢慢来比较快，虚心学技术</strong></p>
+
+<p>原文链接:<a href="https://blog.csdn.net/Laiguanfu/article/details/86416501" rel="nofollow noreferrer" target="_blank">java日志篇（2)&ndash;JUL(java.util.logging)</a></p>
+
+<p>前言：之所以未按照前一篇文章 <a href="https://blog.csdn.net/Laiguanfu/article/details/86258745" rel="nofollow noreferrer" target="_blank">java日志篇（1）-日志概述</a>所描述的日志发展史进行文章编写，是因为JUL是jdk自带的日志实现，其他日志实现原理大同小异，理解起来也是相对简单，如有兴趣可先去看看上一篇文章</p>
+</blockquote>
+
+<h3 id="jul是什么">JUL是什么？</h3>
+
+<p>JUL是jdk自带的一个日志实现，使用简单，控制灵活，如果是小型系统或者测试程序，显然JUL会是比log4j等更好的选择</p>
+
+<h3 id="jul基本使用">JUL基本使用</h3>
+
+<p>使用java.util.logging.Logger的静态方法getLogger(loggerName)来获取或创建一个日志logger</p>
+
+<pre><code class="language-java">import java.io.IOException;
+import java.util.logging.*;
+
+public class JULTest {
+
+     public static Logger log = Logger.getLogger(&quot;TestLog&quot;);  //获取日志对象
+
+    public static void main(String[] args) throws IOException {
+        log.info(&quot;info&quot;);    //信息日志
+        log.warning(&quot;warning&quot;); //警告日志
+        log.log(Level.SEVERE,&quot;server&quot;); //严重日志
+        log.fine(&quot;fine&quot;);
+    }
+}
+</code></pre>
+
+<p>使用日志我们可以使用默认的等级实现方法进行输出：如log.info(&rdquo;****&ldquo;)等，也可以使用特定的等级进行输出：如log.log(等级，输出信息)</p>
+
+<p>如上代码输出日志结果如下：</p>
+
+<pre><code class="language-javascript">一月 14, 2019 9:20:32 下午 JULTest main
+信息: info
+一月 14, 2019 9:20:32 下午 JULTest main
+警告: warning
+一月 14, 2019 9:20:32 下午 JULTest main
+严重: server
+</code></pre>
+
+<h3 id="jul使用分析">JUL使用分析</h3>
+
+<h4 id="一-logger">一、Logger</h4>
+
+<p>为什么<strong>log.fine(&ldquo;fine&rdquo;);</strong>没有输出？</p>
+
+<p>我们首先看一下第一个问题，需要先了解一下JUL的日志等级划分：</p>
+
+<p>JUL日志等级划分（优先级递减）及内置代表的整数如下：</p>
+
+<blockquote>
+<ul>
+<li>OFF(Integer.MAX_VALUE)</li>
+<li>SEVERE(1000)</li>
+<li>WARNING(900)</li>
+<li>INFO(800)</li>
+<li>CONFIG(700)</li>
+<li>FINE(500)</li>
+<li>FINER(400)</li>
+<li>FINEST(300)</li>
+<li>ALL(Integer.MIN_VALUE)</li>
+</ul>
+</blockquote>
+
+<p>为了更好更灵活的控制日志的输出，jul使用如上的9个等级作为日志等级划分，其中常用的日志等级主要是server,warning和info，<strong>当为 Logger 指定了一个 Level, 该 Logger 会包含当前指定级别以及更高级别的日志，logger默认的级别是INFO，比INFO更低的日志将不显示。</strong>由上述输出结果不难看出，只是输出了info及以上等级的日志，而自动忽略info等级以下的日志内容，为什么会有这样的实现呢？此处涉及到JUL的默认配置文件loging.properties,该配置文件位于jdk安装目录的lib包下</p>
+
+<pre><code class="language-java">handlers= java.util.logging.ConsoleHandler
+
+.level= INFO
+
+java.util.logging.FileHandler.pattern = %h/java%u.log
+java.util.logging.FileHandler.limit = 50000
+java.util.logging.FileHandler.count = 1
+java.util.logging.FileHandler.formatter = java.util.logging.XMLFormatter
+
+java.util.logging.ConsoleHandler.level = INFO
+java.util.logging.ConsoleHandler.formatter = java.util.logging.SimpleFormatter
+
+com.xyz.foo.level = SEVERE
+</code></pre>
+
+<p>logger.log(Level.FINE,&ldquo;file&rdquo;);调用方法如下</p>
+
+<pre><code class="language-java">public void log(Levellevel, String msg) {
+          if (level.intValue() &lt; levelValue ||levelValue == offValue) {
+              return;
+          }
+          LogRecord lr = new LogRecord(level, msg);
+          doLog(lr);
+}
+</code></pre>
+
+<p>其中，我们可以看到.level属性指定了logger默认的日志级别为info，而logger类会先读取默认的日志级别，当选定的日志level整数值低于默认值，就不会进行日志输出</p>
+
+<p>所以我们如果要更改logger的输出等级，可以通过修改对应配置项的level等级，也可以通过代码的方式去动态设置logger的等级</p>
+
+<p>如下：结果输出为所有日志信息</p>
+
+<pre><code class="language-java">import java.io.IOException;
+import java.util.logging.*;
+
+public class JULTest {
+
+     public static Logger log = Logger.getLogger(&quot;TestLog&quot;);  //获取日志对象
+
+    public static void main(String[] args) throws IOException {
+
+        log.setLevel(Level.ALL);//设置logger的日志级别为全部，默认输出所有级别日志信息
+
+        log.info(&quot;info&quot;);    //信息日志
+        log.warning(&quot;warning&quot;); //警告日志
+        log.log(Level.SEVERE,&quot;server&quot;); //严重日志
+        log.fine(&quot;fine&quot;);
+    }
+}
+
+输出结果：
+一月 15, 2019 12:12:23 上午 JULTest main
+信息: info
+一月 15, 2019 12:12:23 上午 JULTest main
+警告: warning
+一月 15, 2019 12:12:23 上午 JULTest main
+严重: server
+一月 15, 2019 12:12:23 上午 JULTest main
+较详细: fine
+</code></pre>
+
+<h4 id="二-handler">二、Handler</h4>
+
+<p>既已引出logging.properties文件，我们就接着以此作为分析入口</p>
+
+<p>由文件内容可以看到上一篇文章中介绍的handler组件的配置</p>
+
+<p>默认Handler:</p>
+
+<blockquote>
+<p>JUL中用的比较多的是两个Handler类：<strong>ConsoleHandler和FileHandler</strong></p>
+
+<p><strong>其中，ConsoleHandler是对控制台输出的默认处理类，FileHandler是对文件输出的默认处理类</strong></p>
+</blockquote>
+
+<p>虽然我们可以通过修改配置文件更改系统日志的处理方式，但是更灵活的方式是从代码进行更改</p>
+
+<p>举例：1、更改控制台Handler处理类的默认级别</p>
+
+<pre><code class="language-java">import java.io.IOException;
+import java.util.logging.*;
+
+public class JULTest {
+
+     public static Logger log = Logger.getLogger(&quot;TestLog&quot;);  //获取日志对象
+
+    public static void main(String[] args) throws IOException {
+
+        log.setLevel(Level.ALL);//设置logger的日志级别为全部，默认输出所有级别日志信息
+
+        log.setUseParentHandlers(false); //禁用日志原本处理类
+
+        ConsoleHandler consoleHandler = new ConsoleHandler(); //创建控制台输出控制Handler
+        consoleHandler.setLevel(Level.INFO); //设置控制台输出级别
+        log.addHandler(consoleHandler); //将Handler加入logger中
+
+        log.info(&quot;info&quot;);    //信息日志
+        log.warning(&quot;warning&quot;); //警告日志
+        log.log(Level.SEVERE,&quot;server&quot;); //严重日志
+        log.fine(&quot;fine&quot;);
+    }
+}
+
+输出结果：
+一月 15, 2019 12:03:56 上午 JULTest main
+信息: info
+一月 15, 2019 12:03:56 上午 JULTest main
+警告: warning
+一月 15, 2019 12:03:56 上午 JULTest main
+严重: server
+</code></pre>
+
+<p>上面的代码新建了一个控制台Handler，级别设置为INFO，所以结果又变成了只输出INFO及以上级别的日志</p>
+
+<blockquote>
+<p>注：如果没有 <strong>log.setUseParentHandlers(false);</strong> 父Handler与子Handler都会生效，此时会输出两遍日志内容</p>
+</blockquote>
+
+<p>2、更改文件FileHandler处理类的处理方式</p>
+
+<pre><code class="language-java">import java.io.IOException;
+import java.util.logging.*;
+
+public class JULTest {
+
+     public static Logger log = Logger.getLogger(&quot;TestLog&quot;);  //获取日志对象
+
+    public static void main(String[] args) throws IOException {
+
+        log.setLevel(Level.ALL);//设置logger的日志级别为全部，默认输出所有级别日志信息
+
+        log.setUseParentHandlers(false); //禁用日志原本处理类
+
+        FileHandler fileHandler = new FileHandler(&quot;日志路径/testJUL.log&quot;);
+        fileHandler.setLevel(Level.ALL); //记录级别
+        log.addHandler(fileHandler); //添加Handler
+
+        log.info(&quot;info&quot;);    //信息日志
+        log.warning(&quot;warning&quot;); //警告日志
+        log.log(Level.SEVERE,&quot;server&quot;); //严重日志
+        log.fine(&quot;fine&quot;);
+    }
+}
+</code></pre>
+
+<p>testJUL.log的内容如下</p>
+
+<pre><code class="language-java">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;
+&lt;!DOCTYPE log SYSTEM &quot;logger.dtd&quot;&gt;
+&lt;log&gt;
+&lt;record&gt;
+  &lt;date&gt;2019-01-15T00:22:58&lt;/date&gt;
+  &lt;millis&gt;1547482978598&lt;/millis&gt;
+  &lt;sequence&gt;0&lt;/sequence&gt;
+  &lt;logger&gt;TestLog&lt;/logger&gt;
+  &lt;level&gt;INFO&lt;/level&gt;
+  &lt;class&gt;JULTest&lt;/class&gt;
+  &lt;method&gt;main&lt;/method&gt;
+  &lt;thread&gt;1&lt;/thread&gt;
+  &lt;message&gt;info&lt;/message&gt;
+&lt;/record&gt;
+&lt;record&gt;
+  &lt;date&gt;2019-01-15T00:22:58&lt;/date&gt;
+  &lt;millis&gt;1547482978622&lt;/millis&gt;
+  &lt;sequence&gt;1&lt;/sequence&gt;
+  &lt;logger&gt;TestLog&lt;/logger&gt;
+  &lt;level&gt;WARNING&lt;/level&gt;
+  &lt;class&gt;JULTest&lt;/class&gt;
+  &lt;method&gt;main&lt;/method&gt;
+  &lt;thread&gt;1&lt;/thread&gt;
+  &lt;message&gt;warning&lt;/message&gt;
+&lt;/record&gt;
+&lt;record&gt;
+  &lt;date&gt;2019-01-15T00:22:58&lt;/date&gt;
+  &lt;millis&gt;1547482978622&lt;/millis&gt;
+  &lt;sequence&gt;2&lt;/sequence&gt;
+  &lt;logger&gt;TestLog&lt;/logger&gt;
+  &lt;level&gt;SEVERE&lt;/level&gt;
+  &lt;class&gt;JULTest&lt;/class&gt;
+  &lt;method&gt;main&lt;/method&gt;
+  &lt;thread&gt;1&lt;/thread&gt;
+  &lt;message&gt;server&lt;/message&gt;
+&lt;/record&gt;
+&lt;record&gt;
+  &lt;date&gt;2019-01-15T00:22:58&lt;/date&gt;
+  &lt;millis&gt;1547482978622&lt;/millis&gt;
+  &lt;sequence&gt;3&lt;/sequence&gt;
+  &lt;logger&gt;TestLog&lt;/logger&gt;
+  &lt;level&gt;FINER&lt;/level&gt;
+  &lt;class&gt;JULTest&lt;/class&gt;
+  &lt;method&gt;main&lt;/method&gt;
+  &lt;thread&gt;1&lt;/thread&gt;
+  &lt;message&gt;fine&lt;/message&gt;
+&lt;/record&gt;
+&lt;/log&gt;
+
+</code></pre>
+
+<p>3、自定义Handler</p>
+
+<p>有时候我们在日志中做些自定义的操作，此时我们需要编写自定义Handler并加入logger的Handlers中</p>
+
+<pre><code class="language-java">//继承Handler类编写自定义Handler
+public class MyHandler extends Handler {
+
+    private LogRecord record;
+
+    //
+    @Override
+    public void publish(LogRecord record) {
+        this.record = record;
+        ........(自定义操作)
+    }
+
+    @Override
+    public void flush() {
+        System.out.println(&quot;logger:&quot;+this.record.getLoggerName()+&quot;flush&quot;);
+    }
+
+    @Override
+    public void close() throws SecurityException {
+        System.out.println(&quot;logger:&quot;+this.record.getLoggerName()+&quot;close&quot;);
+    }
+}
+
+public class JULTest {
+
+     public static Logger log = Logger.getLogger(&quot;TestLog&quot;);  //获取日志对象
+
+    public static void main(String[] args) throws IOException {
+
+        log.setLevel(Level.ALL);//设置logger的日志级别为全部，默认输出所有级别日志信息
+
+        log.setUseParentHandlers(false); //禁用日志原本处理类
+
+        MyHandler myHandler = new MyHandler();  //创建自定义日志处理类实体
+        log.addHandler(myHandler); //添加日志处理实体类
+
+        log.info(&quot;info&quot;);    //信息日志
+        log.warning(&quot;warning&quot;); //警告日志
+        log.log(Level.SEVERE,&quot;server&quot;); //严重日志
+        log.fine(&quot;fine&quot;);
+    }
+}
+
+</code></pre>
+
+<h4 id="三-formatter">三、Formatter</h4>
+
+<p>可以看到上述我们的日志文件中默认输出是xml格式，很明显是不利于查看的。此时我们需要去更改日志输出样式，同样的可以使用代码实现：</p>
+
+<pre><code class="language-java">//继承Formatter自定义日志输出形式
+public class MyFormate extends Formatter {
+
+    @Override
+    public String format(LogRecord record) {
+        return new Date()+&quot;-[&quot;+record.getSourceClassName()+&quot;.&quot;+record.getSourceMethodName()+&quot;]&quot;+record.getLevel()+&quot;:&quot;+record.getMessage()+&quot;\n&quot;;
+    }
+}
+
+public class JULTest {
+
+     public static Logger log = Logger.getLogger(&quot;TestLog&quot;);  //获取日志对象
+
+    public static void main(String[] args) throws IOException {
+
+        log.setLevel(Level.ALL);//设置logger的日志级别为全部，默认输出所有级别日志信息
+
+        log.setUseParentHandlers(false); //禁用日志原本处理类
+
+        FileHandler fileHandler = new FileHandler(&quot;日志路径/testJUL.log&quot;);
+        fileHandler.setLevel(Level.ALL); //记录级别
+
+       fileHandler.setFormatter(new MyFormate()); //设置自定义样式
+
+        log.addHandler(fileHandler); //添加Handler
+
+        log.info(&quot;info&quot;);    //信息日志
+        log.warning(&quot;warning&quot;); //警告日志
+        log.log(Level.SEVERE,&quot;server&quot;); //严重日志
+        log.fine(&quot;fine&quot;);
+    }
+}
+
+</code></pre>
+
+<p>此时testJUL.log的输出样式更直观简洁了：</p>
+
+<pre><code class="language-javascript">Tue Jan 15 00:36:09 CST 2019-[JULTest.main]INFO:info
+Tue Jan 15 00:36:09 CST 2019-[JULTest.main]WARNING:warning
+Tue Jan 15 00:36:09 CST 2019-[JULTest.main]SEVERE:server
+Tue Jan 15 00:36:09 CST 2019-[JULTest.main]FINER:fine
+</code></pre>
+
+<p>[图片上传中&hellip;(image-1622e2-1547516929311-0)]</p>
+
+<h3 id="总结">总结</h3>
+
+<blockquote>
+<p>1、JUL通过对级别的整数值比对决定是否输出日志，对外则是使用通俗易懂的Level名，这样的设计使得系统设计清晰简便，值得学习。</p>
+
+<p>2、JUL的logging.propertise配置了基本的日志控制属性，可以通过更改该配置文件控制系统日志的输出</p>
+
+<p>3、JUL的Handler使得JUL的日志控制十分的灵活，但是注意logger可以具备多个Handler，需要考虑Handler之间的干扰和冗余可能</p>
+
+<p>4、JUL的Formatter使JUL的日志输出更加优雅美观，在学习的过程中，我们可以更加多的考虑如何精准输出日志所需要的信息，比如类名，方法名等</p>
+</blockquote>
+
+<h3 id="备注">备注</h3>
+
+<blockquote>
+<p>多参考前辈，源码未深入理解，还望多多探讨，文章结构不大严谨，后续继续完善，谢谢</p>
+
+<p><em>部分内容参考文章：<a href="https://blog.csdn.net/qingkangxu/article/details/7514770" rel="nofollow noreferrer" target="_blank">qingkangxu-JDK Logging深入分析</a></em></p>
+</blockquote>
+
+    </div>
+
+    <div class="post-copyright">
+             
+            <p class="copyright-item">
+                <span>Author:</span>
+                <span>GF.L </span>
+                </p>
+            
+           
+             
+            <p class="copyright-item">
+                    <span>Link:</span>
+                    <a href=https://keep-zero.github.io/2019/java_log02/>https://keep-zero.github.io/2019/java_log02/</span>
+            </p>
+            
+             
+            <p class="copyright-item lincese">
+                本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可
+            </p>
+            
+    </div>
+
+  
+    <div class="post-tags">
+        
+            <section>
+            <i class="iconfont icon-tag"></i>Tag(s): 
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/java/">
+                    #java</a></span>
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/log/">
+                    #log</a></span>
+            
+            </section>
+        
+        <section>
+                <a href="javascript:window.history.back();">back</a></span> · 
+                <span><a href="https://keep-zero.github.io">home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+        
+        <a href="https://keep-zero.github.io/2019/java_log01/" class="prev" rel="prev" title="java日志篇（1）-日志概述"><i class="iconfont icon-left"></i>&nbsp;java日志篇（1）-日志概述</a>
+         
+        
+        <a href="https://keep-zero.github.io/2019/java_log03/" class="next" rel="next" title="java日志篇（3）-Log4j(log for java)">java日志篇（3）-Log4j(log for java)&nbsp;<i class="iconfont icon-right"></i></a>
+        
+    </div>
+
+    <div class="post-comment">
+          
+                 
+          
+    </div>
+</article>
+          </div>
+		   </main>
+      <footer class="footer">
+    <div class="copyright">
+        &copy;
+        
+        <span itemprop="copyrightYear">2011 - 2019</span>
+        
+        <span class="with-love">
+    	 <i class="iconfont icon-love"></i> 
+        </span>
+         
+            <span class="author" itemprop="copyrightHolder"><a href="https://keep-zero.github.io">GF.L</a> | </span> 
+         
+
+         
+		  <span>Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow">Hugo</a> & <a href="https://github.com/liuzc/leaveit" target="_blank" rel="external nofollow">LeaveIt</a></span> 
+		<span id="busuanzi_container_site_pv">
+			本站访问量：<span id="busuanzi_value_site_pv"></span>次
+		</span>
+		&nbsp;
+		<span id="busuanzi_container_site_uv">
+			您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者
+		</span>
+    </div>
+</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    <script src="/js/vendor_no_gallery.min.js" async=""></script>
+    
+  
+
+
+
+     </div>
+  </body>
+</html>

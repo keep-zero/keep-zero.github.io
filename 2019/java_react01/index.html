@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noodp"/>
+  <meta name="author" content="GF.L">
+  
+  
+  
+  <link rel="prev" href="https://keep-zero.github.io/2019/java_log06/" />
+  <link rel="next" href="https://keep-zero.github.io/2019/java_react02/" />
+  <link rel="canonical" href="https://keep-zero.github.io/2019/java_react01/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <title>
+       
+       
+           java学习笔记-反射(1)-Class | Keep Zero
+       
+  </title>
+  <meta name="title" content="java学习笔记-反射(1)-Class | Keep Zero">
+    
+  
+  <link rel="stylesheet" href="/font/iconfont.css">
+  <link rel="stylesheet" href="/css/main.min.css">
+
+
+  
+  
+ 
+
+<script type="application/ld+json">
+ "@context" : "http://schema.org",
+    "@type" : "BlogPosting",
+    "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "https:\/\/keep-zero.github.io"
+    },
+    "articleSection" : "posts",
+    "name" : "java学习笔记-反射(1)-Class",
+    "headline" : "java学习笔记-反射(1)-Class",
+    "description" : "慢慢来比较快，虚心学技术\n前言：在Java中的反射机制是指在运行状态中，对于任意一个类都能够知道这个类所有的属性和方法；并且对于任意一个对象，都能够调用它的任意一个方法；这种动态获取信息以及动态调用对象方法的功能成为Java语言的反射机制。\n 反射 反射的概念（是什么）： java中的反射\x26mdash;\x26mdash;相当于对象的镜子，对象在照镜子时可以获取自身的信息，比如：属性，方法和构造器，实现接口等，而且这面镜子还可以直接调用执行java对象的方法\n反射的用处（有什么用）： 1.当接收到别人传过来的类时，可以进行解析\n2.当只有类名时，可以获取到对象的完整信息，从而执行相应处理\n多用于可配置和动态代理\njava反射涉及的几个类： java.lang. Class：反射的核心类，可以获取类的属性，方法等信息\njava.lang.ClassLoader:类的加载器，用来把类(class)装载进 JVM\njava.lang.reflect.Field ：类的成员变量，用来获取和设置类的属性\njava.lang.reflect.Method：类的方法，用来获取类中方法的信息或调用类的方法\njava.lang.reflect.Modifier：类的修饰符工具，可以用来判断类中属性或者方法的修饰级别\n为方便后续学习，事先创建一个基本类\npublic class BaseEntity { private String name; private Integer age; public BaseEntity(){ super(); } public BaseEntity(String name,Integer age){ super(); this.name = name; this.age = age; } private void addAge(String name,Integer age){ if(this.name.equals(name)){ this.age\x2b=age; }else{ System.out.println(\x26quot;名称不符，请核验\x26quot;); } } }  Class类 class是一个用来描述类的类，封装了当前对象所对应的类信息，我们可以通过该类获取目标对象的属性，方法等信息,还可以根据class类创建目标对象实例\n获取Class类 1.通过类名获取 : 类名.class\nClass clazz = BaseEntity.",
+    "inLanguage" : "en-us",
+    "author" : "GF.L",
+    "creator" : "GF.L",
+    "publisher": "GF.L",
+    "accountablePerson" : "GF.L",
+    "copyrightHolder" : "GF.L",
+    "copyrightYear" : "2019",
+    "datePublished": "2019-08-31 11:54:20 \x2b0800 CST",
+    "dateModified" : "2019-08-31 11:54:20 \x2b0800 CST",
+    "url" : "https:\/\/keep-zero.github.io\/2019\/java_react01\/",
+    "wordCount" : "493",
+    "keywords" : [ "java","java-react", "Keep Zero"]
+}
+</script>
+
+</head>
+
+  
+
+
+  <body class="">
+    <div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo">
+        	<a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a>
+        </div>
+        <div class="menu navbar-right">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+<nav class="navbar-mobile" id="nav-mobile" style="display: none">
+     <div class="container">
+        <div class="navbar-header">
+            <div>  <a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a></div>
+            <div class="menu-toggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+     
+          <div class="menu" id="mobile-menu">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+    	 <main class="main">
+          <div class="container">
+      		
+<article class="post-warp" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">java学习笔记-反射(1)-Class</h1>
+        <div class="post-meta">
+                Written by <a itemprop="name" href="https://keep-zero.github.io" rel="author">GF.L</a> with ♥ 
+                <span class="post-time">
+                on <time datetime=2019-08-31 itemprop="datePublished">August 31, 2019</time>
+                </span>
+                in
+                <i class="iconfont icon-folder"></i>
+                <span class="post-category">
+                        <a href="https://keep-zero.github.io/categories/java-react/"> java-react </a>
+                        
+                </span>
+				
+				<span id="wc" style="font-size: 1rem;text-align: center;">  共500 字|  阅读需时约 3 分|  本文总阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </div>
+    </header>
+    <div class="post-content">
+        
+
+        
+            
+        
+
+        
+        
+     
+          
+          
+          
+
+          
+          
+          
+
+          
+
+<blockquote>
+<p><strong>慢慢来比较快，虚心学技术</strong></p>
+
+<p><em>前言：在Java中的反射机制是指在运行状态中，对于任意一个类都能够知道这个类所有的属性和方法；并且对于任意一个对象，都能够调用它的任意一个方法；这种动态获取信息以及动态调用对象方法的功能成为Java语言的反射机制。</em></p>
+</blockquote>
+
+<h2 id="反射">反射</h2>
+
+<h3 id="反射的概念-是什么">反射的概念（是什么）：</h3>
+
+<p>java中的反射&mdash;&mdash;相当于<strong>对象的镜子</strong>，对象在照镜子时可以获取自身的信息，比如：属性，方法和构造器，实现接口等，而且这面镜子还可以直接调用执行java对象的方法</p>
+
+<h3 id="反射的用处-有什么用">反射的用处（有什么用）：</h3>
+
+<p>1.当接收到别人传过来的类时，可以进行解析</p>
+
+<p>2.当只有类名时，可以获取到对象的完整信息，从而执行相应处理</p>
+
+<p>多用于可配置和动态代理</p>
+
+<h3 id="java反射涉及的几个类">java反射涉及的几个类：</h3>
+
+<p><strong>java.lang. Class</strong>：反射的核心类，可以获取类的属性，方法等信息</p>
+
+<p><strong>java.lang.ClassLoader:</strong>类的加载器，用来把类(class)装载进 JVM</p>
+
+<p><strong>java.lang.reflect.Field</strong> ：类的成员变量，用来获取和设置类的属性</p>
+
+<p><strong>java.lang.reflect.Method</strong>：类的方法，用来获取类中方法的信息或调用类的方法</p>
+
+<p><strong>java.lang.reflect.Modifier</strong>：类的修饰符工具，可以用来判断类中属性或者方法的修饰级别</p>
+
+<p>为方便后续学习，事先创建一个基本类</p>
+
+<pre><code class="language-java">public class BaseEntity {
+
+    private String name;
+
+    private Integer age;
+
+    public BaseEntity(){
+        super();
+    }
+
+    public BaseEntity(String name,Integer age){
+        super();
+        this.name = name;
+        this.age = age;
+    }
+
+    private void addAge(String name,Integer age){
+        if(this.name.equals(name)){
+            this.age+=age;
+        }else{
+            System.out.println(&quot;名称不符，请核验&quot;);
+        }
+    }
+
+}
+</code></pre>
+
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="https://upload-images.jianshu.io/upload_images/1279274-03b991349e1ee87f.gif?imageMogr2/auto-orient/strip" alt="基本类BaseEntity" class="lazyload"><figcaption class="image-caption">基本类BaseEntity</figcaption></figure></p>
+
+<h2 id="class类">Class类</h2>
+
+<p>class是一个用来描述类的类，封装了当前对象所对应的类信息，我们可以通过该类获取目标对象的属性，方法等信息,还可以根据class类创建目标对象实例</p>
+
+<h3 id="获取class类">获取Class类</h3>
+
+<p>1.通过类名获取 : <strong>类名.class</strong></p>
+
+<pre><code class="language-java">Class clazz = BaseEntity.class;
+</code></pre>
+
+<p>2. 通过类全类名获取：<strong>Class.forName(全类名)&ndash;</strong>这种方式一般在开发中用的比较多，多为配置项获取实例，如最简单的JDBC获取驱动方式</p>
+
+<pre><code class="language-java">Class clazz =Class.forName(&quot;com.java.entity.BaseEntity&quot;);
+</code></pre>
+
+<p>3.通过对象实例获取</p>
+
+<pre><code class="language-java">BaseEntity baseEntity = new BaseEntity(&quot;test&quot;,50);
+
+Class clazz = baseEntity.getClass();
+</code></pre>
+
+<h3 id="获取父类class">获取父类Class</h3>
+
+<pre><code class="language-java">Class clazz = Class.forName(&quot;com.java.entity.BaseEntity&quot;);
+
+Class personClazz = sonClazz.getSuperclass();
+</code></pre>
+
+<h3 id="创建目标对象实例">创建目标对象实例</h3>
+
+<pre><code class="language-java">Object newObject = clazz.newInstance();
+</code></pre>
+
+<h2 id="类的字段field">类的字段Field</h2>
+
+<p>通过class类获取目标对象的字段对象，获取到字段对象后可以对具体对象的属性值进行读取和设置操作</p>
+
+<h3 id="获取字段列表">获取字段列表：</h3>
+
+<pre><code class="language-java">//获取基本公共字段(无法获取保护字段和父类字段)
+Field[] fields = clazz.getFields();  //结果是null，因为BaseEntity没有public字段
+
+ //获取所有字段（无法获取父类字段）
+fields = clazz.getDeclaredFields();  //结果是name和age的对应字段对象
+</code></pre>
+
+<h3 id="获取指定字段">获取指定字段</h3>
+
+<p>一般使用getDeclaredField方法获取,两种方法找不到对应字段时都会抛NoSuchFieldException异常</p>
+
+<p>方法结构如下：</p>
+
+<p>Field getField(字段名);</p>
+
+<p>Field getDeclaredField(字段名) ；</p>
+
+<pre><code class="language-java">//getField()---只能获取到公共字段
+Field field = clazz.getField(&quot;name&quot;);
+
+//getDeclaredField()----可以获取到指定字段，不管是否保护字段
+Field field = clazz.getDeclaredField(&quot;name&quot;);
+</code></pre>
+
+<h3 id="设置对象对应字段的值field-set-object-obj-object-value">设置对象对应字段的值field.set(Object obj,Object value)</h3>
+
+<p>方法结构如下：</p>
+
+<p>void set(实例对象，字段值)</p>
+
+<p>如果是保护字段，无论读取还是修改属性内容，都需要先setAccessible(true)方可操作</p>
+
+<pre><code class="language-java">//如果是保护字段，无论读取还是修改属性内容，都需要先setAccessible(true)方可操作
+field.setAccessible(true);
+
+//设置属性值
+field.set(baseEntity,&quot;base&quot;);
+</code></pre>
+
+<h3 id="获取对象对应字段的值field-get-object-obj">获取对象对应字段的值field.get(Object obj)</h3>
+
+<pre><code class="language-java">//如果是保护字段，无论读取还是修改属性内容，都需要先setAccessible(true)方可操作
+field.setAccessible(true);
+
+//获取实例baseEntity对应属性的属性值（此处获取的是name的值）
+field.get(baseEntity);        //-----------得到结果为base
+</code></pre>
+
+<h2 id="类的方法method">类的方法Method</h2>
+
+<p>通过class类获取目标对象的方法对象，获取到方法对象后可以对具体对象的方法进行调用和方法</p>
+
+<h3 id="获取方法列表">获取方法列表</h3>
+
+<p>两种方法获取都不能够获取到父类的方法，只能通过获取父类Class来简介获取父类方法</p>
+
+<pre><code class="language-java">//获取公共方法列表，无法获取保护方法
+Method[] methods = clazz.getMethods();
+
+//获取全部方法列表
+Method[] methods = clazz.getDeclaredMethods();
+</code></pre>
+
+<h3 id="获取指定方法">获取指定方法</h3>
+
+<p>两种方法的区别和获取指定对象的区别一致，方法内的参数结构如下：</p>
+
+<p>Method getMethod(&ldquo;方法名&rdquo;，方法参数类型列表)</p>
+
+<p>Method getDeclaredMethod(&ldquo;方法名&rdquo;，方法参数类型列表)</p>
+
+<pre><code class="language-java">//获取BaseEntity的addAge方法对象
+Method method = clazz.getMethod(&quot;addAge&quot;,String.class,Integer.class);
+
+Method method = clazz.getDeclaredMethod(&quot;addAge&quot;,String.class,Integer.class);
+</code></pre>
+
+<h3 id="执行指定方法-invoke-object-obj-object-args">执行指定方法  invoke(Object obj, Object&hellip; args)</h3>
+
+<p>反射执行指定方法是框架中用的比较普遍的用法，方法结构如下：</p>
+
+<p>Object invoke(具体实例对象, 参数值列表)</p>
+
+<p>如果是保护方法，执行方法前都需要先setAccessible(true)方可操作</p>
+
+<pre><code class="language-java">method.setAccessible(true);
+
+//执行调用baseEntity的addAge方法，传入参数name和age的值
+method.invoke(baseEntity, &quot;base&quot;, 12);
+
+//之后再获取baseEntity的age值看一下结果：
+Field field = clazz.getDeclaredField(&quot;age&quot;);
+
+field.setAccessible(true);
+field.get(baseEntity,&quot;age&quot;);//---------------得到结果：50+12= 62，方法执行正确
+</code></pre>
+
+<h2 id="类的修饰符工具modifier">类的修饰符工具Modifier</h2>
+
+<p>如上所述，方法和属性字段都有保护和公共之分，那么如何判断一个方法或者属性是否公共呢？java反射提供了Modifier工具类，该工具类对类和成员访问修饰符进行解码,通过判断类和成员修饰符的整数编码，判定类和成员是否保护以及修饰符类型</p>
+
+<p>Modifier类将修饰符作为整数编码代号，具体部分常量如下：</p>
+
+<pre><code class="language-java">public static final int PUBLIC  = 0x00000001;
+public static final int PRIVATE  = 0x00000002;
+public static final int PROTECTED  = 0x00000004;
+public static final int STATIC  = 0x00000008;
+public static final int FINAL  = 0x00000010;
+public static final int SYNCHRONIZED  = 0x00000020;
+</code></pre>
+
+<p>Modifier工具类提供如下静态方法判断类和成员的修饰符：</p>
+
+<pre><code class="language-java">Modifier.isPublic(int mod)
+Modifier.isPrivate(int mod)
+Modifier.isProtected(int mod)
+Modifier.isStatic(int mod)
+Modifier.isFinal(int mod)
+Modifier.isSynchronized(int mod)
+</code></pre>
+
+<p>所以，我们可以通过调用Modifier工具类的方法来判断我们的方法或者属性字段是否公共字段/方法，其中，可以使用<strong>field.getModifiers()，method.getModifiers()</strong>获取字段或方法修饰符的对应编码值</p>
+
+<pre><code class="language-java">//判断field是否公共字段
+if(!Modifier.isPublic(field.getModifiers())){
+     field.setAccessible(true);
+}
+
+field.set(baseEntity,50);
+</code></pre>
+
+<h2 id="综合使用-动态执行方法-通过传入全类名-通过传入具体对象">综合使用-动态执行方法（通过传入全类名，通过传入具体对象）</h2>
+
+<p>①依旧使用BaseEntity作为基本类操作</p>
+
+<p>②创建ClassUtil类，作为工具类</p>
+
+<pre><code class="language-java">public class ClassUtil {
+
+    /**
+     * 执行方法
+     *
+     * @param className 目标class名称
+     * @param methodName 目标方法名称
+     * @param args 执行目标方法所需要的参数值
+     * @return java.lang.Object 执行目标方法后的返回值
+     *
+     * @author *** 2019/2/15
+     * @version 1.0
+     **/
+    public static Object invoke(String className,String methodName,Object ...args){
+        Class clazz = null;
+        Class[] parementerType = new Class[args.length];
+
+        try {
+            //通过传入的class路径反射class
+            clazz = Class.forName(className);
+
+            for(int i=0;i&lt;args.length;i++){
+                parementerType[i] = args[i].getClass();
+            }
+
+            //获取要执行的目标方法对象
+            Method method = clazz.getDeclaredMethod(methodName,parementerType);
+
+            System.out.println(&quot;执行方法:&quot;+method.getName());
+
+            //开启权限，执行方法
+            method.setAccessible(true);
+            return method.invoke(clazz.newInstance(),args);
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    /**
+     * 执行方法
+     *
+     * @param obj 要执行方法的对象
+     * @param methodName 要执行的目标方法
+     * @param args 要执行目标方法需要的参数
+     *
+     * @return java.lang.Object 执行目标方法需要的参数值
+     *
+     * @author *** 2019/2/15
+     * @version 1.0
+     **/
+    public static Object invoke(Object obj,String methodName,Object ...args){
+
+        Class clazz = null;
+        Class[] parementerType = new Class[args.length];
+
+        try {
+            //通过传入的class路径反射class
+            clazz = obj.getClass();
+
+            for (int i = 0; i &lt; args.length; i++) {
+                parementerType[i] = args[i].getClass();
+            }
+
+            //获取要执行的目标方法对象
+            Method method = clazz.getDeclaredMethod(methodName, parementerType);
+
+            System.out.println(&quot;执行方法:&quot; + method.getName());
+
+            //开启权限，执行方法
+            method.setAccessible(true);
+            return method.invoke(obj, args);
+
+        }catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+}
+</code></pre>
+
+<p>③综合测试</p>
+
+<pre><code class="language-javascript">//传入全类名调用方法
+ClassUtil.invoke(&quot;com.java.entity.BaseEntity&quot;,&quot;setAge&quot;,123);
+
+//传入具体对象调用方法
+BaseEntity baseEntity = new BaseEntity();
+ClassUtil.invoke(baseEntity,&quot;setAge&quot;,123);
+System.out.println(baseEntity.getAge());
+</code></pre>
+
+<h2 id="总结">总结</h2>
+
+<p>1.java反射-对象在照镜子时可以获取自身的信息，比如：属性，方法和构造器，实现接口等，而且这面镜子还可以直接调用执行java对象的方法</p>
+
+<p>2.java反射的主要类为Class,ClassLoader,Field,Method,Modifier</p>
+
+<p>3.Class类是一个用来描述类的类，封装了当前对象所对应的类信息，我们可以通过该类获取目标对象的属性，方法等信息,还可以根据class类创建目标对象实例</p>
+
+<p>4.Field类，通过class类获取目标对象的字段对象，获取到字段对象后可以对具体对象的属性值进行读取和设置操作。对于保护的字段的读取和更改，需要先调用setAccessible(true)方法。</p>
+
+<p>5.Method类，通过class类获取目标对象的方法对象，获取到方法对象后可以对具体对象的方法进行调用和方法。对于保护的方法执行，需要先调用setAccessible(true)方法。</p>
+
+<p>6.java反射提供了一个专门封装了类和类的成员修饰符的工具类Modifier，用于判断类与类的成员的修饰符。其底层使用的是修饰符整数编码，本人认为与日志级别的设计思想一致，值得学习</p>
+
+<h2 id="参考文档">参考文档</h2>
+
+<p>【1】java编程思想</p>
+
+<p>【2】<a href="https://www.cnblogs.com/tech-bird/p/3525336.html" rel="nofollow noreferrer" target="_blank">https://www.cnblogs.com/tech-bird/p/3525336.html</a></p>
+
+    </div>
+
+    <div class="post-copyright">
+             
+            <p class="copyright-item">
+                <span>Author:</span>
+                <span>GF.L </span>
+                </p>
+            
+           
+             
+            <p class="copyright-item">
+                    <span>Link:</span>
+                    <a href=https://keep-zero.github.io/2019/java_react01/>https://keep-zero.github.io/2019/java_react01/</span>
+            </p>
+            
+             
+            <p class="copyright-item lincese">
+                本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可
+            </p>
+            
+    </div>
+
+  
+    <div class="post-tags">
+        
+            <section>
+            <i class="iconfont icon-tag"></i>Tag(s): 
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/java/">
+                    #java</a></span>
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/java-react/">
+                    #java-react</a></span>
+            
+            </section>
+        
+        <section>
+                <a href="javascript:window.history.back();">back</a></span> · 
+                <span><a href="https://keep-zero.github.io">home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+        
+        <a href="https://keep-zero.github.io/2019/java_log06/" class="prev" rel="prev" title="java日志篇（6）-slf4j"><i class="iconfont icon-left"></i>&nbsp;java日志篇（6）-slf4j</a>
+         
+        
+        <a href="https://keep-zero.github.io/2019/java_react02/" class="next" rel="next" title="java学习笔记-反射(2)-ClassLoader">java学习笔记-反射(2)-ClassLoader&nbsp;<i class="iconfont icon-right"></i></a>
+        
+    </div>
+
+    <div class="post-comment">
+          
+                 
+          
+    </div>
+</article>
+          </div>
+		   </main>
+      <footer class="footer">
+    <div class="copyright">
+        &copy;
+        
+        <span itemprop="copyrightYear">2011 - 2019</span>
+        
+        <span class="with-love">
+    	 <i class="iconfont icon-love"></i> 
+        </span>
+         
+            <span class="author" itemprop="copyrightHolder"><a href="https://keep-zero.github.io">GF.L</a> | </span> 
+         
+
+         
+		  <span>Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow">Hugo</a> & <a href="https://github.com/liuzc/leaveit" target="_blank" rel="external nofollow">LeaveIt</a></span> 
+		<span id="busuanzi_container_site_pv">
+			本站访问量：<span id="busuanzi_value_site_pv"></span>次
+		</span>
+		&nbsp;
+		<span id="busuanzi_container_site_uv">
+			您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者
+		</span>
+    </div>
+</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+    
+     <link href="//lib.baomitu.com/lightgallery/1.6.11/css/lightgallery.min.css" rel="stylesheet">  
+      
+     <script src="/js/vendor_gallery.min.js" async="" ></script>
+    
+  
+
+
+
+     </div>
+  </body>
+</html>

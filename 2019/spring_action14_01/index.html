@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noodp"/>
+  <meta name="author" content="GF.L">
+  
+  
+  
+  <link rel="prev" href="https://keep-zero.github.io/2019/spring_action13_02/" />
+  <link rel="next" href="https://keep-zero.github.io/2019/spring_action14_02/" />
+  <link rel="canonical" href="https://keep-zero.github.io/2019/spring_action14_01/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <title>
+       
+       
+           《Spring实战》-第十四章：保护方法（Security）（1）-使用注解保护方法 | Keep Zero
+       
+  </title>
+  <meta name="title" content="《Spring实战》-第十四章：保护方法（Security）（1）-使用注解保护方法 | Keep Zero">
+    
+  
+  <link rel="stylesheet" href="/font/iconfont.css">
+  <link rel="stylesheet" href="/css/main.min.css">
+
+
+  
+  
+ 
+
+<script type="application/ld+json">
+ "@context" : "http://schema.org",
+    "@type" : "BlogPosting",
+    "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "https:\/\/keep-zero.github.io"
+    },
+    "articleSection" : "posts",
+    "name" : "《Spring实战》-第十四章：保护方法（Security）（1）-使用注解保护方法",
+    "headline" : "《Spring实战》-第十四章：保护方法（Security）（1）-使用注解保护方法",
+    "description" : "慢来比较快，虚心学技术\n尽管Spring Security为我们提供了Web层的安全保护，我们依旧有可能会疏忽而导致用户通过正常访问路径访问到不应该访问的方法，所以除了在web层实施保护以外，我们还需要给底层的方法施加保护层。这样就能保证如果用户不具备权限的话，就无法执行相应的逻辑\n Spring Security 提供了三种不同的安全注解：\n Spring Security 自带的 @Secured 注解； JSR-250 的 @RolesAllowed 注解； 表达式驱动的注解，包括 @PreAuthorize 、 @PostAuthorize 、 @PreFilter 和 @PostFilter 。  其中，@Secured 和 @RolesAllowed 方案非常类似，能够基于用户所授予的权限限制对方法的访问\n基础环境：(详细配置解释请参考第九章文章)\n\x26lt;!--定义spring版本信息--\x26gt; \x26lt;properties\x26gt; \x26lt;org.springframework.version\x26gt;5.1.3.RELEASE\x26lt;\/org.springframework.version\x26gt; \x26lt;spring.security.version\x26gt;5.1.3.RELEASE\x26lt;\/spring.security.version\x26gt; \x26lt;\/properties\x26gt; \x26lt;dependencies\x26gt; \x26lt;dependency\x26gt; \x26lt;groupId\x26gt;junit\x26lt;\/groupId\x26gt; \x26lt;artifactId\x26gt;junit\x26lt;\/artifactId\x26gt; \x26lt;version\x26gt;4.12\x26lt;\/version\x26gt; \x26lt;scope\x26gt;test\x26lt;\/scope\x26gt; \x26lt;\/dependency\x26gt; \x26lt;!-- servlet --\x26gt; \x26lt;dependency\x26gt; \x26lt;groupId\x26gt;javax.servlet\x26lt;\/groupId\x26gt; \x26lt;artifactId\x26gt;javax.servlet-api\x26lt;\/artifactId\x26gt; \x26lt;version\x26gt;3.1.0\x26lt;\/version\x26gt; \x26lt;scope\x26gt;provided\x26lt;\/scope\x26gt; \x26lt;\/dependency\x26gt; \x26lt;!-- jstl --\x26gt; \x26lt;dependency\x26gt; \x26lt;groupId\x26gt;jstl\x26lt;\/groupId\x26gt; \x26lt;artifactId\x26gt;jstl\x26lt;\/artifactId\x26gt; \x26lt;version\x26gt;1.2\x26lt;\/version\x26gt; \x26lt;\/dependency\x26gt; \x26lt;!--lombok引入，用于精简代码，bean类使用注解默认携带setter和getter方法等--\x26gt; \x26lt;dependency\x26gt; \x26lt;groupId\x26gt;org.projectlombok\x26lt;\/groupId\x26gt; \x26lt;artifactId\x26gt;lombok\x26lt;\/artifactId\x26gt; \x26lt;version\x26gt;1.18.4\x26lt;\/version\x26gt; \x26lt;\/dependency\x26gt; \x26lt;!-- Spring基础框架引入 --\x26gt; \x26lt;dependency\x26gt; \x26lt;groupId\x26gt;org.",
+    "inLanguage" : "en-us",
+    "author" : "GF.L",
+    "creator" : "GF.L",
+    "publisher": "GF.L",
+    "accountablePerson" : "GF.L",
+    "copyrightHolder" : "GF.L",
+    "copyrightYear" : "2019",
+    "datePublished": "2019-09-01 11:53:04 \x2b0800 CST",
+    "dateModified" : "2019-09-01 11:53:04 \x2b0800 CST",
+    "url" : "https:\/\/keep-zero.github.io\/2019\/spring_action14_01\/",
+    "wordCount" : "910",
+    "keywords" : [ "java","spring","spring-action", "Keep Zero"]
+}
+</script>
+
+</head>
+
+  
+
+
+  <body class="">
+    <div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo">
+        	<a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a>
+        </div>
+        <div class="menu navbar-right">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+<nav class="navbar-mobile" id="nav-mobile" style="display: none">
+     <div class="container">
+        <div class="navbar-header">
+            <div>  <a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a></div>
+            <div class="menu-toggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+     
+          <div class="menu" id="mobile-menu">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+    	 <main class="main">
+          <div class="container">
+      		
+<article class="post-warp" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">《Spring实战》-第十四章：保护方法（Security）（1）-使用注解保护方法</h1>
+        <div class="post-meta">
+                Written by <a itemprop="name" href="https://keep-zero.github.io" rel="author">GF.L</a> with ♥ 
+                <span class="post-time">
+                on <time datetime=2019-09-01 itemprop="datePublished">September 1, 2019</time>
+                </span>
+                in
+                <i class="iconfont icon-folder"></i>
+                <span class="post-category">
+                        <a href="https://keep-zero.github.io/categories/spring/"> spring </a>
+                        
+                </span>
+				
+				<span id="wc" style="font-size: 1rem;text-align: center;">  共1000 字|  阅读需时约 5 分|  本文总阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </div>
+    </header>
+    <div class="post-content">
+        
+
+        
+            
+        
+
+        
+        
+     
+          
+          
+          
+
+          
+          
+          
+
+          
+
+<blockquote>
+<p><strong>慢来比较快，虚心学技术</strong></p>
+
+<p>尽管Spring Security为我们提供了Web层的安全保护，我们依旧有可能会疏忽而导致用户通过正常访问路径访问到不应该访问的方法，所以除了在web层实施保护以外，我们还需要给底层的方法施加保护层。这样就能保证如果用户不具备权限的话，就无法执行相应的逻辑</p>
+</blockquote>
+
+<p>Spring Security 提供了三种不同的安全注解：</p>
+
+<ol>
+<li>Spring Security 自带的 <strong>@Secured</strong> 注解；</li>
+<li>JSR-250 的 <strong>@RolesAllowed</strong> 注解；</li>
+<li>表达式驱动的注解，包括 <strong>@PreAuthorize 、 @PostAuthorize 、 @PreFilter 和 @PostFilter</strong> 。</li>
+</ol>
+
+<p>其中，<strong>@Secured</strong> 和 <strong>@RolesAllowed</strong> 方案非常类似，能够基于用户所授予的权限限制对方法的访问</p>
+
+<p>基础环境：(详细配置解释请参考第九章文章)</p>
+
+<pre><code class="language-java">&lt;!--定义spring版本信息--&gt;
+&lt;properties&gt;
+    &lt;org.springframework.version&gt;5.1.3.RELEASE&lt;/org.springframework.version&gt;
+    &lt;spring.security.version&gt;5.1.3.RELEASE&lt;/spring.security.version&gt;
+&lt;/properties&gt;
+
+&lt;dependencies&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;junit&lt;/groupId&gt;
+        &lt;artifactId&gt;junit&lt;/artifactId&gt;
+        &lt;version&gt;4.12&lt;/version&gt;
+        &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- servlet --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;javax.servlet&lt;/groupId&gt;
+        &lt;artifactId&gt;javax.servlet-api&lt;/artifactId&gt;
+        &lt;version&gt;3.1.0&lt;/version&gt;
+        &lt;scope&gt;provided&lt;/scope&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- jstl --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;jstl&lt;/groupId&gt;
+        &lt;artifactId&gt;jstl&lt;/artifactId&gt;
+        &lt;version&gt;1.2&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;!--lombok引入，用于精简代码，bean类使用注解默认携带setter和getter方法等--&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;
+        &lt;artifactId&gt;lombok&lt;/artifactId&gt;
+        &lt;version&gt;1.18.4&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;!--    Spring基础框架引入   --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-core&lt;/artifactId&gt;
+        &lt;version&gt;${org.springframework.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-context&lt;/artifactId&gt;
+        &lt;version&gt;${org.springframework.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-test&lt;/artifactId&gt;
+        &lt;version&gt;${org.springframework.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-aop&lt;/artifactId&gt;
+        &lt;version&gt;${org.springframework.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.aspectj&lt;/groupId&gt;
+        &lt;artifactId&gt;aspectjweaver&lt;/artifactId&gt;
+        &lt;version&gt;1.8.13&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- Spring MVC --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt;
+        &lt;version&gt;${org.springframework.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;!--     Spring Security依赖       --&gt;
+    &lt;!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-core --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.security&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-security-core&lt;/artifactId&gt;
+        &lt;version&gt;${spring.security.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-web --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.security&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-security-web&lt;/artifactId&gt;
+        &lt;version&gt;${spring.security.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-com.my.spring.config --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.security&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-security-config&lt;/artifactId&gt;
+        &lt;version&gt;${spring.security.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;
+</code></pre>
+
+<p><strong>配置web环境</strong></p>
+
+<ul>
+<li><p>配置SpringMVC默认<strong>DispatcherServlet</strong>类</p>
+
+<pre><code class="language-java">public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
+
+private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+/*AbstractAnnotationConfigDispatcherServletInitializer 会同时创
+建 DispatcherServlet 和 ContextLoaderListener 。 GetServlet-ConfigClasses() 方法返回的带有 @Configuration 注解的
+类将会用来定义 DispatcherServlet 应用上下文中的 bean 。 getRootConfigClasses() 方法返回的带有 @Configuration 注解的类将
+会用来配置 ContextLoaderListener 创建的应用上下文中的 bean 。*/
+
+@Override
+protected Class&lt;?&gt;[] getRootConfigClasses() {
+    return new Class[]{RootConfig.class};
+}
+
+@Override
+protected Class&lt;?&gt;[] getServletConfigClasses() {
+    return new Class[]{WebConfig.class};
+}
+
+@Override
+protected String[] getServletMappings() {
+    logger.debug(&quot;DispatcherServlet获取匹配的前端控制器。。。。。。&quot;);
+    return new String[]{&quot;/&quot;};
+}
+}
+</code></pre></li>
+
+<li><p>创建Spring Security的<strong>DelegatingFilterProxy</strong>,自动加载<strong>springSecurityFilterChain</strong></p>
+
+<pre><code class="language-java">/**
+*  拦截发往应用中的请求，并将请求委托给 ID 为 springSecurityFilterChain的bean
+*  springSecurityFilterChain 本身是另一个特殊的 Filter,它也被称为 FilterChainProxy.它可以链接任意一个或多个其他的 Filter。
+*  Spring Security 依赖一系列 Servlet Filter 来提供不同的安全特性。
+**/
+public class SpringSecurityInitializer extends AbstractSecurityWebApplicationInitializer {}
+</code></pre></li>
+
+<li><p>配置SpringMVC的根配置和Web配置</p>
+
+<pre><code class="language-java">@Configuration
+@ComponentScan(basePackages ={&quot;com.my.spring&quot;},excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION,value = {EnableWebMvc.class})})
+public class RootConfig {
+}
+
+@EnableWebMvc
+@Configuration
+@ComponentScan(basePackages = {&quot;com.my.spring.controller&quot;})
+@Import(SecurityConfig.class)//引入Spring Security的配置
+public class WebConfig extends WebMvcConfigurationSupport {
+
+/**
+ * 定义一个视图解析器
+ *
+ * @return org.springframework.web.servlet.ViewResolver
+ *
+ * @author lai.guanfu 2019/3/5
+ * @version 1.0
+ **/
+@Bean
+public ViewResolver viewResolver(){
+    InternalResourceViewResolver resourceViewResolver = new InternalResourceViewResolver();
+    resourceViewResolver.setPrefix(&quot;/WEB-INF/view/&quot;);
+    resourceViewResolver.setSuffix(&quot;.jsp&quot;);
+    resourceViewResolver.setExposeContextBeansAsAttributes(true);
+    resourceViewResolver.setViewClass(JstlView.class);
+    return resourceViewResolver;
+}
+
+@Override
+protected void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
+    configurer.enable();
+}
+}
+</code></pre></li>
+
+<li><p>SecurityConfig.java:开启Spring Security并配置基本拦截和用户信息,增加两个用户</p>
+
+<pre><code class="language-java">@Configuration
+@EnableWebSecurity//启用Spring Security
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+/**
+ * 设置拦截路径
+ * @param http
+ * @throws Exception
+ */
+@Override
+protected void configure(HttpSecurity http) throws Exception {
+    http.authorizeRequests()
+            //配置拦截路径以及认证通过的身份，此处指定访问/user/**的请求会被拦截认证，必须以DBA或者ADMIN的身份登录
+            .antMatchers(&quot;/user/**&quot;).access(&quot;hasAnyRole('ROLE_DBA','ROLE_ADMIN')&quot;)
+            //表明除了上述路径需要拦截认证外，其余路径全部不进行认证
+            .anyRequest().permitAll()
+            //add()方法用于连接各种配置指令
+            .and() 
+            //当重写configure(HttpSecurity http)方法后，将失去Spring Security的默认登录页，可以使用formLogin()重新启用
+            .formLogin();
+}
+
+/**
+ * 使用内存设置基本人物信息
+ * @param auth
+ * @throws Exception
+ */
+@Autowired
+public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+    //使用内存添加用户名及登陆密码和身份，使用指定编码器对密码进行编码
+    auth.inMemoryAuthentication().passwordEncoder(new BCryptPasswordEncoder()).withUser(&quot;admin&quot;).password(new BCryptPasswordEncoder().encode(&quot;123456&quot;)).roles(&quot;ADMIN&quot;);
+    auth.inMemoryAuthentication().passwordEncoder(new BCryptPasswordEncoder()).withUser(&quot;dba&quot;).password(new BCryptPasswordEncoder().encode(&quot;123456&quot;)).roles(&quot;DBA&quot;);
+
+    //Spring Security 5.0之前的写法，5.0之后，如果没有指定密码编码器，将会报There is no PasswordEncoder mapped for the id &quot;null&quot;的错
+    /*auth.inMemoryAuthentication().withUser(&quot;admin&quot;).password(&quot;123456&quot;).roles(&quot;ADMIN&quot;);
+    auth.inMemoryAuthentication().withUser(&quot;dba&quot;).password(&quot;123456&quot;).roles(&quot;DBA&quot;);*/
+}
+}
+</code></pre></li>
+
+<li><p>编写基本类</p>
+
+<pre><code class="language-java">@Data//lombok注解，默认编译生成setter和getter方法
+public class User {
+/**
+ * 用户名
+ **/
+private String userName;
+
+/**
+ * 密码
+ **/
+private String password;
+
+/**
+ * 年龄
+ **/
+private Integer age;
+}
+</code></pre></li>
+
+<li><p>编写基本dao，此处为方便起见，不实现jdbc</p>
+
+<pre><code class="language-java">@Repository
+public class BaseDao {
+
+/**
+ * 根据用户名获取用户
+ * @param userName
+ * @return
+ */
+public User get(String userName) {
+    System.out.println(&quot;获取用户&quot;);
+    User user = new User();
+    user.setUserName(userName);
+    return user;
+}
+
+/**
+ * 根据用户名删除用户
+ * @return
+ */
+public void delete() {
+    System.out.println(&quot;删除用户！！！&quot;);
+}
+
+/**
+ * 保存用户
+ * @param user
+ * @return
+ */
+public User save(User user) {
+    return user;
+}
+}
+</code></pre></li>
+
+<li><p>编写基本Service接口和实现类</p>
+
+<pre><code class="language-java">public interface BaseService {
+
+/**
+ * 获取管理员信息
+ * @return
+ */
+User getAdmin();
+
+/**
+ * 获取DBA用户信息
+ * @return
+ */
+User getDBA();
+
+/**
+ * 删除用户
+ */
+void deleteUser();
+
+/**
+ * 添加用户
+ * @param user
+ * @return
+ */
+User addUser(User user);
+}
+
+@Component
+public class BaseServiceImpl implements BaseService {
+
+@Autowired
+private BaseDao baseDao;
+
+@Override
+public User getAdmin() {
+    return this.baseDao.get(&quot;admin&quot;);
+}
+
+@Override
+public User getDBA() {
+    return this.baseDao.get(&quot;dba&quot;);
+}
+
+@Override
+public void deleteUser() {
+    this.baseDao.delete();
+}
+
+@Override
+public User addUser(User user) {
+    return this.baseDao.save(user);
+}
+}
+</code></pre></li>
+
+<li><p>编写基本controller</p>
+
+<pre><code class="language-java">@Controller
+public class MyController{
+
+@Autowired
+private BaseService baseService;
+
+@RequestMapping(value = {&quot;/user/getAdmin&quot;},method = RequestMethod.GET)
+public ModelAndView getAdmin(){
+    ModelAndView model = new ModelAndView();
+    User admin = this.baseService.getAdmin();
+    model.addObject(&quot;user&quot;,admin);
+    model.setViewName(&quot;showUserMessage&quot;);
+    return model;
+}
+
+@RequestMapping(value = {&quot;/user/getDBA&quot;},method = RequestMethod.GET)
+public ModelAndView getDBA(){
+    ModelAndView model = new ModelAndView();
+    User dba = this.baseService.getDBA();
+    model.addObject(&quot;user&quot;,dba);
+    model.setViewName(&quot;showUserMessage&quot;);
+    return model;
+}
+
+@RequestMapping(&quot;/user/userForm&quot;)
+public String login(){
+    return &quot;userForm&quot;;
+}
+
+@RequestMapping(value = {&quot;/user/addUser&quot;})
+public ModelAndView addUser(User user){
+    ModelAndView model = new ModelAndView();
+    User temp = this.baseService.addUser(user);
+    model.addObject(&quot;user&quot;,temp);
+    model.setViewName(&quot;showUserMessage&quot;);
+    return model;
+}
+
+@RequestMapping(value = {&quot;/user/deleteUser&quot;})
+public ModelAndView deleteUser(){
+    ModelAndView model = new ModelAndView();
+    this.baseService.deleteUser();
+    model.addObject(&quot;message&quot;,&quot;删除成功！！！&quot;);
+    model.setViewName(&quot;showUserMessage&quot;);
+    return model;
+}
+}
+</code></pre></li>
+
+<li><p>编写基本视图</p>
+
+<pre><code class="language-java">/userForm.jsp
+
+&lt;%@ page contentType=&quot;text/html;charset=UTF-8&quot; language=&quot;java&quot; %&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;新增用户&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;form method=&quot;get&quot; action=&quot;./user/addUser&quot;&gt;
+    &lt;label&gt;用户名：&lt;/label&gt;&lt;input type=&quot;text&quot; name=&quot;userName&quot;&gt;
+    &lt;label&gt;密码：&lt;/label&gt;&lt;input type=&quot;password&quot; name=&quot;password&quot;&gt;
+    &lt;label&gt;年龄：&lt;/label&gt;&lt;input type=&quot;text&quot; name=&quot;age&quot;&gt;
+    &lt;button type=&quot;submit&quot;&gt;提交&lt;/button&gt;
+&lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+
+/showUserMessage.jsp
+&lt;%@ page contentType=&quot;text/html;charset=UTF-8&quot; language=&quot;java&quot; %&gt;
+&lt;%@ taglib prefix=&quot;c&quot; uri=&quot;http://java.sun.com/jsp/jstl/core&quot; %&gt;
+&lt;%@ page isELIgnored=&quot;false&quot; %&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;用户信息页&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;c:if test=&quot;${user != null}&quot;&gt;
+&lt;label&gt;您获取到的用户名字为：&lt;/label&gt;&lt;span style=&quot;font-size: large&quot;&gt;${user.userName}&lt;/span&gt;
+&lt;/c:if&gt;
+&lt;c:if test=&quot;${user == null}&quot;&gt;
+&lt;span&gt;${message}&lt;/span&gt;
+&lt;/c:if&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre></li>
+</ul>
+
+<p>其基本目录结构如下：</p>
+
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/spring-action/spring_action_14_01_01.jpg" alt="" class="lazyload"><figcaption class="image-caption"></figcaption></figure>
+执行简单测试：</p>
+
+<p>访问/user/getAdmin,使用dba进行登录</p>
+
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/spring-action/spring_action_14_01_02.jpg" alt="" class="lazyload"><figcaption class="image-caption"></figcaption></figure></p>
+
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/spring-action/spring_action_14_01_03.jpg" alt="" class="lazyload"><figcaption class="image-caption"></figcaption></figure></p>
+
+<p>访问/user/getDBA，使用admin进行登录</p>
+
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/spring-action/spring_action_14_01_04.jpg" alt="" class="lazyload"><figcaption class="image-caption"></figcaption></figure></p>
+
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/spring-action/spring_action_14_01_05.jpg" alt="" class="lazyload"><figcaption class="image-caption"></figcaption></figure></p>
+
+<p>可以看到，无论是amdin还是dba用户，只要具备/user/**的访问权限，就可以对路径内的方法拥有畅通的访问，这显然不是我们所允许的。</p>
+
+<h2 id="ⅰ-secured注解实现方法访问权限限制"><strong>Ⅰ、@Secured注解实现方法访问权限限制</strong></h2>
+
+<p>要使用<strong>@Secured</strong>之前，我们需要先开启Security的方法权限配置：<strong>@EnableGlobalMethodSecurity(securedEnabled = true)&amp;GlobalMethodSecurityConfiguration</strong></p>
+
+<p>如果 securedEnabled 属性的值为 true 的话，将会创建一个切点，这样的话 Spring Security 切面就会包装带有 @Secured 注解的方法</p>
+
+<pre><code class="language-java">@Configuration
+@EnableGlobalMethodSecurity(securedEnabled = true)//开启全局方法权限控制
+public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
+}
+</code></pre>
+
+<p>接下来，为Service添加方法权限控制-<strong>@Secured(value = {})</strong></p>
+
+<p><strong>@Secured</strong> 注解会使用一个 String 数组作为参数。每个 String 值是一个权限，调用这个方法至少需要具备其中的一个权限：</p>
+
+<p>如下面的getAdmin方法只允许具备ROLE_ADMIN身份的用户访问，也就是admin</p>
+
+<p>而getDBA方法则允许具备ROLE_ADMIN或者ROLE_DBA身份的用户访问，依此类推</p>
+
+<pre><code class="language-java">@Component
+public class BaseServiceImpl implements BaseService {
+
+    @Autowired
+    private BaseDao baseDao;
+
+    @Override
+    @Secured(value = {&quot;ROLE_ADMIN&quot;})
+    public User getAdmin() {
+        return this.baseDao.get(&quot;admin&quot;);
+    }
+
+    @Override
+    @Secured(value = {&quot;ROLE_ADMIN&quot;,&quot;ROLE_DBA&quot;})
+    public User getDBA() {
+        return this.baseDao.get(&quot;dba&quot;);
+    }
+
+    @Override
+    @Secured(value = {&quot;ROLE_ADMIN&quot;})
+    public void deleteUser() {
+        this.baseDao.delete();
+    }
+
+    @Override
+    @Secured(value = {&quot;ROLE_ADMIN&quot;,&quot;ROLE_DBA&quot;})
+    public User addUser(User user) {
+        return this.baseDao.save(user);
+    }
+}
+</code></pre>
+
+<p>测试结果：</p>
+
+<p>使用admin身份访问/user/getAdmin，允许访问</p>
+
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/spring-action/spring_action_14_01_06.jpg" alt="" class="lazyload"><figcaption class="image-caption"></figcaption></figure></p>
+
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/spring-action/spring_action_14_01_07.jpg" alt="" class="lazyload"><figcaption class="image-caption"></figcaption></figure></p>
+
+<p>使用admin身份访问/user/deleteUser，允许访问</p>
+
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/spring-action/spring_action_14_01_08.jpg" alt="" class="lazyload"><figcaption class="image-caption"></figcaption></figure></p>
+
+<p>使用dba身份访问/user/getAdmin,权限不足</p>
+
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/spring-action/spring_action_14_01_09.jpg" alt="" class="lazyload"><figcaption class="image-caption"></figcaption></figure></p>
+
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/spring-action/spring_action_14_01_10.jpg" alt="" class="lazyload"><figcaption class="image-caption"></figcaption></figure></p>
+
+<p>使用dba身份访问/user/deleteUser,权限不足</p>
+
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/spring-action/spring_action_14_01_11.jpg" alt="" class="lazyload"><figcaption class="image-caption"></figcaption></figure></p>
+
+<p>可以看到，即便dba拥有对/user/**路径的完全访问权限，依旧无法访问受限方法，方法保护成功</p>
+
+<h2 id="ⅱ-rolesallowed-注解实现方法访问权限限制">Ⅱ、 @RolesAllowed 注解实现方法访问权限限制</h2>
+
+<p>@<strong>RolesAllowed</strong> 注解和 @Secured 注解在各个方面基本上都是一致的。唯一显著的区别在于 @RolesAllowed 是 JSR-250 定义的 Java 标准注解</p>
+
+<p>两者使用上的区别在于注解名称和@EnableGlobalMethodSecurity()开启的方式</p>
+
+<p>①引入maven依赖</p>
+
+<pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;javax.annotation&lt;/groupId&gt;
+    &lt;artifactId&gt;jsr250-api&lt;/artifactId&gt;
+    &lt;version&gt;1.0&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+
+<p>②更改<strong>MethodSecurityConfig</strong>，开启jsr250Enabled 支持，值得注意的是，此处实际上可以同时使用securedEnabled和jsr250Enabled，两者并不冲突</p>
+
+<pre><code class="language-java">@Configuration
+@EnableGlobalMethodSecurity(jsr250Enabled = true)
+public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
+}
+</code></pre>
+
+<p>③更改目标方法使用的注解</p>
+
+<pre><code class="language-java">@Component
+public class BaseServiceImpl implements BaseService {
+
+    @Autowired
+    private BaseDao baseDao;
+
+    @Override
+    @RolesAllowed(value = {&quot;ROLE_ADMIN&quot;})
+    public User getAdmin() {
+        return this.baseDao.get(&quot;admin&quot;);
+    }
+
+    @Override
+    @RolesAllowed(value = {&quot;ROLE_ADMIN&quot;,&quot;ROLE_DBA&quot;})
+    public User getDBA() {
+        return this.baseDao.get(&quot;dba&quot;);
+    }
+
+    @Override
+    @RolesAllowed(value = {&quot;ROLE_ADMIN&quot;})
+    public void deleteUser() {
+        this.baseDao.delete();
+    }
+
+    @Override
+    @RolesAllowed(value = {&quot;ROLE_ADMIN&quot;,&quot;ROLE_DBA&quot;})
+    public User addUser(User user) {
+        return this.baseDao.save(user);
+    }
+}
+</code></pre>
+
+<p>④执行测试</p>
+
+<p>使用admin登录，访问/user/getAdmin，允许访问</p>
+
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/spring-action/spring_action_14_01_12.jpg" alt="" class="lazyload"><figcaption class="image-caption"></figcaption></figure></p>
+
+<p>使用admin登录，访问/user/deleteUser，允许访问</p>
+
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/spring-action/spring_action_14_01_13.jpg" alt="" class="lazyload"><figcaption class="image-caption"></figcaption></figure>
+使用dba登录，访问/user/getAdmin，访问受限</p>
+
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/spring-action/spring_action_14_01_14.jpg" alt="" class="lazyload"><figcaption class="image-caption"></figcaption></figure>
+使用dba登录，访问/user/deleteUser，访问受限</p>
+
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/spring-action/spring_action_14_01_15.jpg" alt="" class="lazyload"><figcaption class="image-caption"></figcaption></figure></p>
+
+    </div>
+
+    <div class="post-copyright">
+             
+            <p class="copyright-item">
+                <span>Author:</span>
+                <span>GF.L </span>
+                </p>
+            
+           
+             
+            <p class="copyright-item">
+                    <span>Link:</span>
+                    <a href=https://keep-zero.github.io/2019/spring_action14_01/>https://keep-zero.github.io/2019/spring_action14_01/</span>
+            </p>
+            
+             
+            <p class="copyright-item lincese">
+                本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可
+            </p>
+            
+    </div>
+
+  
+    <div class="post-tags">
+        
+            <section>
+            <i class="iconfont icon-tag"></i>Tag(s): 
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/java/">
+                    #java</a></span>
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/spring/">
+                    #spring</a></span>
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/spring-action/">
+                    #spring-action</a></span>
+            
+            </section>
+        
+        <section>
+                <a href="javascript:window.history.back();">back</a></span> · 
+                <span><a href="https://keep-zero.github.io">home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+        
+        <a href="https://keep-zero.github.io/2019/spring_action13_02/" class="prev" rel="prev" title="《Spring实战》-第十三章：缓存数据（2）-在方法上使用缓存"><i class="iconfont icon-left"></i>&nbsp;《Spring实战》-第十三章：缓存数据（2）-在方法上使用缓存</a>
+         
+        
+        <a href="https://keep-zero.github.io/2019/spring_action14_02/" class="next" rel="next" title="《Spring实战》-第十四章：保护方法（Security）（2）-使用表达式增强方法保护">《Spring实战》-第十四章：保护方法（Security）（2）-使用表达式增强方法保护&nbsp;<i class="iconfont icon-right"></i></a>
+        
+    </div>
+
+    <div class="post-comment">
+          
+                 
+          
+    </div>
+</article>
+          </div>
+		   </main>
+      <footer class="footer">
+    <div class="copyright">
+        &copy;
+        
+        <span itemprop="copyrightYear">2011 - 2019</span>
+        
+        <span class="with-love">
+    	 <i class="iconfont icon-love"></i> 
+        </span>
+         
+            <span class="author" itemprop="copyrightHolder"><a href="https://keep-zero.github.io">GF.L</a> | </span> 
+         
+
+         
+		  <span>Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow">Hugo</a> & <a href="https://github.com/liuzc/leaveit" target="_blank" rel="external nofollow">LeaveIt</a></span> 
+		<span id="busuanzi_container_site_pv">
+			本站访问量：<span id="busuanzi_value_site_pv"></span>次
+		</span>
+		&nbsp;
+		<span id="busuanzi_container_site_uv">
+			您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者
+		</span>
+    </div>
+</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+    
+     <link href="//lib.baomitu.com/lightgallery/1.6.11/css/lightgallery.min.css" rel="stylesheet">  
+      
+     <script src="/js/vendor_gallery.min.js" async="" ></script>
+    
+  
+
+
+
+     </div>
+  </body>
+</html>

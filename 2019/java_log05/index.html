@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noodp"/>
+  <meta name="author" content="GF.L">
+  
+  
+  
+  <link rel="prev" href="https://keep-zero.github.io/2019/java_log04/" />
+  <link rel="next" href="https://keep-zero.github.io/2019/java_log06/" />
+  <link rel="canonical" href="https://keep-zero.github.io/2019/java_log05/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <title>
+       
+       
+           java日志篇（5）-logback | Keep Zero
+       
+  </title>
+  <meta name="title" content="java日志篇（5）-logback | Keep Zero">
+    
+  
+  <link rel="stylesheet" href="/font/iconfont.css">
+  <link rel="stylesheet" href="/css/main.min.css">
+
+
+  
+  
+ 
+
+<script type="application/ld+json">
+ "@context" : "http://schema.org",
+    "@type" : "BlogPosting",
+    "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "https:\/\/keep-zero.github.io"
+    },
+    "articleSection" : "posts",
+    "name" : "java日志篇（5）-logback",
+    "headline" : "java日志篇（5）-logback",
+    "description" : "慢慢来比较快，虚心学技术\n前言:Logback是由log4j创始人设计的又一个开源日志组件。logback当前分成三个模块：logback-core,logback-classic和logback-access。 logback-core :其它两个模块的基础模块 logback-classic:log4j的一个改良版本（此外logback-classic完整实现SLF4J API使你可以很方便地更换成其它日志系统如log4j或JDK14 Logging） logback-access:访问模块与Servlet容器集成提供通过Http来访问日志的功能\n 一、logback\x2bslf4j简单使用示例 ①获取logback的jar包，最新jar包从官网https:\/\/logback.qos.ch\/download.html下载，将其放在lib包目录下，并引入项目中；如果是maven项目，在pom文件中引入如下：\n\x26lt;dependency\x26gt; \x26lt;groupId\x26gt;ch.qos.logback\x26lt;\/groupId\x26gt; \x26lt;artifactId\x26gt;logback-core\x26lt;\/artifactId\x26gt; \x26lt;version\x26gt;1.1.7\x26lt;\/version\x26gt; \x26lt;\/dependency\x26gt; \x26lt;dependency\x26gt; \x26lt;groupId\x26gt;ch.qos.logback\x26lt;\/groupId\x26gt; \x26lt;artifactId\x26gt;logback-access\x26lt;\/artifactId\x26gt; \x26lt;version\x26gt;1.1.7\x26lt;\/version\x26gt; \x26lt;\/dependency\x26gt; \x26lt;dependency\x26gt; \x26lt;groupId\x26gt;ch.qos.logback\x26lt;\/groupId\x26gt; \x26lt;artifactId\x26gt;logback-classic\x26lt;\/artifactId\x26gt; \x26lt;version\x26gt;1.1.7\x26lt;\/version\x26gt; \x26lt;\/dependency\x26gt;  ②获取slf4j的jar包，因为logback完整实现了slf4j的接口，所以需要依赖于slf4j实现功能。最新jar包从官网https:\/\/www.slf4j.org\/download.html下载，如果是maven项目，在pom文件中引入如下：\n\x26lt;dependency\x26gt; \x26lt;groupId\x26gt;org.slf4j\x26lt;\/groupId\x26gt; \x26lt;artifactId\x26gt;slf4j-api\x26lt;\/artifactId\x26gt; \x26lt;version\x26gt;1.7.7\x26lt;\/version\x26gt; \x26lt;\/dependency\x26gt;  ③代码编写\npackage SimpleTest; import org.slf4j.Logger; import org.slf4j.LoggerFactory; \/** * 简单日志获取 *\/ public class SimpleTest { public static void main(String[] args) { \/\/获取logger对象 Logger logger = LoggerFactory.getLogger(SimpleTest.class); logger.info(\x26quot;info.....\x26quot;); logger.debug(\x26quot;debug...\x26quot;); logger.error(\x26quot;error...\x26quot;); logger.warn(\x26quot;warn...\x26quot;); } }  ④执行结果",
+    "inLanguage" : "en-us",
+    "author" : "GF.L",
+    "creator" : "GF.L",
+    "publisher": "GF.L",
+    "accountablePerson" : "GF.L",
+    "copyrightHolder" : "GF.L",
+    "copyrightYear" : "2019",
+    "datePublished": "2019-08-31 00:08:47 \x2b0800 CST",
+    "dateModified" : "2019-08-31 00:08:47 \x2b0800 CST",
+    "url" : "https:\/\/keep-zero.github.io\/2019\/java_log05\/",
+    "wordCount" : "790",
+    "keywords" : [ "java","log", "Keep Zero"]
+}
+</script>
+
+</head>
+
+  
+
+
+  <body class="">
+    <div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo">
+        	<a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a>
+        </div>
+        <div class="menu navbar-right">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+<nav class="navbar-mobile" id="nav-mobile" style="display: none">
+     <div class="container">
+        <div class="navbar-header">
+            <div>  <a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a></div>
+            <div class="menu-toggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+     
+          <div class="menu" id="mobile-menu">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+    	 <main class="main">
+          <div class="container">
+      		
+<article class="post-warp" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">java日志篇（5）-logback</h1>
+        <div class="post-meta">
+                Written by <a itemprop="name" href="https://keep-zero.github.io" rel="author">GF.L</a> with ♥ 
+                <span class="post-time">
+                on <time datetime=2019-08-31 itemprop="datePublished">August 31, 2019</time>
+                </span>
+                in
+                <i class="iconfont icon-folder"></i>
+                <span class="post-category">
+                        <a href="https://keep-zero.github.io/categories/java-log/"> java-log </a>
+                        
+                </span>
+				
+				<span id="wc" style="font-size: 1rem;text-align: center;">  共800 字|  阅读需时约 4 分|  本文总阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </div>
+    </header>
+    <div class="post-content">
+        
+
+        
+            
+        
+
+        
+        
+     
+          
+          
+          
+
+          
+          
+          
+
+          
+
+<blockquote>
+<p><strong>慢慢来比较快，虚心学技术</strong></p>
+
+<p>前言:Logback是由log4j创始人设计的又一个开源日志组件。logback当前分成三个模块：logback-core,logback-classic和logback-access。
+<strong>logback-core :</strong>其它两个模块的基础模块
+<strong>logback-classic:</strong>log4j的一个改良版本（此外logback-classic完整实现SLF4J API使你可以很方便地更换成其它日志系统如log4j或JDK14 Logging）
+<strong>logback-access:</strong>访问模块与Servlet容器集成提供通过Http来访问日志的功能</p>
+</blockquote>
+
+<h2 id="一-logback-slf4j简单使用示例">一、logback+slf4j简单使用示例</h2>
+
+<p>①获取logback的jar包，最新jar包从官网<a href="https://logback.qos.ch/download.html" rel="nofollow noreferrer" target="_blank">https://logback.qos.ch/download.html</a>下载，将其放在lib包目录下，并引入项目中；如果是maven项目，在pom文件中引入如下：</p>
+
+<pre><code class="language-xml">&lt;dependency&gt;
+     &lt;groupId&gt;ch.qos.logback&lt;/groupId&gt;
+     &lt;artifactId&gt;logback-core&lt;/artifactId&gt;
+     &lt;version&gt;1.1.7&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+     &lt;groupId&gt;ch.qos.logback&lt;/groupId&gt;
+     &lt;artifactId&gt;logback-access&lt;/artifactId&gt;
+     &lt;version&gt;1.1.7&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+     &lt;groupId&gt;ch.qos.logback&lt;/groupId&gt;
+     &lt;artifactId&gt;logback-classic&lt;/artifactId&gt;
+     &lt;version&gt;1.1.7&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+
+<p>②获取slf4j的jar包，因为logback完整实现了slf4j的接口，所以需要依赖于slf4j实现功能。最新jar包从官网<a href="https://www.slf4j.org/download.html" rel="nofollow noreferrer" target="_blank">https://www.slf4j.org/download.html</a>下载，如果是maven项目，在pom文件中引入如下：</p>
+
+<pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;org.slf4j&lt;/groupId&gt;
+    &lt;artifactId&gt;slf4j-api&lt;/artifactId&gt;
+    &lt;version&gt;1.7.7&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+
+<p>③代码编写</p>
+
+<pre><code class="language-java">package SimpleTest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * 简单日志获取
+ */
+public class SimpleTest {
+
+    public static void main(String[] args) {
+        //获取logger对象
+        Logger logger = LoggerFactory.getLogger(SimpleTest.class);
+
+        logger.info(&quot;info.....&quot;);
+        logger.debug(&quot;debug...&quot;);
+        logger.error(&quot;error...&quot;);
+        logger.warn(&quot;warn...&quot;);
+
+    }
+}
+
+</code></pre>
+
+<p>④执行结果</p>
+
+<pre><code class="language-properties">22:14:47.606 [main] INFO SimpleTest.SimpleTest - info.....
+22:14:47.611 [main] DEBUG SimpleTest.SimpleTest - debug...
+22:14:47.611 [main] ERROR SimpleTest.SimpleTest - error...
+22:14:47.611 [main] WARN SimpleTest.SimpleTest - warn...
+</code></pre>
+
+<h2 id="二-logback加载过程">二、logback加载过程</h2>
+
+<p>当我们使用logback-classic.jar时，应用启动，logback会按照如下顺序进行扫描：</p>
+
+<ul>
+<li>在系统配置文件System Properties中寻找是否有<strong>logback.configurationFile</strong>对应的value</li>
+<li>在classpath下寻找是否有<strong>logback.groovy</strong>（即logback支持groovy与xml两种配置方式）</li>
+<li>在classpath下寻找是否有<strong>logback-test.xml</strong></li>
+<li>在classpath下寻找是否有<strong>logback.xml</strong></li>
+</ul>
+
+<p>以上任何一项找到之后都会停止，如果全部都不满足，则默认使用ch.qos.logback.classic.BasicConfigurator的configure方法，构造一个ConsoleAppender用于向控制台输出日志，默认日志输出格式为”%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} – %msg%n”。如本文简单实例所示</p>
+
+<h2 id="三-logback配置文件讲解">三、logback配置文件讲解</h2>
+
+<p>分析logbac配置文件节点如下：</p>
+
+<pre><code class="language-markdown">&lt;configuration&gt;(总配置)
+   	|----------------&lt;jmxConfigurator&gt;(动态日志级别）
+   	|----------------&lt;property&gt;(定义变量值）
+   	|----------------&lt;timestamp&gt;(获取时间戳字符串）
+   	|----------------&lt;contextName&gt;(设置上下文名称，每个logger都关联到logger上下文，默认上下文名称为default）
+  	|----------------&lt;appender&gt;(负责写日志的组件）
+            |------------------&lt;encoder&gt;(对日志进行格式化)
+                    |----------------&lt;pattern&gt;(指定日志格式化格式)			
+            |------------------&lt;target&gt;(输出为System.out或System.err)
+            |------------------&lt;file&gt;(被写入的文件名，可以是相对目录，也可以是绝对目录，如果上级目录不存在会自动创建，没有默认值。)
+            |------------------&lt;append&gt;(是否增加到文件末尾)
+            |------------------&lt;prudent&gt;(如果是 true，日志会被安全的写入文件，即使其他的FileAppender也在向此文件做写入操作，效率低，默认是 false)
+            |------------------&lt;filter&gt;（日志输出过滤器）
+                |-----------------&lt;level&gt; （目标日志级别）
+                |-----------------&lt;onMatch&gt;（符合输出条件的的日志行为）
+                |-----------------&lt;onMismatch&gt;（不符合日志级别的日志输出行为）
+            |------------------&lt;rollingPolicy&gt;(当发生滚动时，决定RollingFileAppender的行为，涉及文件移动和重命名)
+                |-----------------&lt;fileNamePattern&gt;(被写入的文件名，可以是相对目录，也可以是绝对目录，如果上级目录不存在会自动创建，没有默认值。)
+                |-----------------&lt;maxHistory&gt;(控制保留的归档文件的最大数量，超出数量就删除旧文件)
+                |-----------------&lt;maxFileSize&gt;(活动文件的大小，默认值是10MB)
+                |-----------------&lt;prudent&gt;(当为true时，不支持FixedWindowRollingPolicy)
+                |-----------------&lt;triggeringPolicy &gt;(告知 RollingFileAppender 何时激活滚动)
+                |-----------------&lt;encorder&gt;（对记录事件进行格式化）
+    |----------------&lt;root&gt;(所有&lt;loger&gt;(的上级）
+            |-------------&lt;appender-ref&gt;(标识这个appender将会添加到这个loger)
+    |----------------&lt;logger&gt;(用来设置某一个包或具体的某一个类的日志打印级别、以及指定&lt;appender&gt;)
+            |-------------&lt;appender-ref&gt;(标识这个appender将会添加到这个loger)
+
+</code></pre>
+
+<p>1.<configuration> 属性讲解</p>
+
+<p><strong>scan</strong>=&ldquo;true&rdquo; //当此属性设置为true时，配置文件如果发生改变，将会被重新加载，默认值为true
+<strong>scanPeriod</strong>=&ldquo;60 seconds&rdquo; //设置监测配置文件是否有修改的时间间隔，如果没有给出时间单位，默认单位是毫秒。当scan为true时，此属性生效。默认的时间间隔为1分钟。
+<strong>debug</strong>=&ldquo;false&rdquo;   //当此属性设置为true时，将打印出logback内部日志信息，实时查看logback运行状态。默认值为false。</p>
+
+<pre><code class="language-xml">&lt;configuration  scan=&quot;true&quot; scanPeriod=&quot;60 seconds&quot; debug=&quot;false&quot;&gt;
+...........
+&lt;/configuration&gt;
+</code></pre>
+
+<ol>
+<li><p><property>属性讲解
+<strong>name</strong>=&ldquo;变量名&rdquo;    //定义变量的名称，引用处可以使用&rdquo;{变量名}&ldquo;引用
+<strong>value</strong>=&ldquo;变量值&rdquo;    //定义变量的值</p>
+
+<pre><code class="language-xml">&lt;configuration  scan=&quot;true&quot; scanPeriod=&quot;60 seconds&quot; debug=&quot;false&quot;&gt;
+ &lt;property name=&quot;log_dir&quot; value=&quot;./Logback-Modle/src/main/logs&quot; /&gt;
+&lt;/configuration&gt;
+</code></pre></li>
+</ol>
+
+<p>3.<appender>属性及其子节点属性讲解</p>
+
+<p><strong>name</strong>=&ldquo;appender名称&rdquo;  //定义appender的名称
+ <strong>class</strong>=&ldquo;ch.qos.logback.core.ConsoleAppender&rdquo;     //logback的默认appender实现类</p>
+
+<p>稍微讲解logback的集中appender类所具备的子节点及属性
+①ch.qos.logback.core.ConsoleAppender  将日志输出到控制台</p>
+
+<pre><code class="language-xml">&lt;configuration  scan=&quot;true&quot; scanPeriod=&quot;60 seconds&quot; debug=&quot;false&quot;&gt;
+&lt;!-- ConsoleAppender 控制台输出日志 --&gt;
+    &lt;appender name=&quot;console&quot; class=&quot;ch.qos.logback.core.ConsoleAppender&quot;&gt;
+        &lt;encoder&gt;
+            &lt;pattern&gt;
+                &lt;!-- 设置日志输出格式 --&gt;
+                %d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger - %msg%n
+            &lt;/pattern&gt;
+        &lt;/encoder&gt;
+        &lt;!--日志输出方式，默认为System.out--&gt;
+        &lt;target&gt;System.err&lt;/target&gt;
+    &lt;/appender&gt;
+&lt;/configuration&gt;
+</code></pre>
+
+<p>②ch.qos.logback.core.FileAppender 将日志输出到日志文件</p>
+
+<pre><code class="language-xml">&lt;configuration  scan=&quot;true&quot; scanPeriod=&quot;60 seconds&quot; debug=&quot;false&quot;&gt;
+　　　&lt;appender name=&quot;FILE&quot; class=&quot;ch.qos.logback.core.FileAppender&quot;&gt;
+            &lt;!--指定日志输出文件--&gt;
+            &lt;file&gt;testFile.log&lt;/file&gt; 
+            &lt;!--指定是否追尾--&gt;
+            &lt;append&gt;true&lt;/append&gt; 
+             &lt;!--指定日志输出格式--&gt;
+            &lt;encoder&gt; 
+　　　　　　　　    &lt;pattern&gt;%-4relative [%thread] %-5level %logger{35} - %msg%n&lt;/pattern&gt;                                 
+            &lt;/encoder&gt; 
+　　　&lt;/appender&gt; 
+&lt;/configuration&gt;
+</code></pre>
+
+<p>③ch.qos.logback.core.RollingFileAppender 将日志滚动输出到日志文件中</p>
+
+<pre><code class="language-xml">&lt;configuration  scan=&quot;true&quot; scanPeriod=&quot;60 seconds&quot; debug=&quot;false&quot;&gt;
+    &lt;appender name=&quot;WARN&quot; class=&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;&gt;
+        &lt;rollingPolicy class=&quot;ch.qos.logback.core.rolling.TimeBasedRollingPolicy&quot;&gt;
+            &lt;!--日志输出位置 可相对、和绝对路径 --&gt;
+            &lt;fileNamePattern&gt;${log_dir}/warn/%d{yyyy-MM-dd}/warn-log.log&lt;/fileNamePattern&gt;
+            &lt;!--日志留存天数--&gt;
+            &lt;maxHistory&gt;${maxHistory}&lt;/maxHistory&gt;
+            &lt;timeBasedFileNamingAndTriggeringPolicy
+                    class=&quot;ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP&quot;&gt;
+                &lt;!-- 这是活动文件的大小，默认值是10MB --&gt;
+                &lt;maxFileSize&gt;1KB&lt;/maxFileSize&gt;
+            &lt;/timeBasedFileNamingAndTriggeringPolicy&gt;
+        &lt;/rollingPolicy&gt;
+    &lt;/appender&gt;
+&lt;/configuration&gt;
+</code></pre>
+
+<p>④<logger>及其子节点和属性讲解</p>
+
+<p><strong>name</strong>=&ldquo;com.data.test&rdquo;  用来指定受此loger约束的某一个包或者具体的某一个类</p>
+
+<p><strong>level</strong>=&ldquo;debug&rdquo; 用来设置打印级别，大小写无关</p>
+
+<p><strong>addtivity</strong>=true 是否向上级loger传递打印信息。默认是true</p>
+
+<p>子节点<appender-ref>  指定受logger约定的appender</p>
+
+<pre><code class="language-xml">&lt;configuration  scan=&quot;true&quot; scanPeriod=&quot;60 seconds&quot; debug=&quot;false&quot;&gt;
+   &lt;!--如无限定level，将自动继承父级logger，即rootLogger--&gt;
+    &lt;logger name=&quot;java&quot; additivity=&quot;false&quot; /&gt;
+    &lt;logger name=&quot;java.lang&quot; level=&quot;warn&quot;&gt;
+        &lt;appender-ref ref=&quot;STDOUT&quot; /&gt;
+    &lt;/logger&gt;
+&lt;/configuration&gt;
+</code></pre>
+
+<p>⑤<root> 讲解</p>
+
+<pre><code class="language-xml">&lt;configuration  scan=&quot;true&quot; scanPeriod=&quot;60 seconds&quot; debug=&quot;false&quot;&gt;
+   &lt;!-- root级别 DEBUG --&gt;
+    &lt;root&gt;
+        &lt;!-- 打印debug级别日志及以上级别日志 --&gt;
+        &lt;level value=&quot;debug&quot; /&gt;
+        &lt;!--指定使用的appender--&gt;
+        &lt;appender-ref ref=&quot;console&quot; /&gt;
+        &lt;appender-ref ref=&quot;haha&quot; /&gt;
+        &lt;appender-ref ref=&quot;test&quot; /&gt;
+    &lt;/root&gt;
+&lt;/configuration&gt;
+</code></pre>
+
+<h2 id="四-filter-等级过滤器">四、Filter 等级过滤器</h2>
+
+<blockquote>
+<p><filter>是<appender>的一个子节点，表示在当前给到的日志级别下再进行一次过滤，最基本的Filter有ch.qos.logback.classic.filter.LevelFilter和ch.qos.logback.classic.filter.ThresholdFilter</p>
+</blockquote>
+
+<p>我们看一下LevelFilter，其过滤策略是针对指定级别的日志是否显示，有三个子节点，</p>
+
+<p><level> 指定当前过滤的目标级别</p>
+
+<p><onMath> 指定当日志级别符合当前目标级别时的行为，有值ACCEPT接收，和DENY拒绝输出</p>
+
+<p><onMismatch> 指定当日志级别不符合当前目标级别时的行为，值同上</p>
+
+<pre><code class="language-xml">&lt;configuration  scan=&quot;true&quot; scanPeriod=&quot;60 seconds&quot; debug=&quot;false&quot;&gt;
+    &lt;appender name=&quot;ERROR&quot; class=&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;&gt;
+        &lt;!-- 过滤器，只记录ERROR级别的日志 --&gt;
+        &lt;!-- 如果日志级别等于配置级别，过滤器会根据onMath 和 onMismatch接收或拒绝日志。 --&gt;
+        &lt;filter class=&quot;ch.qos.logback.classic.filter.LevelFilter&quot;&gt;
+            &lt;!-- 设置过滤级别 --&gt;
+            &lt;level&gt;ERROR&lt;/level&gt;
+            &lt;!-- 用于配置符合过滤条件的操作 --&gt;
+            &lt;onMatch&gt;ACCEPT&lt;/onMatch&gt;
+            &lt;!-- 用于配置不符合过滤条件的操作 --&gt;
+            &lt;onMismatch&gt;DENY&lt;/onMismatch&gt;
+        &lt;/filter&gt;
+        &lt;rollingPolicy class=&quot;ch.qos.logback.core.rolling.TimeBasedRollingPolicy&quot;&gt;
+            .....
+        &lt;/rollingPolicy&gt;
+    &lt;/appender&gt;
+&lt;/configuration&gt;
+</code></pre>
+
+<p>我们再看一下 ThresholdFilter ，其过滤策略为针对指定级别以下的日志全部不显示，配置如下：</p>
+
+<pre><code class="language-xml">&lt;configuration  scan=&quot;true&quot; scanPeriod=&quot;60 seconds&quot; debug=&quot;false&quot;&gt;
+    &lt;appender name=&quot;ERROR&quot; class=&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;&gt;
+        &lt;filter class=&quot;ch.qos.logback.classic.filter.ThresholdFilter&quot;&gt;
+            &lt;!-- 设置过滤级别 --&gt;
+            &lt;level&gt;ERROR&lt;/level&gt;
+        &lt;/filter&gt;
+        &lt;rollingPolicy class=&quot;ch.qos.logback.core.rolling.TimeBasedRollingPolicy&quot;&gt;
+            .....
+        &lt;/rollingPolicy&gt;
+    &lt;/appender&gt;
+&lt;/configuration&gt;
+</code></pre>
+
+<h2 id="五-进阶demo">五、进阶Demo</h2>
+
+<p>综合案例如下：
+使用网上现成可用的配置logback-test.xml如下：</p>
+
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!-- 级别从高到低 OFF 、 FATAL 、 ERROR 、 WARN 、 INFO 、 DEBUG 、 TRACE 、 ALL --&gt;
+&lt;!-- 日志输出规则 根据当前ROOT 级别，日志输出时，级别高于root默认的级别时 会输出 --&gt;
+&lt;!-- 以下 每个配置的 filter 是过滤掉输出文件里面，会出现高级别文件，依然出现低级别的日志信息，通过filter 过滤只记录本级别的日志 --&gt;
+&lt;!-- scan 当此属性设置为true时，配置文件如果发生改变，将会被重新加载，默认值为true。 --&gt;
+&lt;!-- scanPeriod 设置监测配置文件是否有修改的时间间隔，如果没有给出时间单位，默认单位是毫秒。当scan为true时，此属性生效。默认的时间间隔为1分钟。 --&gt;
+&lt;!-- debug 当此属性设置为true时，将打印出logback内部日志信息，实时查看logback运行状态。默认值为false。 --&gt;
+&lt;configuration scan=&quot;true&quot; scanPeriod=&quot;60 seconds&quot; debug=&quot;false&quot;&gt;
+    &lt;!-- 动态日志级别 --&gt;
+    &lt;jmxConfigurator /&gt;
+    &lt;!-- 定义日志文件 输出位置 --&gt;
+    &lt;property name=&quot;log_dir&quot; value=&quot;./Logback-Modle/src/main/logs&quot; /&gt;
+    &lt;!-- 日志最大的历史 30天 --&gt;
+    &lt;property name=&quot;maxHistory&quot; value=&quot;30&quot; /&gt;
+
+    &lt;!-- ConsoleAppender 控制台输出日志 --&gt;
+    &lt;appender name=&quot;console&quot; class=&quot;ch.qos.logback.core.ConsoleAppender&quot;&gt;
+        &lt;encoder&gt;
+            &lt;pattern&gt;
+                &lt;!-- 设置日志输出格式 --&gt;
+                %d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger - %msg%n
+            &lt;/pattern&gt;
+        &lt;/encoder&gt;
+        &lt;target&gt;System.err&lt;/target&gt;
+    &lt;/appender&gt;
+
+    &lt;!-- ERROR级别日志 --&gt;
+    &lt;!-- 滚动记录文件，先将日志记录到指定文件，当符合某个条件时，将日志记录到其他文件 RollingFileAppender --&gt;
+    &lt;appender name=&quot;ERROR&quot; class=&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;&gt;
+        &lt;!-- 过滤器，只记录ERROR级别的日志 --&gt;
+        &lt;!-- 如果日志级别等于配置级别，过滤器会根据onMath 和 onMismatch接收或拒绝日志。 --&gt;
+        &lt;filter class=&quot;ch.qos.logback.classic.filter.LevelFilter&quot;&gt;
+            &lt;!-- 设置过滤级别 --&gt;
+            &lt;level&gt;ERROR&lt;/level&gt;
+            &lt;!-- 用于配置符合过滤条件的操作 --&gt;
+            &lt;onMatch&gt;ACCEPT&lt;/onMatch&gt;
+            &lt;!-- 用于配置不符合过滤条件的操作 --&gt;
+            &lt;onMismatch&gt;DENY&lt;/onMismatch&gt;
+        &lt;/filter&gt;
+        &lt;file&gt;${log_dir}/error/error-log.log&lt;/file&gt;
+        &lt;!-- 最常用的滚动策略，它根据时间来制定滚动策略.既负责滚动也负责出发滚动 --&gt;
+        &lt;rollingPolicy class=&quot;ch.qos.logback.core.rolling.TimeBasedRollingPolicy&quot;&gt;
+            &lt;!--日志输出位置 可相对、和绝对路径 --&gt;
+            &lt;fileNamePattern&gt;
+                ${log_dir}/error/error-log.%d.%i.log
+            &lt;/fileNamePattern&gt;
+            &lt;!-- 可选节点，控制保留的归档文件的最大数量，超出数量就删除旧文件假设设置每个月滚动，且&lt;maxHistory&gt;是6， 则只保存最近6个月的文件，删除之前的旧文件。注意，删除旧文件是，那些为了归档而创建的目录也会被删除 --&gt;
+            &lt;maxHistory&gt;${maxHistory}&lt;/maxHistory&gt;
+            &lt;timeBasedFileNamingAndTriggeringPolicy
+                    class=&quot;ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP&quot;&gt;
+                &lt;!-- maxFileSize:这是活动文件的大小，默认值是10MB,本篇设置为1KB，只是为了演示 --&gt;
+                &lt;maxFileSize&gt;1KB&lt;/maxFileSize&gt;
+            &lt;/timeBasedFileNamingAndTriggeringPolicy&gt;
+        &lt;/rollingPolicy&gt;
+        &lt;encoder&gt;
+            &lt;pattern&gt;
+                &lt;!-- 设置日志输出格式 --&gt;
+                %d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger - %msg%n
+            &lt;/pattern&gt;
+        &lt;/encoder&gt;
+    &lt;/appender&gt;
+
+    &lt;!-- WARN级别日志 appender --&gt;
+    &lt;appender name=&quot;WARN&quot; class=&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;&gt;
+        &lt;!-- 过滤器，只记录WARN级别的日志 --&gt;
+        &lt;!-- 果日志级别等于配置级别，过滤器会根据onMath 和 onMismatch接收或拒绝日志。 --&gt;
+        &lt;filter class=&quot;ch.qos.logback.classic.filter.LevelFilter&quot;&gt;
+            &lt;!-- 设置过滤级别 --&gt;
+            &lt;level&gt;WARN&lt;/level&gt;
+            &lt;!-- 用于配置符合过滤条件的操作 --&gt;
+            &lt;onMatch&gt;ACCEPT&lt;/onMatch&gt;
+            &lt;!-- 用于配置不符合过滤条件的操作 --&gt;
+            &lt;onMismatch&gt;DENY&lt;/onMismatch&gt;
+        &lt;/filter&gt;
+        &lt;rollingPolicy class=&quot;ch.qos.logback.core.rolling.TimeBasedRollingPolicy&quot;&gt;
+            &lt;!--日志输出位置 可相对、和绝对路径 --&gt;
+            &lt;fileNamePattern&gt;${log_dir}/warn/%d{yyyy-MM-dd}/warn-log.log&lt;/fileNamePattern&gt;
+            &lt;maxHistory&gt;${maxHistory}&lt;/maxHistory&gt;
+        &lt;/rollingPolicy&gt;
+        &lt;encoder&gt;
+            &lt;pattern&gt;%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger - %msg%n&lt;/pattern&gt;
+        &lt;/encoder&gt;
+    &lt;/appender&gt;
+
+    &lt;!-- INFO级别日志 appender --&gt;
+    &lt;appender name=&quot;INFO&quot; class=&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;&gt;
+        &lt;filter class=&quot;ch.qos.logback.classic.filter.LevelFilter&quot;&gt;
+            &lt;level&gt;INFO&lt;/level&gt;
+            &lt;onMatch&gt;ACCEPT&lt;/onMatch&gt;
+            &lt;onMismatch&gt;DENY&lt;/onMismatch&gt;
+        &lt;/filter&gt;
+        &lt;rollingPolicy class=&quot;ch.qos.logback.core.rolling.TimeBasedRollingPolicy&quot;&gt;
+            &lt;fileNamePattern&gt;${log_dir}/info/%d{yyyy-MM-dd}/info-log.log&lt;/fileNamePattern&gt;
+            &lt;maxHistory&gt;${maxHistory}&lt;/maxHistory&gt;
+        &lt;/rollingPolicy&gt;
+        &lt;encoder&gt;
+            &lt;pattern&gt;%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger - %msg%n&lt;/pattern&gt;
+        &lt;/encoder&gt;
+    &lt;/appender&gt;
+
+    &lt;!-- DEBUG级别日志 appender --&gt;
+    &lt;appender name=&quot;DEBUG&quot; class=&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;&gt;
+        &lt;filter class=&quot;ch.qos.logback.classic.filter.LevelFilter&quot;&gt;
+            &lt;level&gt;DEBUG&lt;/level&gt;
+            &lt;onMatch&gt;ACCEPT&lt;/onMatch&gt;
+            &lt;onMismatch&gt;DENY&lt;/onMismatch&gt;
+        &lt;/filter&gt;
+        &lt;rollingPolicy class=&quot;ch.qos.logback.core.rolling.TimeBasedRollingPolicy&quot;&gt;
+            &lt;fileNamePattern&gt;${log_dir}/debug/%d{yyyy-MM-dd}/debug-log.log&lt;/fileNamePattern&gt;
+            &lt;maxHistory&gt;${maxHistory}&lt;/maxHistory&gt;
+        &lt;/rollingPolicy&gt;
+        &lt;encoder&gt;
+            &lt;pattern&gt;%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger - %msg%n&lt;/pattern&gt;
+        &lt;/encoder&gt;
+    &lt;/appender&gt;
+
+    &lt;!-- TRACE级别日志 appender --&gt;
+    &lt;appender name=&quot;TRACE&quot; class=&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;&gt;
+        &lt;filter class=&quot;ch.qos.logback.classic.filter.LevelFilter&quot;&gt;
+            &lt;level&gt;TRACE&lt;/level&gt;
+            &lt;onMatch&gt;ACCEPT&lt;/onMatch&gt;
+            &lt;onMismatch&gt;DENY&lt;/onMismatch&gt;
+        &lt;/filter&gt;
+        &lt;rollingPolicy class=&quot;ch.qos.logback.core.rolling.TimeBasedRollingPolicy&quot;&gt;
+            &lt;fileNamePattern&gt;${log_dir}/trace/%d{yyyy-MM-dd}/trace-log.log&lt;/fileNamePattern&gt;
+            &lt;maxHistory&gt;${maxHistory}&lt;/maxHistory&gt;
+        &lt;/rollingPolicy&gt;
+        &lt;encoder&gt;
+            &lt;pattern&gt;%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger - %msg%n&lt;/pattern&gt;
+        &lt;/encoder&gt;
+    &lt;/appender&gt;
+
+    &lt;!-- root级别 DEBUG --&gt;
+    &lt;root&gt;
+        &lt;!-- 打印debug级别日志及以上级别日志 --&gt;
+        &lt;level value=&quot;debug&quot; /&gt;
+        &lt;!-- 控制台输出 --&gt;
+        &lt;appender-ref ref=&quot;console&quot; /&gt;
+        &lt;!-- 文件输出 --&gt;
+        &lt;appender-ref ref=&quot;ERROR&quot; /&gt;
+        &lt;appender-ref ref=&quot;INFO&quot; /&gt;
+        &lt;appender-ref ref=&quot;WARN&quot; /&gt;
+        &lt;appender-ref ref=&quot;DEBUG&quot; /&gt;
+        &lt;appender-ref ref=&quot;TRACE&quot; /&gt;
+    &lt;/root&gt;
+&lt;/configuration&gt;
+</code></pre>
+
+<p>程序代码：</p>
+
+<pre><code class="language-java">package SimpleTest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * 简单日志获取
+ */
+public class SimpleTest {
+
+    public static void main(String[] args) {
+        Logger logger = LoggerFactory.getLogger(SimpleTest.class);
+
+        logger.info(&quot;info.....&quot;);
+        logger.debug(&quot;debug...&quot;);
+        logger.error(&quot;error...&quot;);
+        logger.warn(&quot;warn...&quot;);
+    }
+}
+
+</code></pre>
+
+<p>输出结果如下：</p>
+
+<pre><code class="language-properties">控制台输出
+
+2019-02-04 16:48:43.703 INFO  SimpleTest.SimpleTest - info.....
+2019-02-04 16:48:43.703 DEBUG SimpleTest.SimpleTest - debug...
+2019-02-04 16:48:43.703 ERROR SimpleTest.SimpleTest - error...
+2019-02-04 16:48:43.703 WARN  SimpleTest.SimpleTest - warn...
+
+日志文件输出
+2019-02-04 14:39:04.496 DEBUG SimpleTest.SimpleTest - debug...
+</code></pre>
+
+<p>输出日志目录：
+<figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/java_log/java_log_05_01.jpg" alt="log目录结构" class="lazyload"><figcaption class="image-caption">log目录结构</figcaption></figure></p>
+
+<h2 id="总结"><strong>总结</strong></h2>
+
+<p>1.logback完整实现了slf4j的接口，所以依赖于slf4j实现功能</p>
+
+<p>2.logback的配置需要配置输出源appender，输出日志的logger和根logger root</p>
+
+<p>3.logback通过filter实现对特定日志级别的过滤输出</p>
+
+<p><strong>参考文档</strong></p>
+
+<p>【1】logback官方文档</p>
+
+<p>【2】<a href="http://www.importnew.com/28541.html" rel="nofollow noreferrer" target="_blank">http://www.importnew.com/28541.html</a></p>
+
+<p>【3】<a href="https://www.cnblogs.com/warking/p/5710303.html" rel="nofollow noreferrer" target="_blank">https://www.cnblogs.com/warking/p/5710303.html</a></p>
+
+    </div>
+
+    <div class="post-copyright">
+             
+            <p class="copyright-item">
+                <span>Author:</span>
+                <span>GF.L </span>
+                </p>
+            
+           
+             
+            <p class="copyright-item">
+                    <span>Link:</span>
+                    <a href=https://keep-zero.github.io/2019/java_log05/>https://keep-zero.github.io/2019/java_log05/</span>
+            </p>
+            
+             
+            <p class="copyright-item lincese">
+                本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可
+            </p>
+            
+    </div>
+
+  
+    <div class="post-tags">
+        
+            <section>
+            <i class="iconfont icon-tag"></i>Tag(s): 
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/java/">
+                    #java</a></span>
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/log/">
+                    #log</a></span>
+            
+            </section>
+        
+        <section>
+                <a href="javascript:window.history.back();">back</a></span> · 
+                <span><a href="https://keep-zero.github.io">home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+        
+        <a href="https://keep-zero.github.io/2019/java_log04/" class="prev" rel="prev" title="java日志篇（4）-common-logging"><i class="iconfont icon-left"></i>&nbsp;java日志篇（4）-common-logging</a>
+         
+        
+        <a href="https://keep-zero.github.io/2019/java_log06/" class="next" rel="next" title="java日志篇（6）-slf4j">java日志篇（6）-slf4j&nbsp;<i class="iconfont icon-right"></i></a>
+        
+    </div>
+
+    <div class="post-comment">
+          
+                 
+          
+    </div>
+</article>
+          </div>
+		   </main>
+      <footer class="footer">
+    <div class="copyright">
+        &copy;
+        
+        <span itemprop="copyrightYear">2011 - 2019</span>
+        
+        <span class="with-love">
+    	 <i class="iconfont icon-love"></i> 
+        </span>
+         
+            <span class="author" itemprop="copyrightHolder"><a href="https://keep-zero.github.io">GF.L</a> | </span> 
+         
+
+         
+		  <span>Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow">Hugo</a> & <a href="https://github.com/liuzc/leaveit" target="_blank" rel="external nofollow">LeaveIt</a></span> 
+		<span id="busuanzi_container_site_pv">
+			本站访问量：<span id="busuanzi_value_site_pv"></span>次
+		</span>
+		&nbsp;
+		<span id="busuanzi_container_site_uv">
+			您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者
+		</span>
+    </div>
+</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+    
+     <link href="//lib.baomitu.com/lightgallery/1.6.11/css/lightgallery.min.css" rel="stylesheet">  
+      
+     <script src="/js/vendor_gallery.min.js" async="" ></script>
+    
+  
+
+
+
+     </div>
+  </body>
+</html>

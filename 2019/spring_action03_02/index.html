@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noodp"/>
+  <meta name="author" content="GF.L">
+  
+  
+  
+  <link rel="prev" href="https://keep-zero.github.io/2019/spring_action03_01/" />
+  <link rel="next" href="https://keep-zero.github.io/2019/spring_action03_03/" />
+  <link rel="canonical" href="https://keep-zero.github.io/2019/spring_action03_02/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <title>
+       
+       
+           《Spring实战》-第三章：Bean的高级装配（2）-条件化Bean | Keep Zero
+       
+  </title>
+  <meta name="title" content="《Spring实战》-第三章：Bean的高级装配（2）-条件化Bean | Keep Zero">
+    
+  
+  <link rel="stylesheet" href="/font/iconfont.css">
+  <link rel="stylesheet" href="/css/main.min.css">
+
+
+  
+  
+ 
+
+<script type="application/ld+json">
+ "@context" : "http://schema.org",
+    "@type" : "BlogPosting",
+    "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "https:\/\/keep-zero.github.io"
+    },
+    "articleSection" : "posts",
+    "name" : "《Spring实战》-第三章：Bean的高级装配（2）-条件化Bean",
+    "headline" : "《Spring实战》-第三章：Bean的高级装配（2）-条件化Bean",
+    "description" : "慢慢来比较快，虚心学技术\n 1、什么是条件化Bean 在第一节中说到的profile限定了特殊环境下的Bean装载，但是有时候只根据环境进行Bean装配的选择并不一定能满足我们的需求，所以Spring4提供了更加细化的条件话配置Bean，用于对特定条件才可以进行装配的Bean进行配置\n2、怎么条件化配置Bean 条件化配置Bean主要依赖于一个注解和一个接口：\n@Conditional(MathIsProd.class)\x26mdash;条件判断注解\nCondition接口\x26mdash;\x26mdash;\x26mdash;\x26mdash;\x26mdash;-@Conditional中的条件类必须实现的接口，提供了match方法，进行条件逻辑的编写\n系统进行Bean装配时，遇到@Conditional会先对其所包含的条件类执行match方法，如果方法返回为true，则对该bean进行装配，如果方法返回为false，则不对该bean进行装配\n简单实现：利用@Conditional间接实现@Profile(\x26ldquo;prod\x26rdquo;)功能\n\/\/基本类 @Component public class BaseBean { private String name=\x26quot;BaseBean\x26quot;; public void setName(String name){ this.name = name; } } \/\/接口 public interface BaseService { void update(); } \/\/接口实现类1 @Component public class BaseServiceImpl1 implements BaseService { @Autowired private BaseBean baseBean; @Override public void update() { System.out.println(\x26quot;BaseServiceImpl1 \x26quot;\x2bbaseBean.getName()); } } \/\/接口实现类2 @Component public class BaseServiceImpl2 implements BaseService { @Autowired private BaseBean baseBean; @Override public void update() { System.",
+    "inLanguage" : "en-us",
+    "author" : "GF.L",
+    "creator" : "GF.L",
+    "publisher": "GF.L",
+    "accountablePerson" : "GF.L",
+    "copyrightHolder" : "GF.L",
+    "copyrightYear" : "2019",
+    "datePublished": "2019-08-31 22:01:31 \x2b0800 CST",
+    "dateModified" : "2019-08-31 22:01:31 \x2b0800 CST",
+    "url" : "https:\/\/keep-zero.github.io\/2019\/spring_action03_02\/",
+    "wordCount" : "173",
+    "keywords" : [ "java","spring","spring-action", "Keep Zero"]
+}
+</script>
+
+</head>
+
+  
+
+
+  <body class="">
+    <div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo">
+        	<a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a>
+        </div>
+        <div class="menu navbar-right">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+<nav class="navbar-mobile" id="nav-mobile" style="display: none">
+     <div class="container">
+        <div class="navbar-header">
+            <div>  <a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a></div>
+            <div class="menu-toggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+     
+          <div class="menu" id="mobile-menu">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+    	 <main class="main">
+          <div class="container">
+      		
+<article class="post-warp" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">《Spring实战》-第三章：Bean的高级装配（2）-条件化Bean</h1>
+        <div class="post-meta">
+                Written by <a itemprop="name" href="https://keep-zero.github.io" rel="author">GF.L</a> with ♥ 
+                <span class="post-time">
+                on <time datetime=2019-08-31 itemprop="datePublished">August 31, 2019</time>
+                </span>
+                in
+                <i class="iconfont icon-folder"></i>
+                <span class="post-category">
+                        <a href="https://keep-zero.github.io/categories/spring/"> spring </a>
+                        
+                </span>
+				
+				<span id="wc" style="font-size: 1rem;text-align: center;">  共200 字|  阅读需时约 1 分|  本文总阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </div>
+    </header>
+    <div class="post-content">
+        
+
+        
+
+        
+        
+     
+          
+          
+          
+
+          
+          
+          
+
+          
+
+<blockquote>
+<p><strong>慢慢来比较快，虚心学技术</strong></p>
+</blockquote>
+
+<h2 id="1-什么是条件化bean">1、什么是条件化Bean</h2>
+
+<p>在第一节中说到的profile限定了特殊环境下的Bean装载，但是有时候只根据环境进行Bean装配的选择并不一定能满足我们的需求，所以Spring4提供了更加细化的条件话配置Bean，<strong>用于对特定条件才可以进行装配的Bean进行配置</strong></p>
+
+<h2 id="2-怎么条件化配置bean">2、怎么条件化配置Bean</h2>
+
+<p>条件化配置Bean主要依赖于<strong>一个注解</strong>和<strong>一个接口</strong>：</p>
+
+<p><strong>@Conditional(MathIsProd.class)&mdash;条件判断注解</strong></p>
+
+<p><strong>Condition接口&mdash;&mdash;&mdash;&mdash;&mdash;-@Conditional中的条件类必须实现的接口，提供了match方法，进行条件逻辑的编写</strong></p>
+
+<p>系统进行Bean装配时，遇到@Conditional会先对其所包含的条件类执行match方法，如果方法返回为true，则对该bean进行装配，如果方法返回为false，则不对该bean进行装配</p>
+
+<p>简单实现：<strong>利用@Conditional间接实现@Profile(&ldquo;prod&rdquo;)功能</strong></p>
+
+<pre><code class="language-java">//基本类
+@Component
+public class BaseBean {
+    private String name=&quot;BaseBean&quot;;
+
+    public void setName(String name){
+        this.name = name;
+    }
+}
+
+//接口
+public interface BaseService {
+    void update();
+}
+
+//接口实现类1
+@Component
+public class BaseServiceImpl1 implements BaseService {
+
+    @Autowired
+    private BaseBean baseBean;
+
+    @Override
+    public void update() {
+        System.out.println(&quot;BaseServiceImpl1  &quot;+baseBean.getName());
+    }
+}
+
+//接口实现类2
+@Component
+public class BaseServiceImpl2 implements BaseService {
+    @Autowired
+    private BaseBean baseBean;
+
+    @Override
+    public void update() {
+        System.out.println(&quot;BaseServiceImpl2  &quot;+baseBean.getName());
+    }
+}
+
+//测试类：
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(loader = AnnotationConfigContextLoader.class,classes = {ComponentConfig.class})
+public class AppComponentTest {
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    //注入baseService
+    @Autowired
+    private BaseService baseService;
+
+    @Test
+    public void testPrimary(){
+        baseService.update();
+    }
+}
+
+//测试结果：注入失败，BaseService不止有一个实现类
+org.springframework.beans.factory.NoUniqueBeanDefinitionException: 
+No qualifying bean of type 'com.my.spring.service.BaseService' available: 
+expected single matching bean but found 2: baseServiceImpl1,baseServiceImpl2
+</code></pre>
+
+<p>代码1.8中的match方法参数</p>
+
+<p><strong>AnnotatedTypeMetadata</strong>：封装了使用@Conditional注解的类的信息</p>
+
+<p><strong>ConditionContext</strong>：封装了<strong>系统环境信息以及BeanFactory等各种实现，可以用来作为条件信息的判断</strong></p>
+
+<p>其中ConditionContext有以下常用方法：</p>
+
+<ul>
+<li><strong>getRegistry()</strong> &mdash;&mdash;&mdash;&mdash;&ndash;返回BeanDefinitionRegistry，用于 检查 bean 定义；</li>
+<li><strong>getBeanFactory()</strong>&mdash;&mdash;&mdash;返回ConfigurableListableBeanFactory ，用于检查 bean 是否存在，甚至探查 bean 的属性；</li>
+<li><strong>getEnvironment()</strong> &mdash;&mdash;&ndash;返回Environment，用于 检查环境变量是否存在以及它的值是什么；</li>
+<li><strong>getResourceLoader()</strong> &mdash;返回ResourceLoader 所加载的资源；</li>
+<li><strong>getClassLoader()</strong> &mdash;&mdash;&mdash;返回ClassLoader 加载并检查类是否存在。</li>
+</ul>
+
+<p>注：<strong>实际上@Profile同样注解使用了@Conditional注解，且使用ProfileCondition.class作为其条件判断类</strong>，源码如下，有兴趣自行查看：</p>
+
+<pre><code class="language-java">@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Conditional(ProfileCondition.class)
+public @interface Profile {
+
+   /**
+    * The set of profiles for which the annotated component should be registered.
+    */
+   String[] value();
+
+}
+</code></pre>
+
+    </div>
+
+    <div class="post-copyright">
+             
+            <p class="copyright-item">
+                <span>Author:</span>
+                <span>GF.L </span>
+                </p>
+            
+           
+             
+            <p class="copyright-item">
+                    <span>Link:</span>
+                    <a href=https://keep-zero.github.io/2019/spring_action03_02/>https://keep-zero.github.io/2019/spring_action03_02/</span>
+            </p>
+            
+             
+            <p class="copyright-item lincese">
+                本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可
+            </p>
+            
+    </div>
+
+  
+    <div class="post-tags">
+        
+            <section>
+            <i class="iconfont icon-tag"></i>Tag(s): 
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/java/">
+                    #java</a></span>
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/spring/">
+                    #spring</a></span>
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/spring-action/">
+                    #spring-action</a></span>
+            
+            </section>
+        
+        <section>
+                <a href="javascript:window.history.back();">back</a></span> · 
+                <span><a href="https://keep-zero.github.io">home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+        
+        <a href="https://keep-zero.github.io/2019/spring_action03_01/" class="prev" rel="prev" title="《Spring实战》-第三章：Bean的高级装配（1）-环境Profile"><i class="iconfont icon-left"></i>&nbsp;《Spring实战》-第三章：Bean的高级装配（1）-环境Profile</a>
+         
+        
+        <a href="https://keep-zero.github.io/2019/spring_action03_03/" class="next" rel="next" title="《Spring实战》-第三章：Bean的高级装配（3）-处理自动装配Bean的歧义性">《Spring实战》-第三章：Bean的高级装配（3）-处理自动装配Bean的歧义性&nbsp;<i class="iconfont icon-right"></i></a>
+        
+    </div>
+
+    <div class="post-comment">
+          
+                 
+          
+    </div>
+</article>
+          </div>
+		   </main>
+      <footer class="footer">
+    <div class="copyright">
+        &copy;
+        
+        <span itemprop="copyrightYear">2011 - 2019</span>
+        
+        <span class="with-love">
+    	 <i class="iconfont icon-love"></i> 
+        </span>
+         
+            <span class="author" itemprop="copyrightHolder"><a href="https://keep-zero.github.io">GF.L</a> | </span> 
+         
+
+         
+		  <span>Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow">Hugo</a> & <a href="https://github.com/liuzc/leaveit" target="_blank" rel="external nofollow">LeaveIt</a></span> 
+		<span id="busuanzi_container_site_pv">
+			本站访问量：<span id="busuanzi_value_site_pv"></span>次
+		</span>
+		&nbsp;
+		<span id="busuanzi_container_site_uv">
+			您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者
+		</span>
+    </div>
+</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    <script src="/js/vendor_no_gallery.min.js" async=""></script>
+    
+  
+
+
+
+     </div>
+  </body>
+</html>

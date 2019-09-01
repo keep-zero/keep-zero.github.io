@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noodp"/>
+  <meta name="author" content="GF.L">
+  
+  
+  
+  <link rel="prev" href="https://keep-zero.github.io/2019/spring_action05/" />
+  <link rel="next" href="https://keep-zero.github.io/2019/spring_action07/" />
+  <link rel="canonical" href="https://keep-zero.github.io/2019/spring_action06/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <title>
+       
+       
+           《Spring实战》-第六章:渲染视图（表达式，标签库，模板） | Keep Zero
+       
+  </title>
+  <meta name="title" content="《Spring实战》-第六章:渲染视图（表达式，标签库，模板） | Keep Zero">
+    
+  
+  <link rel="stylesheet" href="/font/iconfont.css">
+  <link rel="stylesheet" href="/css/main.min.css">
+
+
+  
+  
+ 
+
+<script type="application/ld+json">
+ "@context" : "http://schema.org",
+    "@type" : "BlogPosting",
+    "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "https:\/\/keep-zero.github.io"
+    },
+    "articleSection" : "posts",
+    "name" : "《Spring实战》-第六章:渲染视图（表达式，标签库，模板）",
+    "headline" : "《Spring实战》-第六章:渲染视图（表达式，标签库，模板）",
+    "description" : "慢慢来比较快，虚心学技术\n前言：视图解析器可以将逻辑视图名转换成物理实现\n 一、视图解析器 Spring提供了13个基本的视图解析器，能够将逻辑视图名转换为物理实现，如上一篇中提到的InternalResourceViewResolver。\n此处我们只了解其中几个比较常用的视图解析器：\n FreeMarkerViewResolver：将视图解析为 FreeMarker 模板 InternalResourceViewResolver：将视图解析为Web应用的内部资源 TilesViewResolver：将视图解析为 Apache Tile 定义，其中 tile ID 与视图名称相同。注意有两个不同的TilesViewResolver实现，分别对应于 Tiles 2.0 和Tiles 3.0 ThymeleafViewResolver： 将逻辑视图名称解析为 Thymeleaf 模板视图  使用不同的解析器可以实现将视图解析成不同类型的内容展现\n二、具体视图解析器分析Demo Ⅰ、创建JSP视图 基础实现如上一章《Spring实战》-第五章:Web中的Spring（SpringMVC注解实现） )所述，InternalResourceViewResolver还支持将逻辑视图名转换成JstlView，我们只需要修改其viewClass为org.springframework.web.servlet.view.JstlView.class即可\n@Bean public ViewResolver viewResolver(){ InternalResourceViewResolver resourceViewResolver = new InternalResourceViewResolver(); resourceViewResolver.setPrefix(\x26quot;\/WEB-INF\/view\/\x26quot;); resourceViewResolver.setSuffix(\x26quot;.jsp\x26quot;); resourceViewResolver.setExposeContextBeansAsAttributes(true); resourceViewResolver.setViewClass(org.springframework.web.servlet.view.JstlView.class); return resourceViewResolver; }  Ⅱ、使用Apache Tile视图定义布局 如果一个应用多个视图需要使用很多重复性的内容，如头部，尾部等，或许我们会一个个的去复制使用，但是一旦做了任何更改，将需要同步进行多次更改，效率是很低的。\nApache Tiles是一个JavaEE应用的页面布局框架。Tiles框架提供了一种模板机制，可以为某一类页面定义一个通用的模板，该模板定义了页面的整体布局。布局由可以复用的多个块组成，每个页面可以有选择性的重新定义块而达到组件的复用。\nSpringMVC结合Tile使用，案例如下：\n引入tiles支持jar包：\n\x26lt;!--tiles--\x26gt; \x26lt;dependency\x26gt; \x26lt;groupId\x26gt;org.apache.tiles\x26lt;\/groupId\x26gt; \x26lt;artifactId\x26gt;tiles-jsp\x26lt;\/artifactId\x26gt; \x26lt;version\x26gt;3.0.5\x26lt;\/version\x26gt; \x26lt;\/dependency\x26gt;  ①创建TilesConfig配置类，同时定义视图解析器TilesViewResolver\n@Configuration @EnableAspectJAutoProxy @ComponentScan(basePackages = {\x26quot;com.",
+    "inLanguage" : "en-us",
+    "author" : "GF.L",
+    "creator" : "GF.L",
+    "publisher": "GF.L",
+    "accountablePerson" : "GF.L",
+    "copyrightHolder" : "GF.L",
+    "copyrightYear" : "2019",
+    "datePublished": "2019-08-31 23:21:07 \x2b0800 CST",
+    "dateModified" : "2019-08-31 23:21:07 \x2b0800 CST",
+    "url" : "https:\/\/keep-zero.github.io\/2019\/spring_action06\/",
+    "wordCount" : "440",
+    "keywords" : [ "java","spring","spring-action", "Keep Zero"]
+}
+</script>
+
+</head>
+
+  
+
+
+  <body class="">
+    <div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo">
+        	<a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a>
+        </div>
+        <div class="menu navbar-right">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+<nav class="navbar-mobile" id="nav-mobile" style="display: none">
+     <div class="container">
+        <div class="navbar-header">
+            <div>  <a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a></div>
+            <div class="menu-toggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+     
+          <div class="menu" id="mobile-menu">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+    	 <main class="main">
+          <div class="container">
+      		
+<article class="post-warp" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">《Spring实战》-第六章:渲染视图（表达式，标签库，模板）</h1>
+        <div class="post-meta">
+                Written by <a itemprop="name" href="https://keep-zero.github.io" rel="author">GF.L</a> with ♥ 
+                <span class="post-time">
+                on <time datetime=2019-08-31 itemprop="datePublished">August 31, 2019</time>
+                </span>
+                in
+                <i class="iconfont icon-folder"></i>
+                <span class="post-category">
+                        <a href="https://keep-zero.github.io/categories/spring/"> spring </a>
+                        
+                </span>
+				
+				<span id="wc" style="font-size: 1rem;text-align: center;">  共500 字|  阅读需时约 3 分|  本文总阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </div>
+    </header>
+    <div class="post-content">
+        
+
+        
+            
+        
+
+        
+        
+     
+          
+          
+          
+
+          
+          
+          
+
+          
+
+<blockquote>
+<p><strong>慢慢来比较快，虚心学技术</strong></p>
+
+<p><em>前言：视图解析器可以将逻辑视图名转换成物理实现</em></p>
+</blockquote>
+
+<h2 id="一-视图解析器">一、视图解析器</h2>
+
+<p>Spring提供了<strong>13个基本的视图解析器</strong>，能够<strong>将逻辑视图名转换为物理实现</strong>，如上一篇中提到的InternalResourceViewResolver。</p>
+
+<p>此处我们只了解其中几个比较常用的视图解析器：</p>
+
+<ul>
+<li><strong>FreeMarkerViewResolver</strong>：将视图解析为 <strong>FreeMarker</strong> 模板</li>
+<li><strong>InternalResourceViewResolver</strong>：将视图解析为Web应用的内部资源</li>
+<li><strong>TilesViewResolver</strong>：将视图解析为 <strong>Apache Tile</strong> 定义，其中 tile ID 与视图名称相同。注意有两个不同的TilesViewResolver实现，分别对应于 Tiles 2.0 和Tiles 3.0</li>
+<li><strong>ThymeleafViewResolver</strong>： 将逻辑视图名称解析为 <strong>Thymeleaf</strong> 模板视图</li>
+</ul>
+
+<p>使用不同的解析器可以实现将视图解析成不同类型的内容展现</p>
+
+<h2 id="二-具体视图解析器分析demo">二、具体视图解析器分析Demo</h2>
+
+<h3 id="ⅰ-创建jsp视图">Ⅰ、创建JSP视图</h3>
+
+<p>基础实现如上一章<a href="https://www.jianshu.com/p/b74ff4de15e8" rel="nofollow noreferrer" target="_blank">《Spring实战》-第五章:Web中的Spring（SpringMVC注解实现）</a>
+)所述，<strong>InternalResourceViewResolver</strong>还支持将逻辑视图名转换成<strong>JstlView</strong>，我们只需要修改其<strong>viewClass为org.springframework.web.servlet.view.JstlView.class</strong>即可</p>
+
+<pre><code class="language-java">@Bean
+public ViewResolver viewResolver(){
+    InternalResourceViewResolver resourceViewResolver = new InternalResourceViewResolver();
+    resourceViewResolver.setPrefix(&quot;/WEB-INF/view/&quot;);
+    resourceViewResolver.setSuffix(&quot;.jsp&quot;);
+    resourceViewResolver.setExposeContextBeansAsAttributes(true);
+    resourceViewResolver.setViewClass(org.springframework.web.servlet.view.JstlView.class);
+    return resourceViewResolver;
+}
+</code></pre>
+
+<h3 id="ⅱ-使用apache-tile视图定义布局">Ⅱ、使用Apache Tile视图定义布局</h3>
+
+<p>如果一个应用多个视图需要使用很多重复性的内容，如头部，尾部等，或许我们会一个个的去复制使用，但是一旦做了任何更改，将需要同步进行多次更改，效率是很低的。</p>
+
+<p><strong>Apache Tiles是一个JavaEE应用的页面布局框架。Tiles框架提供了一种模板机制，可以为某一类页面定义一个通用的模板，该模板定义了页面的整体布局。布局由可以复用的多个块组成，每个页面可以有选择性的重新定义块而达到组件的复用。</strong></p>
+
+<p>SpringMVC结合Tile使用，案例如下：</p>
+
+<p>引入tiles支持jar包：</p>
+
+<pre><code class="language-xml">&lt;!--tiles--&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.apache.tiles&lt;/groupId&gt;
+    &lt;artifactId&gt;tiles-jsp&lt;/artifactId&gt;
+    &lt;version&gt;3.0.5&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+
+<p>①创建<strong>TilesConfig</strong>配置类，同时定义视图解析器<strong>TilesViewResolver</strong></p>
+
+<pre><code class="language-java">@Configuration
+@EnableAspectJAutoProxy
+@ComponentScan(basePackages = {&quot;com.my.spring.controller&quot;})
+@EnableWebMvc /*&lt;mvc:annotation-driven&gt; 开启mvc配置*/
+public class TilesConfig {
+    /**
+     * 定义默认处理器
+     */
+    @Bean
+    public TilesConfigurer tilesConfigurer(){
+        TilesConfigurer tilesConfigurer = new TilesConfigurer();
+        //指定tiles的位置
+        tilesConfigurer.setDefinitions(new String[]{&quot;/WEB-INF/layout/tiles.xml&quot;});
+        //开启刷新功能
+        tilesConfigurer.setCheckRefresh(true);
+
+        return tilesConfigurer;
+    }
+
+    //定义使用TilesViewResolver
+    @Bean
+    public ViewResolver viewResolver(){
+        return new TilesViewResolver();
+    }
+}
+</code></pre>
+
+<p>②定义Tiles</p>
+
+<p>由上述配置代码中可以，Tiles文件是一个xml文件，创建位于<strong>/WEB-INF/layout/tiles.xml</strong>，使用<strong><tiles-definitions></strong>作为根节点,使用<strong><definition></strong>节点包裹一个Tile</p>
+
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
+&lt;!DOCTYPE tiles-definitions PUBLIC
+        &quot;-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN&quot;
+        &quot;http://tiles.apache.org/dtds/tiles-config_3_0.dtd&quot;&gt;
+&lt;tiles-definitions&gt;
+    &lt;!--定义一个名为base的tile，其模板文件时WEB-INF/layout下的base.jsp--&gt;
+    &lt;definition name=&quot;base&quot; template=&quot;/WEB-INF/layout/base.jsp&quot;&gt;
+        &lt;!--定义属性header，指向视图/WEB-INF/layout/header.jsp--&gt;
+        &lt;put-attribute name=&quot;header&quot; value=&quot;/WEB-INF/layout/header.jsp&quot;/&gt;
+        &lt;!--定义属性footer，指向视图/WEB-INF/layout/header.jsp--&gt;
+        &lt;put-attribute name=&quot;footer&quot; value=&quot;/WEB-INF/layout/footer.jsp&quot;/&gt;
+    &lt;/definition&gt;
+    &lt;!--定义一个名为home的tile，继承了名为base的tile，自动继承header和footer属性--&gt;
+    &lt;definition name=&quot;home&quot; extends=&quot;base&quot; &gt;
+        &lt;!--定义属性body，指向视图/WEB-INF/layout/home.jsp--&gt;
+        &lt;put-attribute name=&quot;body&quot; value=&quot;/WEB-INF/view/home.jsp&quot;/&gt;
+    &lt;/definition&gt;
+&lt;/tiles-definitions&gt;
+</code></pre>
+
+<p>③编写主模板base.jsp</p>
+
+<pre><code class="language-jsp">&lt;%@ page contentType=&quot;text/html;charset=UTF-8&quot; language=&quot;java&quot; %&gt;
+&lt;!--引入tiles标签库--&gt;
+&lt;%@ taglib uri=&quot;http://tiles.apache.org/tags-tiles&quot; prefix=&quot;t&quot;%&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;base&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div id = &quot;header&quot;&gt;
+        &lt;!--此处引入上tiles.xml文件中定义的属性header，实际上就是将header属性指向的header.jsp引入此处--&gt;
+        &lt;t:insertAttribute name=&quot;header&quot;&gt;&lt;/t:insertAttribute&gt;
+    &lt;/div&gt;
+    &lt;div id=&quot;content&quot;&gt;
+         &lt;!--此处引入属性body，一般来说这个地方都是用来作为空占位，所以base tile才没有body属性，此处是被继承者填充的--&gt;
+        &lt;t:insertAttribute name=&quot;body&quot;&gt;&lt;/t:insertAttribute&gt;
+    &lt;/div&gt;
+    &lt;div id=&quot;footer&quot;&gt;
+        &lt;!--此处引入上tiles.xml文件中定义的属性footer，实际上就是将footer属性指向的footer.jsp引入此处--&gt;
+        &lt;t:insertAttribute name=&quot;footer&quot;&gt;&lt;/t:insertAttribute&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p>④编写属性模板文件：header.jsp和footer.jsp这两个文件作为模板文件都是十分简洁的</p>
+
+<pre><code class="language-jsp">header.jsp:
+
+    &lt;div style=&quot;font-size: medium;font-weight: bolder&quot;&gt;TestDemo&lt;/div&gt;
+
+footer.jsp:
+    &lt;span style=&quot;align-content: center&quot;&gt;@create by Mr D&lt;/span&gt;
+
+</code></pre>
+
+<p>⑤编写目标文件：home.jsp</p>
+
+<pre><code class="language-jsp">&lt;%@ page contentType=&quot;text/html;charset=UTF-8&quot; language=&quot;java&quot; %&gt;
+&lt;%@ taglib uri=&quot;http://tiles.apache.org/tags-tiles&quot; prefix=&quot;t&quot;%&gt;
+&lt;h1&gt;Hello World&lt;/h1&gt;
+</code></pre>
+
+<p>⑥编写基本Controller方法home()，方法返回一个逻辑视图名“<strong>home</strong>”，经过<strong>TilesViewResolver</strong>后被解析为完整视图：base.jsp中的<strong>body属性由home.jsp填充</strong></p>
+
+<pre><code class="language-java">@Controller
+public class HomeController {
+
+    @RequestMapping(method = RequestMethod.GET,value = &quot;/home&quot;)
+    public String home(){
+        //返回试图名为home的视图
+        return &quot;home&quot;;
+    }
+}
+</code></pre>
+
+<p>⑦浏览器访问结果如下：</p>
+
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/spring-action/spring_action_06_01.jpg" alt="" class="lazyload"><figcaption class="image-caption"></figcaption></figure></p>
+
+<h3 id="ⅲ-使用thymeleaf">Ⅲ、使用Thymeleaf</h3>
+
+<p>尽管JSP和Tiles十分便捷，但是终究建立在Servlet的基础之上，有时候很多代码并不是完全的前端代码，使其变得很混乱。<strong>Thymeleaf</strong>模板是<strong>原生的，不依赖于标签库</strong>。它能<strong>在接受原始 HTML 的地方进行编辑和渲染</strong></p>
+
+<p>案例如下：</p>
+
+<p>引入Thymeleaf支持jar包：</p>
+
+<pre><code class="language-xml">&lt;!-- https://mvnrepository.com/artifact/org.thymeleaf/thymeleaf-spring4 --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.thymeleaf&lt;/groupId&gt;
+    &lt;artifactId&gt;thymeleaf-spring4&lt;/artifactId&gt;
+    &lt;version&gt;3.0.9.RELEASE&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+
+<p>①创建<strong>ThymeleafConfig</strong>配置类，装配<strong>ThymeleafViewResolver</strong>用于将逻辑视图名称解析为 Thymeleaf 模板视图,<strong>SpringTemplateEngine</strong>用于处理模板并渲染结果；<strong>TemplateResolver</strong> 用于加载 <strong>Thymeleaf</strong> 模板</p>
+
+<pre><code class="language-java">@Configuration
+public class ThymeleafConfig implements WebMvcConfigurer {
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    /**
+     * 装配模板引擎（解析器），用于处理模板并渲染结果
+     */
+    @Bean
+    public SpringResourceTemplateResolver templateResolver() {
+        SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
+        templateResolver.setCharacterEncoding(&quot;UTF-8&quot;);
+        templateResolver.setApplicationContext(applicationContext);
+        templateResolver.setPrefix(&quot;/WEB-INF/view/&quot;);//指定视图前缀
+        templateResolver.setSuffix(&quot;.html&quot;);//指定视图后缀
+        return templateResolver;
+    }
+
+    /**
+     * 装配模板引擎，用于处理模板并渲染结果
+     */
+    @Bean
+    public SpringTemplateEngine templateEngine() {
+        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+        templateEngine.setTemplateResolver(templateResolver());
+        templateEngine.setEnableSpringELCompiler(true);
+
+        return templateEngine;
+    }
+
+    /**
+     * 装配视图解析器
+     */
+    @Override
+    public void configureViewResolvers(ViewResolverRegistry registry) {
+        ThymeleafViewResolver resolver = new ThymeleafViewResolver();
+        resolver.setCharacterEncoding(&quot;UTF-8&quot;);
+        resolver.setTemplateEngine(templateEngine());
+        registry.viewResolver(resolver);
+    }
+}
+</code></pre>
+
+<p>②编写基本页面：<strong>ThymeleafHtml.html</strong>,绑定bean对象，将bean对象属性作为输出</p>
+
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html xmlns:th=&quot;http://www.thymeleaf.org&quot;&gt;&lt;!--引入thymeleaf支持--&gt;
+&lt;head&gt;
+    &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=utf-8&quot; /&gt;
+    &lt;title&gt;SpringMVC5+Thymeleaf示例&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h1&gt;Spring MVC + Thymeleaf Hello World example&lt;/h1&gt;
+&lt;p th:text=&quot;${bean.id}&quot;&gt;&lt;/p&gt;
+&lt;p th:text=&quot;${bean.name}&quot;&gt;&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p>③编写基础Controller方法，返回逻辑视图名指向ThymeleafHtml.html，并将数据封装返回</p>
+
+<pre><code class="language-java">@RequestMapping(method = RequestMethod.GET,value = &quot;/getBean&quot;)
+public String getBeanByParam(String data, Model model){
+
+    JSONObject jo = JSON.parseObject(data);
+    Integer id = jo.getInteger(&quot;id&quot;);
+    BaseBean bean = this.baseService.findBean(id);
+
+    model.addAttribute(&quot;bean&quot;,bean);
+
+    return &quot;ThymeleafHtml&quot;;
+}
+</code></pre>
+
+<p>④浏览器访问结果：可以看到，返回的bean成功被绑定到页面属性中</p>
+
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/spring-action/spring_action_06_02.jpg" alt="" class="lazyload"><figcaption class="image-caption"></figcaption></figure></p>
+
+<p>但是，Thymeleaf更出色的地方是实现<strong>表单绑定</strong>，将<strong>表单和对象绑定到一起</strong></p>
+
+<p>⑤创建一个AddBeanHtml.html文件，其中包含一个表单文件</p>
+
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot; xmlns:th=&quot;http://www.thymeleaf.org&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;title&gt;Title&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;form method=&quot;post&quot; action=&quot;addBean&quot; th:object=&quot;${baseBean}&quot;&gt;
+        &lt;div class=&quot;error&quot; th:if=&quot;${#fields.hasErrors('*')}&quot;&gt;
+            &lt;ul&gt;
+                &lt;li th:each=&quot;err: ${#fields.errors('*')}&quot; th:text=&quot;${err}&quot;&gt;
+                    Input is incorrect
+                &lt;/li&gt;
+            &lt;/ul&gt;
+        &lt;/div&gt;
+        &lt;label th:class=&quot;${#fields.hasErrors('id')}?'error'&quot;&gt;Id&lt;/label&gt;
+        &lt;input type=&quot;text&quot; th:field=&quot;*{id}&quot; th:class=&quot;${#fields.hasErrors('id')}?'error'&quot;/&gt;&lt;br&gt;
+        &lt;label th:class=&quot;${#fields.hasErrors('name')}?'error'&quot;&gt;Name&lt;/label&gt;
+        &lt;input type=&quot;text&quot; th:field=&quot;*{name}&quot; th:class=&quot;${#fields.hasErrors('name')}?'error'&quot;/&gt;&lt;br&gt;
+
+        &lt;button type=&quot;submit&quot;&gt;提交&lt;/button&gt;
+    &lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p>⑥编写基本控制方法，将上述代码提交的类展示到ThymeleafHtml.html中去</p>
+
+<pre><code class="language-java">@RequestMapping(method = RequestMethod.POST,value = &quot;/addBean&quot;)
+public String addBean(BaseBean baseBean, Model model){
+
+    model.addAttribute(&quot;bean&quot;,baseBean);
+
+    //返回试图名为home的视图
+    return &quot;ThymeleafHtml&quot;;
+}
+</code></pre>
+
+<p>网页请求如下：</p>
+
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/spring-action/spring_action_06_03.jpg" alt="" class="lazyload"><figcaption class="image-caption"></figcaption></figure></p>
+
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/spring-action/spring_action_06_04.jpg" alt="" class="lazyload"><figcaption class="image-caption"></figcaption></figure></p>
+
+    </div>
+
+    <div class="post-copyright">
+             
+            <p class="copyright-item">
+                <span>Author:</span>
+                <span>GF.L </span>
+                </p>
+            
+           
+             
+            <p class="copyright-item">
+                    <span>Link:</span>
+                    <a href=https://keep-zero.github.io/2019/spring_action06/>https://keep-zero.github.io/2019/spring_action06/</span>
+            </p>
+            
+             
+            <p class="copyright-item lincese">
+                本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可
+            </p>
+            
+    </div>
+
+  
+    <div class="post-tags">
+        
+            <section>
+            <i class="iconfont icon-tag"></i>Tag(s): 
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/java/">
+                    #java</a></span>
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/spring/">
+                    #spring</a></span>
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/spring-action/">
+                    #spring-action</a></span>
+            
+            </section>
+        
+        <section>
+                <a href="javascript:window.history.back();">back</a></span> · 
+                <span><a href="https://keep-zero.github.io">home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+        
+        <a href="https://keep-zero.github.io/2019/spring_action05/" class="prev" rel="prev" title="《Spring实战》-第五章：Web中的Spring（SpringMVC注解实现）"><i class="iconfont icon-left"></i>&nbsp;《Spring实战》-第五章：Web中的Spring（SpringMVC注解实现）</a>
+         
+        
+        <a href="https://keep-zero.github.io/2019/spring_action07/" class="next" rel="next" title="《Spring实战》-第七章:SpringMVC的高级技术">《Spring实战》-第七章:SpringMVC的高级技术&nbsp;<i class="iconfont icon-right"></i></a>
+        
+    </div>
+
+    <div class="post-comment">
+          
+                 
+          
+    </div>
+</article>
+          </div>
+		   </main>
+      <footer class="footer">
+    <div class="copyright">
+        &copy;
+        
+        <span itemprop="copyrightYear">2011 - 2019</span>
+        
+        <span class="with-love">
+    	 <i class="iconfont icon-love"></i> 
+        </span>
+         
+            <span class="author" itemprop="copyrightHolder"><a href="https://keep-zero.github.io">GF.L</a> | </span> 
+         
+
+         
+		  <span>Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow">Hugo</a> & <a href="https://github.com/liuzc/leaveit" target="_blank" rel="external nofollow">LeaveIt</a></span> 
+		<span id="busuanzi_container_site_pv">
+			本站访问量：<span id="busuanzi_value_site_pv"></span>次
+		</span>
+		&nbsp;
+		<span id="busuanzi_container_site_uv">
+			您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者
+		</span>
+    </div>
+</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+    
+     <link href="//lib.baomitu.com/lightgallery/1.6.11/css/lightgallery.min.css" rel="stylesheet">  
+      
+     <script src="/js/vendor_gallery.min.js" async="" ></script>
+    
+  
+
+
+
+     </div>
+  </body>
+</html>

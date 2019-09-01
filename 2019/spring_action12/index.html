@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noodp"/>
+  <meta name="author" content="GF.L">
+  
+  
+  
+  <link rel="prev" href="https://keep-zero.github.io/2019/spring_action11_03/" />
+  <link rel="next" href="https://keep-zero.github.io/2019/spring_action13_01/" />
+  <link rel="canonical" href="https://keep-zero.github.io/2019/spring_action12/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <title>
+       
+       
+           《Spring实战》-第十二章：Spring与NoSQL | Keep Zero
+       
+  </title>
+  <meta name="title" content="《Spring实战》-第十二章：Spring与NoSQL | Keep Zero">
+    
+  
+  <link rel="stylesheet" href="/font/iconfont.css">
+  <link rel="stylesheet" href="/css/main.min.css">
+
+
+  
+  
+ 
+
+<script type="application/ld+json">
+ "@context" : "http://schema.org",
+    "@type" : "BlogPosting",
+    "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "https:\/\/keep-zero.github.io"
+    },
+    "articleSection" : "posts",
+    "name" : "《Spring实战》-第十二章：Spring与NoSQL",
+    "headline" : "《Spring实战》-第十二章：Spring与NoSQL",
+    "description" : "慢来比较快，虚心学技术\n 随着非关系型数据库（NoSQL数据库）概念的流行，Spring也开始提供非关系型数据库的支持，Spring主要提供以下几种非关系型数据库的支持：\n MongoDB \x26mdash;\x26ndash;文档数据库，不是通用的数据库，它们所擅长解决的是一个很小的问题集 Neo4j \x26mdash;\x26mdash;\x26mdash;\x26ndash;图数据库。 Redis \x26mdash;\x26mdash;\x26mdash;\x26ndash;键值对数据库  现如今用的比较多的NoSQL数据库是Redis数据库，我们以Spring整合Redis数据库为例了解Spring对NoSQL的支持\n一、Spring Data Redis体系结构分析 Spring-data-redis提供了在srping应用中通过简单的配置访问redis服务，对reids底层开发包(Jedis, JRedis, and RJC)进行了高度封装，RedisTemplate提供了redis各种操作、异常处理及序列化，支持发布订阅，并对spring 3.1 cache进行了实现。\n 连接到 Redis  Redis 连接工厂会生成到 Redis 数据库服务器的连接。 Spring Data Redis 为四种 Redis 客户端实现提供了连接工厂：\n JedisConnectionFactory\x26mdash;\x26mdash;\x26mdash;-最为常用\n SrpConnectionFactory\n LettuceConnectionFactory\n JredisConnectionFactory\n 操作Redis\n  RedisTemplate对应不同需求封装了如下操作：\nopsForValue()\x26mdash;\x26mdash;普通键值对操作 opsForList()\x26mdash;\x26mdash;\x26mdash;ArrayList键值对操作 opsForSet()\x26mdash;\x26mdash;\x26mdash;HashSet键值对操作 opsForHash()\x26mdash;\x26mdash;HashMap键值对操作\n二、Spring 整合使用Spring Data Redis ①引入依赖\n\x26lt;!--引入Spring Data Redis--\x26gt; \x26lt;!-- https:\/\/mvnrepository.com\/artifact\/org.springframework.data\/spring-data-redis --\x26gt; \x26lt;dependency\x26gt; \x26lt;groupId\x26gt;org.springframework.data\x26lt;\/groupId\x26gt; \x26lt;artifactId\x26gt;spring-data-redis\x26lt;\/artifactId\x26gt; \x26lt;version\x26gt;2.1.5.RELEASE\x26lt;\/version\x26gt; \x26lt;\/dependency\x26gt; \x26lt;!",
+    "inLanguage" : "en-us",
+    "author" : "GF.L",
+    "creator" : "GF.L",
+    "publisher": "GF.L",
+    "accountablePerson" : "GF.L",
+    "copyrightHolder" : "GF.L",
+    "copyrightYear" : "2019",
+    "datePublished": "2019-09-01 11:52:39 \x2b0800 CST",
+    "dateModified" : "2019-09-01 11:52:39 \x2b0800 CST",
+    "url" : "https:\/\/keep-zero.github.io\/2019\/spring_action12\/",
+    "wordCount" : "468",
+    "keywords" : [ "java","spring","spring-action", "Keep Zero"]
+}
+</script>
+
+</head>
+
+  
+
+
+  <body class="">
+    <div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo">
+        	<a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a>
+        </div>
+        <div class="menu navbar-right">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+<nav class="navbar-mobile" id="nav-mobile" style="display: none">
+     <div class="container">
+        <div class="navbar-header">
+            <div>  <a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a></div>
+            <div class="menu-toggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+     
+          <div class="menu" id="mobile-menu">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+    	 <main class="main">
+          <div class="container">
+      		
+<article class="post-warp" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">《Spring实战》-第十二章：Spring与NoSQL</h1>
+        <div class="post-meta">
+                Written by <a itemprop="name" href="https://keep-zero.github.io" rel="author">GF.L</a> with ♥ 
+                <span class="post-time">
+                on <time datetime=2019-09-01 itemprop="datePublished">September 1, 2019</time>
+                </span>
+                in
+                <i class="iconfont icon-folder"></i>
+                <span class="post-category">
+                        <a href="https://keep-zero.github.io/categories/spring/"> spring </a>
+                        
+                </span>
+				
+				<span id="wc" style="font-size: 1rem;text-align: center;">  共500 字|  阅读需时约 3 分|  本文总阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </div>
+    </header>
+    <div class="post-content">
+        
+
+        
+            
+        
+
+        
+        
+     
+          
+          
+          
+
+          
+          
+          
+
+          
+
+<blockquote>
+<p><strong>慢来比较快，虚心学技术</strong></p>
+</blockquote>
+
+<p>随着<strong>非关系型数据库（NoSQL数据库）</strong>概念的流行，Spring也开始提供非关系型数据库的支持，Spring主要提供以下几种非关系型数据库的支持：</p>
+
+<ul>
+<li><strong>MongoDB</strong> &mdash;&ndash;文档数据库，不是通用的数据库，它们所擅长解决的是一个很小的问题集</li>
+<li><strong>Neo4j</strong> &mdash;&mdash;&mdash;&ndash;图数据库。</li>
+<li><strong>Redis</strong> &mdash;&mdash;&mdash;&ndash;键值对数据库</li>
+</ul>
+
+<p>现如今用的比较多的NoSQL数据库是Redis数据库，我们以Spring整合Redis数据库为例了解Spring对NoSQL的支持</p>
+
+<h2 id="一-spring-data-redis体系结构分析">一、Spring Data Redis体系结构分析</h2>
+
+<p>Spring-data-redis提供了在srping应用中通过简单的配置访问redis服务，对reids底层开发包(Jedis, JRedis, and RJC)进行了高度封装，RedisTemplate提供了redis各种操作、异常处理及序列化，支持发布订阅，并对spring 3.1 cache进行了实现。</p>
+
+<ul>
+<li>连接到 Redis</li>
+</ul>
+
+<p>Redis 连接工厂会生成到 Redis 数据库服务器的连接。 Spring Data Redis 为四种 Redis 客户端实现提供了连接工厂：</p>
+
+<ul>
+<li><p><strong>JedisConnectionFactory</strong>&mdash;&mdash;&mdash;-最为常用</p></li>
+
+<li><p><strong>SrpConnectionFactory</strong></p></li>
+
+<li><p><strong>LettuceConnectionFactory</strong></p></li>
+
+<li><p><strong>JredisConnectionFactory</strong></p></li>
+
+<li><p>操作Redis</p></li>
+</ul>
+
+<p>RedisTemplate对应不同需求封装了如下操作：</p>
+
+<p><strong>opsForValue</strong>()&mdash;&mdash;普通键值对操作
+<strong>opsForList</strong>()&mdash;&mdash;&mdash;ArrayList键值对操作
+<strong>opsForSet</strong>()&mdash;&mdash;&mdash;HashSet键值对操作
+<strong>opsForHash</strong>()&mdash;&mdash;HashMap键值对操作</p>
+
+<h2 id="二-spring-整合使用spring-data-redis">二、Spring 整合使用Spring Data Redis</h2>
+
+<p>①引入依赖</p>
+
+<pre><code class="language-xml">&lt;!--引入Spring Data Redis--&gt;
+&lt;!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-redis --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.data&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-data-redis&lt;/artifactId&gt;
+    &lt;version&gt;2.1.5.RELEASE&lt;/version&gt;
+&lt;/dependency&gt;
+
+&lt;!--引入jedis支持--&gt;
+&lt;!-- https://mvnrepository.com/artifact/redis.clients/jedis --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;redis.clients&lt;/groupId&gt;
+    &lt;artifactId&gt;jedis&lt;/artifactId&gt;
+    &lt;version&gt;2.9.1&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+
+<p>②编写redis配置文件：redis.properties</p>
+
+<pre><code class="language-properties">#redis地址
+redis.host=127.0.0.1
+#redis端口
+redis.port=6379
+#redis密码，一般不需要
+redis.password=&quot;&quot;
+#最大空闲时间
+redis.maxIdle=400
+#最大连接数
+redis.maxTotal=6000
+#最大等待时间
+redis.maxWaitMillis=1000
+#连接耗尽时是否阻塞，false报异常，true阻塞超时 默认：true
+redis.blockWhenExhausted=true
+#在获得链接的时候检查有效性，默认false
+redis.testOnBorrow=true
+#超时时间，默认：2000
+redis.timeout=100000
+</code></pre>
+
+<p>③编写Spring配置文件并配置Redis：application.xml</p>
+
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+       xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans.xsd 
+       http://www.springframework.org/schema/context 
+       http://www.springframework.org/schema/context/spring-context.xsd 
+       http://www.springframework.org/schema/tx 
+       http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop 
+       http://www.springframework.org/schema/aop/spring-aop.xsd&quot;&gt;
+
+    &lt;!--开启注解扫描--&gt;
+    &lt;context:annotation-config/&gt;
+    &lt;!--指定组件扫描范围--&gt;
+    &lt;context:component-scan base-package=&quot;com.my.spring&quot;/&gt;
+
+    &lt;!--引入redis资源文件--&gt;
+    &lt;context:property-placeholder location=&quot;classpath*:redis.properties&quot;/&gt;
+
+    &lt;!-- redis数据源 --&gt;
+    &lt;bean id=&quot;poolConfig&quot; class=&quot;redis.clients.jedis.JedisPoolConfig&quot;&gt;
+        &lt;!-- 最大空闲数 --&gt;
+        &lt;property name=&quot;maxIdle&quot; value=&quot;${redis.maxIdle}&quot; /&gt;
+        &lt;!-- 最大空连接数 --&gt;
+        &lt;property name=&quot;maxTotal&quot; value=&quot;${redis.maxTotal}&quot; /&gt;
+        &lt;!-- 最大等待时间 --&gt;
+        &lt;property name=&quot;maxWaitMillis&quot; value=&quot;${redis.maxWaitMillis}&quot; /&gt;
+        &lt;!-- 连接超时时是否阻塞，false时报异常,ture阻塞直到超时, 默认true --&gt;
+        &lt;property name=&quot;blockWhenExhausted&quot; value=&quot;${redis.blockWhenExhausted}&quot; /&gt;
+        &lt;!-- 返回连接时，检测连接是否成功 --&gt;
+        &lt;property name=&quot;testOnBorrow&quot; value=&quot;${redis.testOnBorrow}&quot; /&gt;
+    &lt;/bean&gt;
+
+    &lt;!-- Spring-redis连接池管理工厂 --&gt;
+    &lt;bean id=&quot;jedisConnectionFactory&quot; class=&quot;org.springframework.data.redis.connection.jedis.JedisConnectionFactory&quot;&gt;
+        &lt;!-- IP地址 --&gt;
+        &lt;property name=&quot;hostName&quot; value=&quot;${redis.host}&quot; /&gt;
+        &lt;!-- 端口号 --&gt;
+       &lt;property name=&quot;port&quot; value=&quot;${redis.port}&quot; /&gt;
+        &lt;!-- 超时时间 默认2000--&gt;
+        &lt;property name=&quot;timeout&quot; value=&quot;${redis.timeout}&quot; /&gt;
+        &lt;!-- 连接池配置引用 --&gt;
+        &lt;property name=&quot;poolConfig&quot; ref=&quot;poolConfig&quot; /&gt;
+        &lt;!-- usePool：是否使用连接池 --&gt;
+        &lt;property name=&quot;usePool&quot; value=&quot;true&quot;/&gt;
+    &lt;/bean&gt;
+
+    &lt;!-- 注册RedisTemplate --&gt;
+    &lt;bean id=&quot;redisTemplate&quot; class=&quot;org.springframework.data.redis.core.RedisTemplate&quot;&gt;
+        &lt;!--注入连接池管理工具--&gt;
+        &lt;property name=&quot;connectionFactory&quot; ref=&quot;jedisConnectionFactory&quot; /&gt;
+        &lt;!--设置Redis的key序列化方式--&gt;
+        &lt;property name=&quot;keySerializer&quot;&gt;
+            &lt;bean class=&quot;org.springframework.data.redis.serializer.StringRedisSerializer&quot; /&gt;
+        &lt;/property&gt;
+        &lt;!--设置Redis的value序列化方式--&gt;
+        &lt;property name=&quot;valueSerializer&quot;&gt;
+            &lt;bean class=&quot;org.springframework.data.redis.serializer.StringRedisSerializer&quot; /&gt;
+        &lt;/property&gt;
+        &lt;!--设置Redis存入haseMap时的key序列化方式--&gt;
+        &lt;property name=&quot;hashKeySerializer&quot;&gt;
+            &lt;bean class=&quot;org.springframework.data.redis.serializer.StringRedisSerializer&quot; /&gt;
+        &lt;/property&gt;
+        &lt;!--设置Redis存入haseMap时的value序列化方式--&gt;
+        &lt;property name=&quot;hashValueSerializer&quot;&gt;
+            &lt;bean class=&quot;org.springframework.data.redis.serializer.JdkSerializationRedisSerializer&quot; /&gt;
+        &lt;/property&gt;
+        &lt;!--开启事务  --&gt;
+        &lt;property name=&quot;enableTransactionSupport&quot; value=&quot;true&quot;&gt;&lt;/property&gt;
+    &lt;/bean&gt;
+
+    &lt;!--自定义redis工具类  --&gt;
+    &lt;bean id=&quot;redisHelper&quot; class=&quot;com.my.spring.util.RedisHelper&quot;&gt;
+        &lt;property name=&quot;redisTemplate&quot; ref=&quot;redisTemplate&quot; /&gt;
+    &lt;/bean&gt;
+&lt;/beans&gt;
+</code></pre>
+
+<p>④编写Redis工具类:RedisManager,注入RedisTemplate</p>
+
+<pre><code class="language-java">@Data
+public class RedisHelper {
+
+    //注入RedisTemplate
+    private RedisTemplate&lt;String,Object&gt; redisTemplate;
+
+    /**
+     * 设置过期时间
+     * @param key
+     * @param time
+     * @return
+     */
+    public boolean expire(String key, long time) {
+        return this.redisTemplate.expire(key,time, TimeUnit.SECONDS);
+    }
+
+     /**
+     * 是否存在key
+     * @param key
+     * @return
+     */
+    public Object hasKey(String key){
+        return this.redisTemplate.hasKey(key);
+    }
+
+    /**
+     * 获取过期时间
+     * @param key
+     * @return
+     */
+    public long getExpire(String key){
+        return this.redisTemplate.getExpire(key);
+    }
+
+    /**
+     * 根据key获取值
+     * @param key
+     * @return
+     */
+    public Object get(String key){
+        Object o = redisTemplate.opsForValue().get(key);
+        return o;
+    }
+
+    /**
+     * 存储key-value
+     * @param key
+     * @param value
+     * @return
+     */
+    public boolean set(String key,Object value){
+        redisTemplate.opsForValue().set(key,value);
+        return true;
+    }
+
+    /**
+     * 存入key-value并设置过期时间，以秒为单位
+     * @param key
+     * @param value
+     * @param time
+     * @return
+     */
+    public boolean set(String key,Object value,long time){
+        redisTemplate.opsForValue().set(key,value,time,TimeUnit.SECONDS);
+        return true;
+    }
+
+    /**
+     * 将值以set形式存入redis中
+     * @param key
+     * @param values
+     * @return
+     */
+    public long sSet(String key,Object ...values){
+        return this.redisTemplate.opsForSet().add(key,values);
+    }
+
+    /**
+     * 获取键为key的set
+     * @param key
+     * @return
+     */
+    public Set&lt;String&gt; sGet(String key){
+        return this.redisTemplate.opsForSet().members(key);
+    }
+
+}
+</code></pre>
+
+<p>⑤编写测试类</p>
+
+<pre><code class="language-java">@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {&quot;classpath:application.xml&quot;})
+public class AppTest {
+
+    @Autowired
+    private RedisHelper redisHelper;
+
+    @Test
+    public void testSet(){
+       this.redisHelper.set(&quot;testKey&quot;,&quot;testValue&quot;)
+    }
+
+   @Test
+    public void testGet(){
+        System.out.println(this.redisHelper.get(&quot;testKey&quot;));
+    }
+
+    @Test
+    public void testsSet(){
+       this.redisHelper.sSet(&quot;testKey2&quot;,&quot;testValue1&quot;,&quot;testValue2&quot;,&quot;testValue3&quot;)
+    }
+
+    @Test
+    public void testsGet(){
+        Set&lt;String&gt; set = this.redisHelper.sGet(&quot;testKey2&quot;);
+        System.out.println(set.toString());
+    }
+}
+</code></pre>
+
+<p>运行测试，测试结果：</p>
+
+<p>运行testSet():</p>
+
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/spring-action/spring_action_12_01.jpg" alt="" class="lazyload"><figcaption class="image-caption"></figcaption></figure>
+运行testGet():</p>
+
+<pre><code class="language-properties">testValue
+</code></pre>
+
+<p>运行testsSet():</p>
+
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/spring-action/spring_action_12_02.jpg" alt="" class="lazyload"><figcaption class="image-caption"></figcaption></figure></p>
+
+<p>运行testsGet():</p>
+
+<pre><code class="language-properties">[testValue1, testValue3, testValue2]
+</code></pre>
+
+    </div>
+
+    <div class="post-copyright">
+             
+            <p class="copyright-item">
+                <span>Author:</span>
+                <span>GF.L </span>
+                </p>
+            
+           
+             
+            <p class="copyright-item">
+                    <span>Link:</span>
+                    <a href=https://keep-zero.github.io/2019/spring_action12/>https://keep-zero.github.io/2019/spring_action12/</span>
+            </p>
+            
+             
+            <p class="copyright-item lincese">
+                本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可
+            </p>
+            
+    </div>
+
+  
+    <div class="post-tags">
+        
+            <section>
+            <i class="iconfont icon-tag"></i>Tag(s): 
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/java/">
+                    #java</a></span>
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/spring/">
+                    #spring</a></span>
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/spring-action/">
+                    #spring-action</a></span>
+            
+            </section>
+        
+        <section>
+                <a href="javascript:window.history.back();">back</a></span> · 
+                <span><a href="https://keep-zero.github.io">home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+        
+        <a href="https://keep-zero.github.io/2019/spring_action11_03/" class="prev" rel="prev" title="《Spring实战》-第十一章：利用对象-关系映射持久化数据（Spring整合Spring Data ）"><i class="iconfont icon-left"></i>&nbsp;《Spring实战》-第十一章：利用对象-关系映射持久化数据（Spring整合Spring Data ）</a>
+         
+        
+        <a href="https://keep-zero.github.io/2019/spring_action13_01/" class="next" rel="next" title="《Spring实战》-第十三章：缓存数据（1）-Spring对缓存的支持">《Spring实战》-第十三章：缓存数据（1）-Spring对缓存的支持&nbsp;<i class="iconfont icon-right"></i></a>
+        
+    </div>
+
+    <div class="post-comment">
+          
+                 
+          
+    </div>
+</article>
+          </div>
+		   </main>
+      <footer class="footer">
+    <div class="copyright">
+        &copy;
+        
+        <span itemprop="copyrightYear">2011 - 2019</span>
+        
+        <span class="with-love">
+    	 <i class="iconfont icon-love"></i> 
+        </span>
+         
+            <span class="author" itemprop="copyrightHolder"><a href="https://keep-zero.github.io">GF.L</a> | </span> 
+         
+
+         
+		  <span>Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow">Hugo</a> & <a href="https://github.com/liuzc/leaveit" target="_blank" rel="external nofollow">LeaveIt</a></span> 
+		<span id="busuanzi_container_site_pv">
+			本站访问量：<span id="busuanzi_value_site_pv"></span>次
+		</span>
+		&nbsp;
+		<span id="busuanzi_container_site_uv">
+			您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者
+		</span>
+    </div>
+</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+    
+     <link href="//lib.baomitu.com/lightgallery/1.6.11/css/lightgallery.min.css" rel="stylesheet">  
+      
+     <script src="/js/vendor_gallery.min.js" async="" ></script>
+    
+  
+
+
+
+     </div>
+  </body>
+</html>

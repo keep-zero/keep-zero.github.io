@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noodp"/>
+  <meta name="author" content="GF.L">
+  
+  
+  
+  <link rel="prev" href="https://keep-zero.github.io/2019/spring_action02_01/" />
+  <link rel="next" href="https://keep-zero.github.io/2019/spring_action02_03/" />
+  <link rel="canonical" href="https://keep-zero.github.io/2019/spring_action02_02/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <title>
+       
+       
+           《Spring实战》-第二章：Bean的装配（2）-JavaConfig显式装配 | Keep Zero
+       
+  </title>
+  <meta name="title" content="《Spring实战》-第二章：Bean的装配（2）-JavaConfig显式装配 | Keep Zero">
+    
+  
+  <link rel="stylesheet" href="/font/iconfont.css">
+  <link rel="stylesheet" href="/css/main.min.css">
+
+
+  
+  
+ 
+
+<script type="application/ld+json">
+ "@context" : "http://schema.org",
+    "@type" : "BlogPosting",
+    "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "https:\/\/keep-zero.github.io"
+    },
+    "articleSection" : "posts",
+    "name" : "《Spring实战》-第二章：Bean的装配（2）-JavaConfig显式装配",
+    "headline" : "《Spring实战》-第二章：Bean的装配（2）-JavaConfig显式装配",
+    "description" : "慢慢来比较快，虚心学技术\n*前言：*创建应用对象之间协作关系的行为通常称为装配（ wiring ），这也是依赖注入（ DI ）的本质\nSpring提供三种Bean装配机制：\n 在 XML 中进行显式配置。 在 Java 中进行显式配置 隐式的 bean 发现机制和自动装配   一、为什么使用JavaConfig显式配置？ 相比于XML显式配置，javaConfig显然是更好的方案\n Ⅰ.本就是java代码，便于重构管理 Ⅱ.类型安全，更为强大 Ⅲ.配置方便，简洁  二、怎么配置？ java显式配置：类似于XML配置模式，显式配置每个Bean的名称\n在实现之前我们需要了解一下几个基本注解：\n@Autowired ：标记于属性，方法等，自动装配的关键注解，依赖注入的表现，该注解可以自动寻找并从Spring容器中提取使用该注解的bean并注入到对应的属性中去\n@Bean:该注解用于配置类中，注明某方法是装配方法，方法名就是装配的Bean名称(javaConfig显式配置的核心注解)\n@Configuration ：标记于配置类，标明当前类是一个配置类\n① 与上一篇文章一样，基础类代码不变。\npublic class CDBean { \/** * 定义CD名 *\/ private String title=\x26quot;The World!\x26quot;; \/** * 定义CD作者 *\/ private String author=\x26quot;Mr.D\x26quot;; }  ② CDPlayerImp类增加CDPlayerImpl(CDBean cdBean)构造方法，方便后续注入\npublic class CDPlayerImpl implements CDPlayer { private CDBean cdBean; public CDPlayerImpl() { super(); } public CDPlayerImpl(CDBean cdBean) { super(); this.",
+    "inLanguage" : "en-us",
+    "author" : "GF.L",
+    "creator" : "GF.L",
+    "publisher": "GF.L",
+    "accountablePerson" : "GF.L",
+    "copyrightHolder" : "GF.L",
+    "copyrightYear" : "2019",
+    "datePublished": "2019-08-31 14:14:45 \x2b0800 CST",
+    "dateModified" : "2019-08-31 14:14:45 \x2b0800 CST",
+    "url" : "https:\/\/keep-zero.github.io\/2019\/spring_action02_02\/",
+    "wordCount" : "392",
+    "keywords" : [ "java","spring","spring-action", "Keep Zero"]
+}
+</script>
+
+</head>
+
+  
+
+
+  <body class="">
+    <div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo">
+        	<a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a>
+        </div>
+        <div class="menu navbar-right">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+<nav class="navbar-mobile" id="nav-mobile" style="display: none">
+     <div class="container">
+        <div class="navbar-header">
+            <div>  <a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a></div>
+            <div class="menu-toggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+     
+          <div class="menu" id="mobile-menu">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+    	 <main class="main">
+          <div class="container">
+      		
+<article class="post-warp" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">《Spring实战》-第二章：Bean的装配（2）-JavaConfig显式装配</h1>
+        <div class="post-meta">
+                Written by <a itemprop="name" href="https://keep-zero.github.io" rel="author">GF.L</a> with ♥ 
+                <span class="post-time">
+                on <time datetime=2019-08-31 itemprop="datePublished">August 31, 2019</time>
+                </span>
+                in
+                <i class="iconfont icon-folder"></i>
+                <span class="post-category">
+                        <a href="https://keep-zero.github.io/categories/spring/"> spring </a>
+                        
+                </span>
+				
+				<span id="wc" style="font-size: 1rem;text-align: center;">  共400 字|  阅读需时约 2 分|  本文总阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </div>
+    </header>
+    <div class="post-content">
+        
+
+        
+
+        
+        
+     
+          
+          
+          
+
+          
+          
+          
+
+          
+
+<blockquote>
+<p><strong>慢慢来比较快，虚心学技术</strong></p>
+
+<p>*前言：*创建应用对象之间协作关系的行为通常称为装配（ wiring ），这也是依赖注入（ DI ）的本质</p>
+
+<p>Spring提供三种Bean装配机制：</p>
+
+<ol>
+<li>在 XML 中进行显式配置。</li>
+<li>在 Java 中进行显式配置</li>
+<li>隐式的 bean 发现机制和自动装配</li>
+</ol>
+</blockquote>
+
+<h2 id="一-为什么使用javaconfig显式配置">一、为什么使用JavaConfig显式配置？</h2>
+
+<p>相比于XML显式配置，javaConfig显然是更好的方案</p>
+
+<ul>
+<li>Ⅰ.本就是java代码，便于重构管理</li>
+<li>Ⅱ.类型安全，更为强大</li>
+<li>Ⅲ.配置方便，简洁</li>
+</ul>
+
+<h2 id="二-怎么配置">二、怎么配置？</h2>
+
+<p><strong>java显式配置：类似于XML配置模式，显式配置每个Bean的名称</strong></p>
+
+<p>在实现之前我们需要了解一下几个基本注解：</p>
+
+<p><strong>@Autowired</strong> ：标记于属性，方法等，自动装配的关键注解，依赖注入的表现，该注解可以自动寻找并从Spring容器中提取使用该注解的bean并注入到对应的属性中去</p>
+
+<p><strong>@Bean:</strong>该注解用于配置类中，注明某方法是装配方法，方法名就是装配的Bean名称(javaConfig显式配置的核心注解)</p>
+
+<p><strong>@Configuration</strong> ：标记于配置类，标明当前类是一个配置类</p>
+
+<p>① 与上一篇文章一样，基础类代码不变。</p>
+
+<pre><code class="language-java">public class CDBean {
+
+    /**
+     * 定义CD名
+     */
+    private String title=&quot;The World!&quot;;
+
+    /**
+     * 定义CD作者
+     */
+    private String author=&quot;Mr.D&quot;;
+
+}
+</code></pre>
+
+<p>② CDPlayerImp类增加CDPlayerImpl(CDBean cdBean)构造方法，方便后续注入</p>
+
+<pre><code class="language-java">public class CDPlayerImpl implements CDPlayer {
+
+    private CDBean cdBean;
+
+    public CDPlayerImpl() {
+        super();
+    }
+
+    public CDPlayerImpl(CDBean cdBean) {
+        super();
+        this.cdBean = cdBean;
+    }
+
+    @Override
+    public void playCD() {
+        System.out.println(&quot;正在播放：&quot;+cdBean.getTitle()+&quot; by &quot;+cdBean.getAuthor());
+    }
+}
+</code></pre>
+
+<p>③ CDConfig类更改配置方式，显式配置每一个类</p>
+
+<pre><code class="language-java">@Configuration//标明配置
+public class CDConfig {
+
+    @Bean
+    public CDBean cdBean(){
+        return new CDBean();
+    }
+
+    @Bean
+    public CDPlayer cdPlayer(){
+        return new CDPlayerImpl(cdBean());
+    }
+}
+</code></pre>
+
+<p>④注解测试，将配置类指向CDConfig2</p>
+
+<p>此处使用Spring提供的测试类SpringJUnit4ClassRunner帮助测试，以便在测试开始的时候自动创建 Spring 的应用上下文，而@ContextConfiguration可以指定创建上下文的加载方式以及配置的位置等</p>
+
+<pre><code class="language-java">@RunWith(SpringJUnit4ClassRunner.class)//使用Spring提供的测试包进行测试，主要帮助实现bean的装载环境
+@ContextConfiguration(loader = AnnotationConfigContextLoader.class,classes = {CDConfig2.class})//配置类指向CDConfig2
+public class AppTest 
+{
+    //使用注解自动注入
+    @Autowired
+    private CDPlayer cdPlayer;
+
+    /**
+     * Rigorous Test :-)
+     */
+    @Test
+    public void play()
+    {
+        this.cdPlayer.playCD();
+    }
+}
+</code></pre>
+
+<p>⑤测试结果：</p>
+
+<pre><code class="language-properties">正在播放：The World! by Mr.D
+</code></pre>
+
+<p>⑥Spring提供另一种测试方式，通过Spring应用上下文<strong>AnnotationConfigApplicationContext</strong>上下文实现进行测试</p>
+
+<pre><code class="language-java">public class App 
+{
+    public static void main(String[] args) {
+
+        /**
+         * 之所以要指定配置类，相当于，写了xml文件也一样需要指定xml文件位置一样，spring并不能自动开启注解并读取配置
+         */
+        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(CDConfig2.class);
+
+        //获取应用上下文中的所有Bean名称
+        String[] beanDefinitionNames = applicationContext.getBeanDefinitionNames();
+        for (String className : beanDefinitionNames){
+            System.out.println(className);
+        }
+
+        CDPlayer cdPlayer = applicationContext.getBean(CDPlayer.class);
+
+        cdPlayer.playCD();
+    }
+}
+</code></pre>
+
+<p>⑦ 测试结果</p>
+
+<pre><code class="language-properties">org.springframework.context.annotation.internalConfigurationAnnotationProcessor
+org.springframework.context.annotation.internalAutowiredAnnotationProcessor
+org.springframework.context.annotation.internalCommonAnnotationProcessor
+org.springframework.context.event.internalEventListenerProcessor
+org.springframework.context.event.internalEventListenerFactory
+CDConfig2
+cdBean
+cdPlayer
+正在播放：The World! by Mr.D
+</code></pre>
+
+<p>注：</p>
+
+<p>Ⅰ、<strong>@Bean</strong>注解可以<strong>为Bean另起ID</strong>，源码中有属性如下，<strong>name属性是一个用{}包围起来字符串数组</strong>，表明可以定义多个id：</p>
+
+<pre><code class="language-java">public @interface Bean {
+
+   /**
+    * Alias for {@link #name}.
+    * &lt;p&gt;Intended to be used when no other attributes are needed, for example:
+    * {@code @Bean(&quot;customBeanName&quot;)}.
+    * @since 4.3.3
+    * @see #name
+    */
+   @AliasFor(&quot;name&quot;)
+   String[] value() default {};
+
+   /**
+    * The name of this bean, or if several names, a primary bean name plus aliases.
+    * &lt;p&gt;If left unspecified, the name of the bean is the name of the annotated method.
+    * If specified, the method name is ignored.
+    * &lt;p&gt;The bean name and aliases may also be configured via the {@link #value}
+    * attribute if no other attributes are declared.
+    * @see #value
+    */
+   @AliasFor(&quot;value&quot;)
+   String[] name() default {};
+}
+</code></pre>
+
+<p>由上述源码可做如下更改：</p>
+
+<pre><code class="language-java">@Configuration
+public class CDConfig2 {
+
+    @Bean(name = {&quot;CDBEAN&quot;})
+    public CDBean cdBean(){
+        return new CDBean();
+    }
+
+    @Bean
+    public CDPlayer cdPlayer(){
+        return new CDPlayerImpl(cdBean());
+    }
+}
+</code></pre>
+
+<p>执行⑥测试结果如下：CDBean的装配ID已成功更改</p>
+
+<pre><code class="language-properties">org.springframework.context.annotation.internalConfigurationAnnotationProcessor
+org.springframework.context.annotation.internalAutowiredAnnotationProcessor
+org.springframework.context.annotation.internalCommonAnnotationProcessor
+org.springframework.context.event.internalEventListenerProcessor
+org.springframework.context.event.internalEventListenerFactory
+CDConfig2
+CDBEAN
+cdPlayer
+正在播放：The World! by Mr.D
+</code></pre>
+
+<p>Ⅱ、@Bean注解的使用，内部注入不只是能在构造方法内，还可以在setter和普通方法等注入</p>
+
+<pre><code class="language-java">@Configuration
+public class CDConfig2 {
+
+    @Bean(name = {&quot;CDBEAN&quot;})
+    public CDBean cdBean(){
+        return new CDBean();
+    }
+
+    @Bean
+    public CDPlayer cdPlayer(){
+        CDPlayer cdPlayer = new CDPlayerImpl();
+        cdPlayer.setCDBean(cdBean());//在setter方法中注入
+    }
+}
+</code></pre>
+
+<h2 id="总结">总结</h2>
+
+<p>1、JavaConfig显式配置相对于XML显式配置来说，具有配置简单，维护方便的优点</p>
+
+<p>2、JavaConfig显式配置主要依赖于<strong>@Bean</strong>注解和<strong>@Configuration</strong>两个注解实现，其中@Configuration注解标明当前类为配置类，而@Bean使用在配置类中的方法内，定义一个装配类名为方法名的Bean</p>
+
+<p>3、Spring使用<strong>@Autowired</strong>进行依赖注入</p>
+
+<p>4、Spring中我们可以通过两种方式方便的对javaConfig显式配置进行测试，一种是结合SpringJUnit4ClassRunner模拟装配环境进行测试，一种是使用应用上下文<strong>AnnotationConfigApplicationContext</strong>进行测试</p>
+
+<h2 id="参考文档">参考文档</h2>
+
+<p>【1】《Spring 实战（第 4 版）》·Craig Walls</p>
+
+    </div>
+
+    <div class="post-copyright">
+             
+            <p class="copyright-item">
+                <span>Author:</span>
+                <span>GF.L </span>
+                </p>
+            
+           
+             
+            <p class="copyright-item">
+                    <span>Link:</span>
+                    <a href=https://keep-zero.github.io/2019/spring_action02_02/>https://keep-zero.github.io/2019/spring_action02_02/</span>
+            </p>
+            
+             
+            <p class="copyright-item lincese">
+                本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可
+            </p>
+            
+    </div>
+
+  
+    <div class="post-tags">
+        
+            <section>
+            <i class="iconfont icon-tag"></i>Tag(s): 
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/java/">
+                    #java</a></span>
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/spring/">
+                    #spring</a></span>
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/spring-action/">
+                    #spring-action</a></span>
+            
+            </section>
+        
+        <section>
+                <a href="javascript:window.history.back();">back</a></span> · 
+                <span><a href="https://keep-zero.github.io">home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+        
+        <a href="https://keep-zero.github.io/2019/spring_action02_01/" class="prev" rel="prev" title="《Spring实战》-第二章：Bean的装配（1）-XML显式装配"><i class="iconfont icon-left"></i>&nbsp;《Spring实战》-第二章：Bean的装配（1）-XML显式装配</a>
+         
+        
+        <a href="https://keep-zero.github.io/2019/spring_action02_03/" class="next" rel="next" title="《Spring实战》-第二章：Bean的装配（3）-自动化装配">《Spring实战》-第二章：Bean的装配（3）-自动化装配&nbsp;<i class="iconfont icon-right"></i></a>
+        
+    </div>
+
+    <div class="post-comment">
+          
+                 
+          
+    </div>
+</article>
+          </div>
+		   </main>
+      <footer class="footer">
+    <div class="copyright">
+        &copy;
+        
+        <span itemprop="copyrightYear">2011 - 2019</span>
+        
+        <span class="with-love">
+    	 <i class="iconfont icon-love"></i> 
+        </span>
+         
+            <span class="author" itemprop="copyrightHolder"><a href="https://keep-zero.github.io">GF.L</a> | </span> 
+         
+
+         
+		  <span>Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow">Hugo</a> & <a href="https://github.com/liuzc/leaveit" target="_blank" rel="external nofollow">LeaveIt</a></span> 
+		<span id="busuanzi_container_site_pv">
+			本站访问量：<span id="busuanzi_value_site_pv"></span>次
+		</span>
+		&nbsp;
+		<span id="busuanzi_container_site_uv">
+			您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者
+		</span>
+    </div>
+</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    <script src="/js/vendor_no_gallery.min.js" async=""></script>
+    
+  
+
+
+
+     </div>
+  </body>
+</html>

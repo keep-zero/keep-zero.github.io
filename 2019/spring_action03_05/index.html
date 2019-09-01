@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noodp"/>
+  <meta name="author" content="GF.L">
+  
+  
+  
+  <link rel="prev" href="https://keep-zero.github.io/2019/spring_action03_04/" />
+  <link rel="next" href="https://keep-zero.github.io/2019/spring_action03_06/" />
+  <link rel="canonical" href="https://keep-zero.github.io/2019/spring_action03_05/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <title>
+       
+       
+           《Spring实战》-第三章：Bean的高级装配（5）-运行时值注入 | Keep Zero
+       
+  </title>
+  <meta name="title" content="《Spring实战》-第三章：Bean的高级装配（5）-运行时值注入 | Keep Zero">
+    
+  
+  <link rel="stylesheet" href="/font/iconfont.css">
+  <link rel="stylesheet" href="/css/main.min.css">
+
+
+  
+  
+ 
+
+<script type="application/ld+json">
+ "@context" : "http://schema.org",
+    "@type" : "BlogPosting",
+    "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "https:\/\/keep-zero.github.io"
+    },
+    "articleSection" : "posts",
+    "name" : "《Spring实战》-第三章：Bean的高级装配（5）-运行时值注入",
+    "headline" : "《Spring实战》-第三章：Bean的高级装配（5）-运行时值注入",
+    "description" : "慢慢来比较快，虚心学技术\n 当我们讨论依赖注入的时候，多数注意的都是将一个bena作为属性或构造器参数注入到另一个bean中。但是有时候我们也需要关注如何将值注入到方法参数或者属性中去，在前面的文章中，我们所了解的注入都是在系统初始化的时候就已经写死的值，可是有时候我们也需要在运行时才确定需要注入的值，Spring提供了两种运行时注入的方式：\n 属性占位符（ Property placeholder ）。 Spring 表达式语言（ SpEL ）  一、属性占位符 在Spring中，最简单直接的外部值注入方式是属性占位符，通过读取外部属性文件的值并注入到bean中。此处涉及@PropertySource注解和之前提到的Enviroment对象\n @PropertySource：将目标路径的属性文件引入当前环境 Enviroment对象：封装了当前环境的属性，用于读取环境中的属性  如，我们现在创建一个属性文件application.properties和一个基本类BeseBean，一个JavaConfig配置类，并将application.properties对应的属性值传入BaseBean中\n#application.properties properties.name=Properties name  \/\/BaseBean.class public class BaseBean { private String name=\x26quot;BaseBean\x26quot;; } \/\/BaseConfig.class @Configuration @PropertySource(\x26quot;classpath:application.properties\x26quot;) public class BeanConfig { @Autowired Environment environment; \/\/定义bean并将环境中key为properties.name注入到BaseBean的构造函数参数中 @Bean public BaseBean baseBean(){ return new BaseBean(environment.getProperty(\x26quot;properties.name\x26quot;)); } } \/\/测试类： @RunWith(SpringJUnit4ClassRunner.class) @ContextConfiguration(loader = AnnotationConfigContextLoader.class,classes = {BeanConfig.class}) public class AppBaseConfigTest { @Autowired private BaseBean baseBean; @Test public void getBean(){ System.",
+    "inLanguage" : "en-us",
+    "author" : "GF.L",
+    "creator" : "GF.L",
+    "publisher": "GF.L",
+    "accountablePerson" : "GF.L",
+    "copyrightHolder" : "GF.L",
+    "copyrightYear" : "2019",
+    "datePublished": "2019-08-31 22:02:20 \x2b0800 CST",
+    "dateModified" : "2019-08-31 22:02:20 \x2b0800 CST",
+    "url" : "https:\/\/keep-zero.github.io\/2019\/spring_action03_05\/",
+    "wordCount" : "269",
+    "keywords" : [ "java","spring","spring-action", "Keep Zero"]
+}
+</script>
+
+</head>
+
+  
+
+
+  <body class="">
+    <div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo">
+        	<a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a>
+        </div>
+        <div class="menu navbar-right">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+<nav class="navbar-mobile" id="nav-mobile" style="display: none">
+     <div class="container">
+        <div class="navbar-header">
+            <div>  <a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a></div>
+            <div class="menu-toggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+     
+          <div class="menu" id="mobile-menu">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+    	 <main class="main">
+          <div class="container">
+      		
+<article class="post-warp" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">《Spring实战》-第三章：Bean的高级装配（5）-运行时值注入</h1>
+        <div class="post-meta">
+                Written by <a itemprop="name" href="https://keep-zero.github.io" rel="author">GF.L</a> with ♥ 
+                <span class="post-time">
+                on <time datetime=2019-08-31 itemprop="datePublished">August 31, 2019</time>
+                </span>
+                in
+                <i class="iconfont icon-folder"></i>
+                <span class="post-category">
+                        <a href="https://keep-zero.github.io/categories/spring/"> spring </a>
+                        
+                </span>
+				
+				<span id="wc" style="font-size: 1rem;text-align: center;">  共300 字|  阅读需时约 2 分|  本文总阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </div>
+    </header>
+    <div class="post-content">
+        
+
+        
+
+        
+        
+     
+          
+          
+          
+
+          
+          
+          
+
+          
+
+<blockquote>
+<p><strong>慢慢来比较快，虚心学技术</strong></p>
+</blockquote>
+
+<p>当我们讨论依赖注入的时候，多数注意的都是将一个bena作为属性或构造器参数注入到另一个bean中。但是有时候我们也需要关注如何将值注入到方法参数或者属性中去，在前面的文章中，我们所了解的注入都是在系统初始化的时候就已经写死的值，可是有时候我们也需要在运行时才确定需要注入的值，Spring提供了两种运行时注入的方式：</p>
+
+<ul>
+<li><strong>属性占位符（ Property placeholder ）。</strong></li>
+<li><strong>Spring 表达式语言（ SpEL ）</strong></li>
+</ul>
+
+<h2 id="一-属性占位符">一、属性占位符</h2>
+
+<p>在Spring中，最简单直接的外部值注入方式是属性占位符，<strong>通过读取外部属性文件的值并注入到bean中</strong>。此处涉及<strong>@PropertySource</strong>注解和之前提到的<strong>Enviroment</strong>对象</p>
+
+<ul>
+<li><strong>@PropertySource：将目标路径的属性文件引入当前环境</strong></li>
+<li><strong>Enviroment对象：封装了当前环境的属性，用于读取环境中的属性</strong></li>
+</ul>
+
+<p>如，我们现在创建一个属性文件application.properties和一个基本类BeseBean，一个JavaConfig配置类，并将application.properties对应的属性值传入BaseBean中</p>
+
+<pre><code class="language-properties">#application.properties
+properties.name=Properties name
+</code></pre>
+
+<pre><code class="language-java">//BaseBean.class
+public class BaseBean {
+
+    private String name=&quot;BaseBean&quot;;
+}
+
+//BaseConfig.class
+@Configuration
+@PropertySource(&quot;classpath:application.properties&quot;)
+public class BeanConfig {
+
+    @Autowired
+    Environment environment;
+
+    //定义bean并将环境中key为properties.name注入到BaseBean的构造函数参数中
+    @Bean
+    public BaseBean baseBean(){
+        return new BaseBean(environment.getProperty(&quot;properties.name&quot;));
+    }
+}
+
+//测试类：
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(loader = AnnotationConfigContextLoader.class,classes = {BeanConfig.class})
+public class AppBaseConfigTest {
+
+    @Autowired
+    private BaseBean baseBean;
+
+    @Test
+    public void getBean(){
+        System.out.println(baseBean.getName());
+    }
+}
+
+//测试结果：并不是默认的“BaseBean”，而是properties文件中定义好的Properties name
+Properties name
+</code></pre>
+
+<p>上述代码演示了通过@PropertySource注解和Enviroment对象实现外部值注入到bean。实际上，Enviroment提供了几个获取环境属性值的实现方法：</p>
+
+<ul>
+<li><strong>String getProperty(String key); //以key获取对应值（String类型）</strong></li>
+<li><strong>String getProperty(String key, String defaultValue); //以key获取对应值，当不存在对应的key或对应value为null时，使用defaultValue（String类型）</strong></li>
+<li><strong><T> T getProperty(String key, Class<T> type); //以key获取对应值(并强转为type类型)</strong></li>
+<li><strong><T> T getProperty(String key, Class<T> type, T defaultValue); //以key获取对应值（并强转为type类型），当不存在对应的key或对应value为null时，使用defaultValue（type类型）</strong></li>
+</ul>
+
+<p>如：假设BaseBean内有属性age类型为Integer，price属性类型为double，系统注入如下：</p>
+
+<pre><code class="language-properties">#application.properties
+properties.name=Properties name
+properties.age=50
+properties.price=1.5
+</code></pre>
+
+<pre><code class="language-java">//定义bean并将环境中key为properties.name注入到BaseBean的构造函数参数中
+@Bean
+public BaseBean baseBean(){
+   BaseBean baseBean =  new BaseBean(environment.getProperty(&quot;properties.name&quot;));
+   baseBean.setAge(enviroment.getProperty(&quot;properties.age&quot;,Integer.class,new Integer(10)));
+   baseBean.setPrice(enviroment.getProperty(&quot;properties.price&quot;,Double.class,new Double(10.5)))
+}
+</code></pre>
+
+<h2 id="二-spring表达式-spel">二、Spring表达式（SpEL）</h2>
+
+<p>SpEL（ Spring Expression Language，Spring表达式语言），是一种灵活的表达式，它能够以一种强大和简洁的方式将值装配到 bean 属性和构造器参数中，在这个过程中所使用的表达式会在运行时计算得到值。</p>
+
+<p>SpEL具备如下特性：</p>
+
+<ul>
+<li><p><strong>使用 bean 的 ID 来引用 bean ；</strong></p></li>
+
+<li><p><strong>调用方法和访问对象的属性；</strong></p></li>
+
+<li><p><strong>对值进行算术、关系和逻辑运算；</strong></p></li>
+
+<li><p><strong>正则表达式匹配；</strong></p></li>
+
+<li><p><strong>集合操作</strong></p></li>
+</ul>
+
+<p>利用这些特性可以为我们执行很多强大的功能， SpEL 表达式要放到 “#{ &hellip; }” 之中，使用在@Value（）注解里面</p>
+
+<h3 id="ⅰ-使用字面量值">Ⅰ、<strong>使用字面量值</strong></h3>
+
+<p>SpEL可以注入字面量值，使用方式：#{1}、#{&lsquo;Test&rsquo;}，#{1.09}，#{flase}等</p>
+
+<p>如上述例子中的BaseBean，我们通过SqEL为其注入一个name，注意：一定要去除默认构造函数，否则自动扫描不会执行目标构造函数</p>
+
+<pre><code class="language-java">public class BaseBean {
+
+    private String name=&quot;BaseBean&quot;;
+
+    public  BaseBean(@Value(&quot;#{'SqEL Name'}&quot;)String name){
+        this.name = name;
+    }
+}
+</code></pre>
+
+<h3 id="ⅱ-引用bean属性和方法">Ⅱ、<strong>引用bean属性和方法</strong></h3>
+
+<p>SpEL还可以根据bean的ID获取到bean并将该bean的，该bean的属性或执行该bean方法的返回值注入到参数中</p>
+
+<p>如，将baseBean中的name属性传入sonBean的name属性中</p>
+
+<pre><code class="language-java">@Component
+public class SonBean {
+    private String sonName=&quot;sonName&quot;;
+    public SonBean(@Value(&quot;#{baseBean.name}&quot;) String sonName){
+        this.sonName = sonName;
+    }
+}
+</code></pre>
+
+<p>执行baseBean中的getName方法将返回值注入到SonBean的构造方法中：</p>
+
+<pre><code class="language-java">@Component
+public class SonBean {
+    private String sonName=&quot;sonName&quot;;
+    public SonBean(@Value(&quot;#{baseBean.getName())}&quot;) String sonName){
+        this.sonName = sonName;
+    }
+}
+</code></pre>
+
+<p>假设SonBean中有BaseBean属性，将baseBean示例注入到SonBean的构造方法中：</p>
+
+<pre><code class="language-java">@Component
+public class SonBean {
+
+    private String sonName=&quot;sonName&quot;;
+
+    private BaseBean baseBean=null;
+
+    public SonBean(@Value(&quot;#{baseBean}&quot;) BaseBean baseBean){
+        this.baseBean = baseBean;
+    }
+}
+</code></pre>
+
+<p><strong><em>注：如果一个类中存在多个构造函数，那么使用自动化配置方式装配Bean的时候会报装配失败异常</em></strong></p>
+
+<h3 id="ⅲ-在表达式中使用类型">Ⅲ、<strong>在表达式中使用类型</strong></h3>
+
+<p>有时候我们需要在SpEL中使用一些类作用域的方法和属性，需要使用T()关键子运算符，其运算结果是一个Class，关键作用在于我们能够利用它访问静态方法和属性。</p>
+
+<p>如：获取Math类中的PI和随机数方法</p>
+
+<pre><code class="language-java">//获取PI值
+#{T(java.lang.Math).PI}
+
+//获取随机数
+#{T(java.lang.Math).random()}
+</code></pre>
+
+<h3 id="ⅳ-运算符">Ⅳ、运算符</h3>
+
+<p>在SpEL中我们可以像正常java语法中一样使用运算符，其中比较特殊也比较常用的是三目表达式 ？：</p>
+
+<pre><code class="language-java">//判断如果baseBean的age属性值大于50，则返回该age，否则返回60
+#{baseBean.age&gt;50?baseBean.age:60}
+
+//判断baseBean的age是否null，如果是，则返回60
+#{baseBean.age?:60}
+</code></pre>
+
+<h3 id="ⅴ-正则表达式-matches">Ⅴ、正则表达式（matches）</h3>
+
+<p>使用SpEL进行正则匹配依赖于matches运算符，该运算符返回一个boolean值，语法类似java</p>
+
+<pre><code class="language-java">//baseBean的name是否全英文
+#{baseBean.name matches '[a-zA-Z]*'}
+</code></pre>
+
+<h3 id="ⅵ-集合计算">Ⅵ、集合计算</h3>
+
+<p>使用SpEL可以对集合做很多方便的操作，主要依赖于&rdquo;[]&ldquo;运算符实现，如：</p>
+
+<p>假设现有一个BaseBean列表</p>
+
+<blockquote>
+<p>①获取集合某个元素的name属性：#{beanList[4].name}</p>
+
+<p>②获取字符串中的某个下标的字符：#{&lsquo;The Test&rsquo;[3]}</p>
+
+<p>③获取集合中符合条件的元素（查询运算符：.?[]）：#{beanList.?[name eq &lsquo;Mr D&rsquo;]}(查找name等于”Mr D“的bean)</p>
+
+<p>④获取集合中共符合条件的第一项元素(查询运算符：.<sup class="footnote-ref" id="fnref:footnote-1"><a href="#fn:footnote-1">1</a></sup>)：#{beanList.<sup class="footnote-ref" id="fnref:name-eq-Mr-D"><a href="#fn:name-eq-Mr-D">2</a></sup>}(查找name等于”Mr D“的第一个bean)</p>
+
+<p>⑤获取集合中共符合条件的最后一项元素(查询运算符：.$[])：#{beanList.$[name eq &lsquo;Mr D&rsquo;]}(查找name等于”Mr D“的最后一个bean)</p>
+
+<p>⑥将集合中的某个属性投影到另一个集合中（投影运算符：.![]）：#{beanList.![name]}(将beanList中元素的name单独作为一个列表返回)</p>
+</blockquote>
+<div class="footnotes">
+
+<hr />
+
+<ol>
+<li id="fn:footnote-1"> <a class="footnote-return" href="#fnref:footnote-1"><sup>[return]</sup></a></li>
+<li id="fn:name-eq-Mr-D">name eq &lsquo;Mr D&rsquo; <a class="footnote-return" href="#fnref:name-eq-Mr-D"><sup>[return]</sup></a></li>
+</ol>
+</div>
+
+    </div>
+
+    <div class="post-copyright">
+             
+            <p class="copyright-item">
+                <span>Author:</span>
+                <span>GF.L </span>
+                </p>
+            
+           
+             
+            <p class="copyright-item">
+                    <span>Link:</span>
+                    <a href=https://keep-zero.github.io/2019/spring_action03_05/>https://keep-zero.github.io/2019/spring_action03_05/</span>
+            </p>
+            
+             
+            <p class="copyright-item lincese">
+                本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可
+            </p>
+            
+    </div>
+
+  
+    <div class="post-tags">
+        
+            <section>
+            <i class="iconfont icon-tag"></i>Tag(s): 
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/java/">
+                    #java</a></span>
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/spring/">
+                    #spring</a></span>
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/spring-action/">
+                    #spring-action</a></span>
+            
+            </section>
+        
+        <section>
+                <a href="javascript:window.history.back();">back</a></span> · 
+                <span><a href="https://keep-zero.github.io">home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+        
+        <a href="https://keep-zero.github.io/2019/spring_action03_04/" class="prev" rel="prev" title="《Spring实战》-第三章：Bean的高级装配（4）-Bean的作用域"><i class="iconfont icon-left"></i>&nbsp;《Spring实战》-第三章：Bean的高级装配（4）-Bean的作用域</a>
+         
+        
+        <a href="https://keep-zero.github.io/2019/spring_action03_06/" class="next" rel="next" title="《Spring实战》-第三章：Bean的高级装配(总目录)">《Spring实战》-第三章：Bean的高级装配(总目录)&nbsp;<i class="iconfont icon-right"></i></a>
+        
+    </div>
+
+    <div class="post-comment">
+          
+                 
+          
+    </div>
+</article>
+          </div>
+		   </main>
+      <footer class="footer">
+    <div class="copyright">
+        &copy;
+        
+        <span itemprop="copyrightYear">2011 - 2019</span>
+        
+        <span class="with-love">
+    	 <i class="iconfont icon-love"></i> 
+        </span>
+         
+            <span class="author" itemprop="copyrightHolder"><a href="https://keep-zero.github.io">GF.L</a> | </span> 
+         
+
+         
+		  <span>Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow">Hugo</a> & <a href="https://github.com/liuzc/leaveit" target="_blank" rel="external nofollow">LeaveIt</a></span> 
+		<span id="busuanzi_container_site_pv">
+			本站访问量：<span id="busuanzi_value_site_pv"></span>次
+		</span>
+		&nbsp;
+		<span id="busuanzi_container_site_uv">
+			您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者
+		</span>
+    </div>
+</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    <script src="/js/vendor_no_gallery.min.js" async=""></script>
+    
+  
+
+
+
+     </div>
+  </body>
+</html>

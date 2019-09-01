@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noodp"/>
+  <meta name="author" content="GF.L">
+  
+  
+  
+  <link rel="prev" href="https://keep-zero.github.io/2019/java_react02/" />
+  <link rel="next" href="https://keep-zero.github.io/2019/spring_action01/" />
+  <link rel="canonical" href="https://keep-zero.github.io/2019/java_react03/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <title>
+       
+       
+           java学习笔记-反射(3)-动态代理 | Keep Zero
+       
+  </title>
+  <meta name="title" content="java学习笔记-反射(3)-动态代理 | Keep Zero">
+    
+  
+  <link rel="stylesheet" href="/font/iconfont.css">
+  <link rel="stylesheet" href="/css/main.min.css">
+
+
+  
+  
+ 
+
+<script type="application/ld+json">
+ "@context" : "http://schema.org",
+    "@type" : "BlogPosting",
+    "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "https:\/\/keep-zero.github.io"
+    },
+    "articleSection" : "posts",
+    "name" : "java学习笔记-反射(3)-动态代理",
+    "headline" : "java学习笔记-反射(3)-动态代理",
+    "description" : "慢慢来比较快，虚心学技术\n 代理模式  代理是基本的设计模式之一，它是为了提供额外的或不同的操作，而插入的用来代替实际对象的对象，简单来说，代理通常充当着中间人的角色\n 代理的特征是代理类与委托类有同样的接口，我们通过访问实际对象时是通过代理对象来访问的，代理类实际上不实现任何服务功能，通过调用实际对象（委托类）的方法实现功能，这样设计可以为方法实现更多的额外操作，比如日志记录，时间判断等与实际功能无关，但是能够完善程序的操作。\njava中，有两种代理方式：\n①静态代理：由程序员创建代理类或特定工具自动生成源代码再对其编译。在程序运行前代理类的.class文件就已经存在了。\n②动态代理：代理类在程序运行时运用反射机制动态创建而成\n静态代理 静态代理定义如上，下面是静态代理的简单实现，在调用委托类方法前后，记录相关日志\n①首先，创建统一委托接口（Person）\npublic interface Person { void sayHi(); }  ②创建基本委托类Student实现Person接口\npublic class Student implements Person { private String name; public Student(){ super(); } public Student(String name){ super(); this.name = name; } @Override public void sayHi() { try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); } System.out.println(this.name\x2b\x26quot;说:hi!!!!\x26quot;); } }  ③创建代理类StudentsProxy，与Student一样实现Person的接口，只不过代理类会将实际委托对象引入作为操作对象（个人理解StudentsProxy更像一个传声筒，只不过这个传声筒可以做的事情更多而已）\npublic class StudentsProxy implements Person { private static Logger logger= LoggerFactory.",
+    "inLanguage" : "en-us",
+    "author" : "GF.L",
+    "creator" : "GF.L",
+    "publisher": "GF.L",
+    "accountablePerson" : "GF.L",
+    "copyrightHolder" : "GF.L",
+    "copyrightYear" : "2019",
+    "datePublished": "2019-08-31 12:23:16 \x2b0800 CST",
+    "dateModified" : "2019-08-31 12:23:16 \x2b0800 CST",
+    "url" : "https:\/\/keep-zero.github.io\/2019\/java_react03\/",
+    "wordCount" : "377",
+    "keywords" : [ "java","java-react", "Keep Zero"]
+}
+</script>
+
+</head>
+
+  
+
+
+  <body class="">
+    <div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo">
+        	<a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a>
+        </div>
+        <div class="menu navbar-right">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+<nav class="navbar-mobile" id="nav-mobile" style="display: none">
+     <div class="container">
+        <div class="navbar-header">
+            <div>  <a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a></div>
+            <div class="menu-toggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+     
+          <div class="menu" id="mobile-menu">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+    	 <main class="main">
+          <div class="container">
+      		
+<article class="post-warp" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">java学习笔记-反射(3)-动态代理</h1>
+        <div class="post-meta">
+                Written by <a itemprop="name" href="https://keep-zero.github.io" rel="author">GF.L</a> with ♥ 
+                <span class="post-time">
+                on <time datetime=2019-08-31 itemprop="datePublished">August 31, 2019</time>
+                </span>
+                in
+                <i class="iconfont icon-folder"></i>
+                <span class="post-category">
+                        <a href="https://keep-zero.github.io/categories/java-react/"> java-react </a>
+                        
+                </span>
+				
+				<span id="wc" style="font-size: 1rem;text-align: center;">  共400 字|  阅读需时约 2 分|  本文总阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </div>
+    </header>
+    <div class="post-content">
+        
+
+        
+
+        
+        
+     
+          
+          
+          
+
+          
+          
+          
+
+          
+
+<blockquote>
+<p><strong>慢慢来比较快，虚心学技术</strong></p>
+</blockquote>
+
+<h2 id="代理模式">代理模式</h2>
+
+<blockquote>
+<p>代理是基本的设计模式之一，它是为了提供额外的或不同的操作，而插入的用来代替实际对象的对象，简单来说，代理通常充当着中间人的角色</p>
+</blockquote>
+
+<p>代理的特征是<strong>代理类与委托类有同样的接口</strong>，我们通过访问实际对象时是通过代理对象来访问的，代理类实际上不实现任何服务功能，通过调用实际对象（委托类）的方法实现功能，这样设计可以为方法实现更多的额外操作，比如日志记录，时间判断等与实际功能无关，但是能够完善程序的操作。</p>
+
+<p>java中，有两种代理方式：</p>
+
+<p>①<strong>静态代理</strong>：由程序员创建代理类或特定工具自动生成源代码再对其编译。在程序运行前代理类的.class文件就已经存在了。</p>
+
+<p>②<strong>动态代理</strong>：代理类在程序运行时运用反射机制动态创建而成</p>
+
+<h2 id="静态代理">静态代理</h2>
+
+<p>静态代理定义如上，下面是静态代理的简单实现，在调用委托类方法前后，记录相关日志</p>
+
+<p>①首先，创建统一委托接口（Person）</p>
+
+<pre><code class="language-java">public interface Person {
+
+    void sayHi();
+}
+</code></pre>
+
+<p>②创建基本委托类Student实现Person接口</p>
+
+<pre><code class="language-java">public class Student implements Person {
+
+    private String name;
+
+    public  Student(){
+        super();
+    }
+
+    public Student(String name){
+        super();
+        this.name = name;
+    }
+
+    @Override
+    public void sayHi() {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println(this.name+&quot;说:hi!!!!&quot;);
+    }
+
+}
+</code></pre>
+
+<p>③创建代理类StudentsProxy，与Student一样实现Person的接口，只不过代理类会将实际委托对象引入作为操作对象（个人理解StudentsProxy更像一个传声筒，只不过这个传声筒可以做的事情更多而已）</p>
+
+<pre><code class="language-java">public class StudentsProxy implements Person {
+
+    private static Logger logger= LoggerFactory.getLogger(StudentsProxy.class);
+
+    Student stu;
+
+    public  StudentsProxy(Person stu){
+        //只代理Student类
+        if(stu.getClass() ==Student.class){
+            this.stu = (Student) stu;
+        }
+    }
+
+    @Override
+    public void sayHi() {
+        logger.debug(&quot;执行方法sayHi&quot;);
+
+        //调用委托类方法
+        stu.sayHi();
+
+        logger.debug(&quot;方法执行完成&quot;);
+    }
+
+}
+</code></pre>
+
+<p>④测试调用</p>
+
+<pre><code class="language-java">public class ProxyTest_static {
+
+    public static void main(String[] args) {
+        //创建委托实际对象
+        Person student = new Student(&quot;小明&quot;);
+
+        //创建代理类对象
+        Person sp = new StudentsProxy(student);
+
+        //访问代理类方法，间接调用委托类方法
+        sp.sayHi();
+    }
+}
+</code></pre>
+
+<p>⑤ 运行结果</p>
+
+<pre><code class="language-properties">[main] DEBUG com.java.proxy.StudentsProxy - 执行方法sayHi
+小明说:hi!!!!
+[main] DEBUG com.java.proxy.StudentsProxy - 方法执行完成
+</code></pre>
+
+<p>从上述代码可以得知，静态代理可以在委托类方法前后执行额外操作而无需修改委托类本身的实现。但是</p>
+
+<p><strong>静态代理的弊端：</strong></p>
+
+<p>1<strong>.</strong>因为静态代理类与委托类接口是一对一的关系，任何一个委托类想要增加代理操作都需要创建一个代理类，对于大面积代理很明显是不实际的。</p>
+
+<p>2.再往小了说，静态代理类的方法与委托类的方法也是一对一的，很明显一个代理类里面也许需要很多重复性的代码，比如记录日志等，而且一旦委托类增加了一个方法，代理类也需要相应的增加一个方法，增加了维护难度。</p>
+
+<p>为了解决这些弊端，是否可以做到一个代理类代理多个或任意个委托类呢？</p>
+
+<h2 id="动态代理">动态代理</h2>
+
+<blockquote>
+<p>java的动态代理比代理思想更向前迈进了一步，因为它可以动态地创建代理并动态地处理对所代理方法的调用。在动态代理上所做的所有调用都会被重定向到单一的调用处理器上，它的工作是揭示调用的类型并确定相应的对策。（来自《java编程思想》）</p>
+</blockquote>
+
+<p>简单来讲，动态代理类和静态代理类的一个很大的区别是，静态代理类在系统初始化的时候已经被程序员定义完成并编译，而动态代理类则是通过反射机制在运行时动态创建的，动态代理类使用泛型实现动态兼容多种接口的代理，恰好解决了静态代理的重复性问题</p>
+
+<h3 id="动态代理基本组成">动态代理基本组成</h3>
+
+<p>java动态代理主要依靠java.lang.reflect包下的InvocationHandler接口以及Proxy类实现功能。</p>
+
+<p><strong>InvocationHandler：</strong>提供调用委托类目标方法的统一出口方法&ndash;Object invoke(Object proxy, Method method, Object[] args)，该方法通过反射执行委托类目标方法，同时执行额外操作</p>
+
+<p><strong>Proxy：</strong>该类负责调用JDK动态创建目标代理类，并将目标代理类的方法调用重定向到InvocationHandler的实现类的invoke方法中</p>
+
+<h3 id="动态代理的简单实现-方法日志记录与耗时计算">动态代理的简单实现-方法日志记录与耗时计算</h3>
+
+<p>①在Person接口中增加一个sayHello方法</p>
+
+<pre><code class="language-java">public interface Person {
+
+    void sayHi();
+
+    void sayHello();
+}
+</code></pre>
+
+<p>②Student类实现Person接口</p>
+
+<pre><code class="language-java">public class Student implements Person {
+
+    private String name;
+
+    public  Student(){
+        super();
+    }
+
+    public Student(String name){
+        super();
+        this.name = name;
+    }
+
+    @Override
+    public void sayHi() {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println(this.name+&quot;说:hi!!!!&quot;);
+    }
+
+    @Override
+    public void sayHello() {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println(this.name+&quot;说:hello!!!&quot;);
+    }
+}
+</code></pre>
+
+<p>③定义动态代理对象 ，实现InvocationHandler接口，强制实现invoke方法</p>
+
+<pre><code class="language-java">public class StuInvocationHandler&lt;T&gt; implements InvocationHandler {
+
+    //动态代理目标类
+    T target;
+
+    public StuInvocationHandler(T target){
+        this.target = target;
+    }
+
+    /**
+     * 实现动态代理方法，必须实现，作为代理方法的必经之路
+     * 
+     * @param proxy 动态代理接口对象
+     * @param method 目标方法
+     * @param args 目标方法参数
+     *       
+     * @return java.lang.Object 方法执行结果
+     *       
+     * @author *** 2019/2/18
+     * @version 1.0
+     **/
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+
+        logger.debug(&quot;执行&quot;+method.getName()+&quot;方法&quot;);
+        long startTime = System.currentTimeMillis();
+        // 通过反射执行目标方法
+        Object result = method.invoke(target, args);
+
+        long finishTime = System.currentTimeMillis();
+
+        logger.debug(&quot;方法执行完成，耗时&quot;+(finishTime - startTime)+&quot;ms&quot;);
+        return result;
+    }
+}
+</code></pre>
+
+<p>⑤测试代码</p>
+
+<pre><code class="language-java">public class ProxyTest_dynamic {
+
+    public static void main(String[] args) {
+
+        //创建目标委托对象
+        Student student = new Student(&quot;小明&quot;);
+
+        //创建一个与代理对象相关联的InvocationHandler
+        StuInvocationHandler stuInvocationHandler= new StuInvocationHandler&lt;Person&gt;(student);
+
+        //创建一个代理对象proxyInstance 来代理stuInvocationHandler，代理对象的每个执行方法都会替换执行Invocation中的invoke方法
+        Person proxyInstance = (Person) Proxy.newProxyInstance(Person.class.getClassLoader(), new Class&lt;?&gt;[]{Person.class}, stuInvocationHandler);
+
+        //代理执行方法
+        proxyInstance.sayHi();
+
+        proxyInstance.sayHello();
+
+    }
+}
+</code></pre>
+
+<p>⑥运行结果</p>
+
+<pre><code class="language-properties">[main] DEBUG com.java.handler.StuInvocationHandler - 执行sayHi方法
+小明说:hi!!!!
+[main] DEBUG com.java.handler.StuInvocationHandler - 方法执行完成，耗时1015ms
+[main] DEBUG com.java.handler.StuInvocationHandler - 执行sayHello方法
+小明说:hello!!!
+[main] DEBUG com.java.handler.StuInvocationHandler - 方法执行完成，耗时1001ms
+</code></pre>
+
+<p>那么问题来了，动态代理是怎么做到将委托类的 方法重定向到InvocationHandler的实现类的invoke方法中的呢？</p>
+
+<p>其实，Proxy.newProxyInstance(Person.class.getClassLoader(), new Class&lt;?&gt;[]{Person.class}, stuInvocationHandler);将InvocationHandler的实现类作为参数传入，在创建目标代理类的时候，已经将代理类里面的对应方法改成了InvocationHandler的实现类方法调用实现的形式</p>
+
+<h2 id="总结">总结</h2>
+
+<p>1.代理是基本的设计模式之一，它是为了提供额外的或不同的操作，而插入的用来代替实际对象的对象，简单来说，代理通常充当着中间人的角色。代理分为静态代理和动态代理两种方式</p>
+
+<p>2.静态代理是由程序员创建代理类或特定工具自动生成源代码再对其编译。在程序运行前代理类的.class文件就已经存在了</p>
+
+<p>3.动态代理是代理类在程序运行时运用反射机制动态创建而成的代理方式，主要依靠java.lang.reflect包下的InvocationHandler接口以及Proxy类实现功能</p>
+
+<p>4.动态代理统一通过invoke作为方法调用出口，实现方式是在动态创建代理类的时候将方法调用指向InvocationHandler的invoke方法，底层反射调用方法</p>
+
+<h2 id="参考文档">参考文档</h2>
+
+<p>【1】<a href="https://www.cnblogs.com/gonjan-blog/p/6685611.html" rel="nofollow noreferrer" target="_blank">https://www.cnblogs.com/gonjan-blog/p/6685611.html</a></p>
+
+<p>【2】《java编程思想》</p>
+
+    </div>
+
+    <div class="post-copyright">
+             
+            <p class="copyright-item">
+                <span>Author:</span>
+                <span>GF.L </span>
+                </p>
+            
+           
+             
+            <p class="copyright-item">
+                    <span>Link:</span>
+                    <a href=https://keep-zero.github.io/2019/java_react03/>https://keep-zero.github.io/2019/java_react03/</span>
+            </p>
+            
+             
+            <p class="copyright-item lincese">
+                本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可
+            </p>
+            
+    </div>
+
+  
+    <div class="post-tags">
+        
+            <section>
+            <i class="iconfont icon-tag"></i>Tag(s): 
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/java/">
+                    #java</a></span>
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/java-react/">
+                    #java-react</a></span>
+            
+            </section>
+        
+        <section>
+                <a href="javascript:window.history.back();">back</a></span> · 
+                <span><a href="https://keep-zero.github.io">home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+        
+        <a href="https://keep-zero.github.io/2019/java_react02/" class="prev" rel="prev" title="java学习笔记-反射(2)-ClassLoader"><i class="iconfont icon-left"></i>&nbsp;java学习笔记-反射(2)-ClassLoader</a>
+         
+        
+        <a href="https://keep-zero.github.io/2019/spring_action01/" class="next" rel="next" title="《Spring实战》-第一章-Spring初识">《Spring实战》-第一章-Spring初识&nbsp;<i class="iconfont icon-right"></i></a>
+        
+    </div>
+
+    <div class="post-comment">
+          
+                 
+          
+    </div>
+</article>
+          </div>
+		   </main>
+      <footer class="footer">
+    <div class="copyright">
+        &copy;
+        
+        <span itemprop="copyrightYear">2011 - 2019</span>
+        
+        <span class="with-love">
+    	 <i class="iconfont icon-love"></i> 
+        </span>
+         
+            <span class="author" itemprop="copyrightHolder"><a href="https://keep-zero.github.io">GF.L</a> | </span> 
+         
+
+         
+		  <span>Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow">Hugo</a> & <a href="https://github.com/liuzc/leaveit" target="_blank" rel="external nofollow">LeaveIt</a></span> 
+		<span id="busuanzi_container_site_pv">
+			本站访问量：<span id="busuanzi_value_site_pv"></span>次
+		</span>
+		&nbsp;
+		<span id="busuanzi_container_site_uv">
+			您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者
+		</span>
+    </div>
+</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    <script src="/js/vendor_no_gallery.min.js" async=""></script>
+    
+  
+
+
+
+     </div>
+  </body>
+</html>

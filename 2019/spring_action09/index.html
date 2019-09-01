@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noodp"/>
+  <meta name="author" content="GF.L">
+  
+  
+  
+  <link rel="prev" href="https://keep-zero.github.io/2019/spring_action07/" />
+  <link rel="next" href="https://keep-zero.github.io/2019/spring_action10/" />
+  <link rel="canonical" href="https://keep-zero.github.io/2019/spring_action09/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <title>
+       
+       
+           《Spring实战》-第九章:Spring Web应用安全（Spring Security） | Keep Zero
+       
+  </title>
+  <meta name="title" content="《Spring实战》-第九章:Spring Web应用安全（Spring Security） | Keep Zero">
+    
+  
+  <link rel="stylesheet" href="/font/iconfont.css">
+  <link rel="stylesheet" href="/css/main.min.css">
+
+
+  
+  
+ 
+
+<script type="application/ld+json">
+ "@context" : "http://schema.org",
+    "@type" : "BlogPosting",
+    "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "https:\/\/keep-zero.github.io"
+    },
+    "articleSection" : "posts",
+    "name" : "《Spring实战》-第九章:Spring Web应用安全（Spring Security）",
+    "headline" : "《Spring实战》-第九章:Spring Web应用安全（Spring Security）",
+    "description" : "慢慢来比较快，虚心学技术\n 安全性是绝大多数应用系统中的一个重要切面（ aspect ），之所以说是切面，是因为安全性是超越应用程序功能的一个关注点。应用系统的绝大部分内容都不应该参与到与自己相关的安全性处理中。尽管我们可以直接在应用程序中编写安全性功能相关的代码（这种情况并不少见），但更好的方式还是将安全性相关的关注点与应用程序本身的关注点进行分离\n一、什么是Spring Security? 一种基于 Spring AOP 和 Servlet 规范中的 Filter 实现的安全框架。 Spring Security 提供了完整的安全性解决方案，它能够在 Web 请求级别和方法调用级别处理身份认证和授权\nSpring Security 从两个角度来解决安全性问题。\n 它使用 Servlet 规范中的 Filter 保护 Web 请求并限制 URL 级别的访问。 Spring Security 还能够使用 Spring AOP 保护方法调用 —— 借助于对象代理和使用通知，能够确保只有具备适当权限的用户才能访问安全保护的方法  Spring Security的核心是 用户认证（Authentication）和用户授权（Authorization）\n二、Spring Security基本组成 Spring Security 被分成了 11 个模块 ACL:支持通过访问控制列表（ access control list ， ACL ）为域对象提供安全性 切面（ Aspects ）:一个很小的模块，当使用 Spring Security 注解时，会使用基于 AspectJ 的切面，而不是使用标准的 Spring AOP CAS 客户端（ CAS Client ）：提供与 Jasig 的中心认证服务（ Central Authentication Service ， CAS ）进行集成的功能 配置（ Configuration ）:包含通过 XML 和 Java 配置 Spring Security 的功能支持 核心（ Core ）:提供 Spring Security 基本库 加密（ Cryptography ）:提供了加密和密码编码的功能 LDAP:支持基于 LDAP 进行认证 OpenID:支持使用 OpenID 进行集中式认证 Remoting:提供了对 Spring Remoting 的支持 标签库（ Tag Library ）:Spring Security 的 JSP 标签库 Web:提供了 Spring Security 基于 Filter 的 Web 安全性支持",
+    "inLanguage" : "en-us",
+    "author" : "GF.L",
+    "creator" : "GF.L",
+    "publisher": "GF.L",
+    "accountablePerson" : "GF.L",
+    "copyrightHolder" : "GF.L",
+    "copyrightYear" : "2019",
+    "datePublished": "2019-08-31 23:21:28 \x2b0800 CST",
+    "dateModified" : "2019-08-31 23:21:28 \x2b0800 CST",
+    "url" : "https:\/\/keep-zero.github.io\/2019\/spring_action09\/",
+    "wordCount" : "1867",
+    "keywords" : [ "java","spring","spring-action", "Keep Zero"]
+}
+</script>
+
+</head>
+
+  
+
+
+  <body class="">
+    <div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo">
+        	<a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a>
+        </div>
+        <div class="menu navbar-right">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+<nav class="navbar-mobile" id="nav-mobile" style="display: none">
+     <div class="container">
+        <div class="navbar-header">
+            <div>  <a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a></div>
+            <div class="menu-toggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+     
+          <div class="menu" id="mobile-menu">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+    	 <main class="main">
+          <div class="container">
+      		
+<article class="post-warp" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">《Spring实战》-第九章:Spring Web应用安全（Spring Security）</h1>
+        <div class="post-meta">
+                Written by <a itemprop="name" href="https://keep-zero.github.io" rel="author">GF.L</a> with ♥ 
+                <span class="post-time">
+                on <time datetime=2019-08-31 itemprop="datePublished">August 31, 2019</time>
+                </span>
+                in
+                <i class="iconfont icon-folder"></i>
+                <span class="post-category">
+                        <a href="https://keep-zero.github.io/categories/spring/"> spring </a>
+                        
+                </span>
+				
+				<span id="wc" style="font-size: 1rem;text-align: center;">  共1900 字|  阅读需时约 9 分|  本文总阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </div>
+    </header>
+    <div class="post-content">
+        
+
+        
+            
+        
+
+        
+        
+     
+          
+          
+          
+
+          
+          
+          
+
+          
+
+<blockquote>
+<p><strong>慢慢来比较快，虚心学技术</strong></p>
+</blockquote>
+
+<p>安全性是绝大多数应用系统中的一个重要切面（ aspect ），之所以说是切面，是因为<strong>安全性是超越应用程序功能的一个关注点</strong>。应用系统的绝大部分内容都不应该参与到与自己相关的安全性处理中。尽管我们可以直接在应用程序中编写安全性功能相关的代码（这种情况并不少见），但更好的方式还是将安全性相关的关注点与应用程序本身的关注点进行分离</p>
+
+<h2 id="一-什么是spring-security">一、什么是Spring Security?</h2>
+
+<p><strong>一种基于 Spring AOP 和 Servlet 规范中的 Filter 实现的安全框架</strong>。 Spring Security 提供了完整的安全性解决方案，它能够在 <strong>Web 请求级别和方法调用级别处理身份认证和授权</strong></p>
+
+<p>Spring Security 从两个角度来解决安全性问题。</p>
+
+<ul>
+<li>它使用 Servlet 规范中的 <strong>Filter</strong> 保护 Web 请求并限制 URL 级别的访问。</li>
+<li>Spring Security 还能够使用 Spring AOP 保护方法调用 —— 借助于对象代理和使用通知，能够确保<strong>只有具备适当权限的用户才能访问安全保护的方法</strong></li>
+</ul>
+
+<p>Spring Security的核心是 <strong>用户认证（Authentication）和用户授权（Authorization）</strong></p>
+
+<h2 id="二-spring-security基本组成">二、Spring Security基本组成</h2>
+
+<p>Spring Security 被分成了 11 个模块
+ACL:支持通过访问控制列表（ access control list ， ACL ）为域对象提供安全性
+切面（ Aspects ）:一个很小的模块，当使用 Spring Security 注解时，会使用基于 AspectJ 的切面，而不是使用标准的 Spring AOP
+CAS 客户端（ CAS Client ）：提供与 Jasig 的中心认证服务（ Central Authentication Service ， CAS ）进行集成的功能
+<strong>配置（ Configuration ）</strong>:<strong>包含通过 XML 和 Java 配置 Spring Security 的功能支持</strong>
+<strong>核心（ Core ）</strong>:<strong>提供 Spring Security 基本库</strong>
+加密（ Cryptography ）:提供了加密和密码编码的功能
+LDAP:支持基于 LDAP 进行认证
+OpenID:支持使用 OpenID 进行集中式认证
+Remoting:提供了对 Spring Remoting 的支持
+标签库（ Tag Library ）:Spring Security 的 JSP 标签库
+<strong>Web</strong>:<strong>提供了 Spring Security 基于 Filter 的 Web 安全性支持</strong></p>
+
+<p>一个基本的Spring Security应用至少包括Core和Configuration模块，当涉及到Web应用时，还需要包含Web模块。</p>
+
+<h2 id="三-spring-security使用">三、Spring Security使用</h2>
+
+<p>pom文件中引入基本的Spring Security及Spring MVC所需要的包</p>
+
+<pre><code class="language-xml">&lt;properties&gt;
+    &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+    &lt;maven.compiler.source&gt;1.7&lt;/maven.compiler.source&gt;
+    &lt;maven.compiler.target&gt;1.7&lt;/maven.compiler.target&gt;
+    &lt;spring.security.version&gt;5.1.3.RELEASE&lt;/spring.security.version&gt;
+&lt;/properties&gt;
+
+&lt;dependencies&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;junit&lt;/groupId&gt;
+        &lt;artifactId&gt;junit&lt;/artifactId&gt;
+        &lt;version&gt;4.12&lt;/version&gt;
+        &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+
+    &lt;!--引入Servlet支持--&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;javax.servlet&lt;/groupId&gt;
+        &lt;artifactId&gt;javax.servlet-api&lt;/artifactId&gt;
+        &lt;version&gt;3.1.0&lt;/version&gt;
+        &lt;scope&gt;provided&lt;/scope&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- jstl --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;jstl&lt;/groupId&gt;
+        &lt;artifactId&gt;jstl&lt;/artifactId&gt;
+        &lt;version&gt;1.2&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;!--个人封装的一个模块，可有可无，不影响功能实现--&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.my.spring&lt;/groupId&gt;
+        &lt;artifactId&gt;com.m.spring.common&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+
+    &lt;!--引入Spring支持--&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-core&lt;/artifactId&gt;
+        &lt;version&gt;${org.springframework.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-context&lt;/artifactId&gt;
+        &lt;version&gt;${org.springframework.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-test&lt;/artifactId&gt;
+        &lt;version&gt;${org.springframework.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-aop&lt;/artifactId&gt;
+        &lt;version&gt;${org.springframework.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.aspectj&lt;/groupId&gt;
+        &lt;artifactId&gt;aspectjweaver&lt;/artifactId&gt;
+        &lt;version&gt;1.8.13&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;!--引入Spring MVC支持--&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt;
+        &lt;version&gt;${org.springframework.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;!--引入Spring Security支持--&gt;
+    &lt;!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-core --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.security&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-security-core&lt;/artifactId&gt;
+        &lt;version&gt;${spring.security.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-web --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.security&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-security-web&lt;/artifactId&gt;
+        &lt;version&gt;${spring.security.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-config --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.security&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-security-config&lt;/artifactId&gt;
+        &lt;version&gt;${spring.security.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;
+</code></pre>
+
+<p>①配置SpringMVC默认<strong>DispatcherServlet</strong>类</p>
+
+<pre><code class="language-java">public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    /*AbstractAnnotationConfigDispatcherServletInitializer 会同时创
+    建 DispatcherServlet 和 ContextLoaderListener 。 GetServlet-ConfigClasses() 方法返回的带有 @Configuration 注解的
+    类将会用来定义 DispatcherServlet 应用上下文中的 bean 。 getRootConfigClasses() 方法返回的带有 @Configuration 注解的类将
+    会用来配置 ContextLoaderListener 创建的应用上下文中的 bean 。*/
+
+    @Override
+    protected Class&lt;?&gt;[] getRootConfigClasses() {
+        return new Class[]{RootConfig.class};
+    }
+
+    @Override
+    protected Class&lt;?&gt;[] getServletConfigClasses() {
+        return new Class[]{WebConfig.class};
+    }
+
+    @Override
+    protected String[] getServletMappings() {
+        logger.debug(&quot;DispatcherServlet获取匹配的前端控制器。。。。。。&quot;);
+        return new String[]{&quot;/&quot;};
+    }
+}
+</code></pre>
+
+<p>②创建Spring Security的DelegatingFilterProxy,自动加载springSecurityFilterChain</p>
+
+<pre><code class="language-java">/**
+ *  拦截发往应用中的请求，并将请求委托给 ID 为 springSecurityFilterChain的bean
+ *  springSecurityFilterChain 本身是另一个特殊的 Filter,它也被称为 FilterChainProxy.它可以链接任意一个或多个其他的 Filter。
+ *  Spring Security 依赖一系列 Servlet Filter 来提供不同的安全特性。
+ **/
+public class SpringSecurityInitializer extends AbstractSecurityWebApplicationInitializer {}
+</code></pre>
+
+<p>③配置SpringMVC的根配置和Web配置</p>
+
+<pre><code class="language-java">@Configuration
+@ComponentScan(basePackages ={&quot;com.my.spring&quot;},excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION,value = {EnableWebMvc.class})})
+public class RootConfig {
+}
+
+@EnableWebMvc
+@Configuration
+@ComponentScan(basePackages = {&quot;com.my.spring.controller&quot;})
+@Import(SecurityConfig.class)//引入Spring Security的配置
+public class WebConfig extends WebMvcConfigurationSupport {
+
+    /**
+     * 定义一个视图解析器
+     *
+     * @return org.springframework.web.servlet.ViewResolver
+     *
+     * @author lai.guanfu 2019/3/5
+     * @version 1.0
+     **/
+    @Bean
+    public ViewResolver viewResolver(){
+        InternalResourceViewResolver resourceViewResolver = new InternalResourceViewResolver();
+        resourceViewResolver.setPrefix(&quot;/WEB-INF/view/&quot;);
+        resourceViewResolver.setSuffix(&quot;.jsp&quot;);
+        resourceViewResolver.setExposeContextBeansAsAttributes(true);
+        resourceViewResolver.setViewClass(JstlView.class);
+        return resourceViewResolver;
+    }
+
+    @Override
+    protected void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
+        configurer.enable();
+    }
+}
+</code></pre>
+
+<p>④SecurityConfig.java:开启Spring Security并配置基本拦截和用户信息,增加两个用户</p>
+
+<pre><code class="language-java">@Configuration
+@EnableWebSecurity//启用Spring Security
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    /**
+     * 设置拦截路径
+     * @param http
+     * @throws Exception
+     */
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+                //配置拦截路径以及认证通过的身份，此处拦截任意/admin/**路径，必须以ADMIN身份登录
+                .antMatchers(&quot;/admin/**&quot;).access(&quot;hasRole('ROLE_ADMIN')&quot;)
+                //配置拦截路径以及认证通过的身份，此处指定只有访问/dba/**的GET请求会被拦截认证，必须以DBA或者ADMIN的身份登录
+                .antMatchers(HttpMethod.GET,&quot;/dba/**&quot;).access(&quot;hasAnyRole('ROLE_DBA','ROLE_ADMIN')&quot;)
+                //表明除了上述路径需要拦截认证外，其余路径全部不进行认证
+                .anyRequest().permitAll()
+                //add()方法用于连接各种配置指令
+                .and() 
+                //当重写configure(HttpSecurity http)方法后，将失去Spring Security的默认登录页，可以使用formLogin()重新启用
+                .formLogin();
+    }
+
+    /**
+     * 使用内存设置基本人物信息
+     * @param auth
+     * @throws Exception
+     */
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        //使用内存添加用户名及登陆密码和身份，使用指定编码器对密码进行编码
+        auth.inMemoryAuthentication().passwordEncoder(new BCryptPasswordEncoder()).withUser(&quot;admin&quot;).password(new BCryptPasswordEncoder().encode(&quot;123456&quot;)).roles(&quot;ADMIN&quot;);
+        auth.inMemoryAuthentication().passwordEncoder(new BCryptPasswordEncoder()).withUser(&quot;dba&quot;).password(new BCryptPasswordEncoder().encode(&quot;123456&quot;)).roles(&quot;DBA&quot;);
+
+        //Spring Security 5.0之前的写法，5.0之后，如果没有指定密码编码器，将会报There is no PasswordEncoder mapped for the id &quot;null&quot;的错
+        /*auth.inMemoryAuthentication().withUser(&quot;admin&quot;).password(&quot;123456&quot;).roles(&quot;ADMIN&quot;);
+        auth.inMemoryAuthentication().withUser(&quot;dba&quot;).password(&quot;123456&quot;).roles(&quot;DBA&quot;);*/
+    }
+}
+</code></pre>
+
+<p>⑤编写controller方法</p>
+
+<pre><code class="language-java">@Controller
+public class MyController{
+
+    //不需要权限的路径
+    @RequestMapping(value = {&quot;/&quot;,&quot;/welcome**&quot;},method = RequestMethod.GET)
+    public ModelAndView toWelcomePage(){
+        ModelAndView model = new ModelAndView();
+        model.addObject(&quot;title&quot;,&quot;Spring Security Welcome Page!!&quot;);
+        model.addObject(&quot;message&quot;,&quot;Hello World&quot;);
+        model.setViewName(&quot;welcome&quot;);
+        return model;
+    }
+
+    //需要ADMIN角色权限
+    @RequestMapping(value = {&quot;/admin**&quot;},method = RequestMethod.GET)
+    public ModelAndView toAdminPage(){
+        ModelAndView model = new ModelAndView();
+        model.addObject(&quot;title&quot;,&quot;Spring Security Admin Page!!&quot;);
+        model.addObject(&quot;message&quot;,&quot;Hello World&quot;);
+        model.setViewName(&quot;admin&quot;);
+        return model;
+    }
+
+    //需要DBA或者ADMIN权限
+    @RequestMapping(value = {&quot;/dba**&quot;},method = RequestMethod.GET)
+    public ModelAndView toDBAPage(){
+        ModelAndView model = new ModelAndView();
+        model.addObject(&quot;title&quot;,&quot;Spring Security DBA Admin Page!!&quot;);
+        model.addObject(&quot;message&quot;,&quot;Hello World&quot;);
+        model.setViewName(&quot;dba&quot;);
+        return model;
+    }
+}
+</code></pre>
+
+<p>⑥编写视图：</p>
+
+<pre><code class="language-java">welcome.jsp
+
+&lt;%@ page contentType=&quot;text/html;charset=UTF-8&quot; language=&quot;java&quot; %&gt;
+&lt;%@ taglib prefix=&quot;c&quot; uri=&quot;http://java.sun.com/jsp/jstl/core&quot; %&gt;
+&lt;%@ page isELIgnored=&quot;false&quot; %&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;欢迎页&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;&lt;c:out value=&quot;${title}&quot;&gt;&lt;/c:out&gt;&lt;/h1&gt;
+    &lt;hr&gt;
+    &lt;h3&gt;&lt;c:out value=&quot;${message}&quot;&gt;&lt;/c:out&gt;&lt;/h3&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+
+admin.jsp
+
+&lt;%@ page contentType=&quot;text/html;charset=UTF-8&quot; language=&quot;java&quot; %&gt;
+&lt;%@ taglib prefix=&quot;c&quot; uri=&quot;http://java.sun.com/jsp/jstl/core&quot; %&gt;
+&lt;%@ page isELIgnored=&quot;false&quot; %&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;管理员页面&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h1&gt;Title : ${title}&lt;/h1&gt;
+&lt;h1&gt;Message : ${message}&lt;/h1&gt;
+
+&lt;!--获取用户信息--&gt;
+&lt;c:if test=&quot;${pageContext.request.userPrincipal.name != null}&quot;&gt;
+    &lt;h2&gt;Welcome : ${pageContext.request.userPrincipal.name}
+        | &lt;a href=&quot;&lt;c:url value=&quot;/logout&quot; /&gt;&quot; &gt; Logout&lt;/a&gt;&lt;/h2&gt;
+&lt;/c:if&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+
+dba.jsp
+
+&lt;%@ page contentType=&quot;text/html;charset=UTF-8&quot; language=&quot;java&quot; %&gt;
+&lt;%@ taglib prefix=&quot;c&quot; uri=&quot;http://java.sun.com/jsp/jstl/core&quot; %&gt;
+&lt;%@ page isELIgnored=&quot;false&quot; %&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;h1&gt;Title : ${title}&lt;/h1&gt;
+    &lt;h1&gt;Message : ${message}&lt;/h1&gt;
+
+    &lt;c:if test=&quot;${pageContext.request.userPrincipal.name != null}&quot;&gt;
+        &lt;h2&gt;Welcome : ${pageContext.request.userPrincipal.name}
+            | &lt;a href=&quot;&lt;c:url value=&quot;/logout&quot; /&gt;&quot; &gt; Logout&lt;/a&gt;&lt;/h2&gt;
+    &lt;/c:if&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p>启动服务器，浏览器校验如下：</p>
+
+<p>访问welcome，无登陆身份状态可访问</p>
+
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/spring-action/spring_action_09_01.jpg" alt="" class="lazyload"><figcaption class="image-caption"></figcaption></figure>
+访问/admin,自动跳转到Spring Security提供的登录页
+<figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/spring-action/spring_action_09_02.jpg" alt="" class="lazyload"><figcaption class="image-caption"></figcaption></figure></p>
+
+<p>输入错误登录名或密码时会显示错误</p>
+
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/spring-action/spring_action_09_03.jpg" alt="" class="lazyload"><figcaption class="image-caption"></figcaption></figure></p>
+
+<p>使用对/admin无权限的用户登录，会显示403页面</p>
+
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/spring-action/spring_action_09_04.jpg" alt="" class="lazyload"><figcaption class="image-caption"></figcaption></figure></p>
+
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/spring-action/spring_action_09_05.jpg" alt="" class="lazyload"><figcaption class="image-caption"></figcaption></figure>
+使用admin进行登陆，正常进入并获取到登陆用户的信息</p>
+
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/spring-action/spring_action_09_06.jpg" alt="" class="lazyload"><figcaption class="image-caption"></figcaption></figure></p>
+
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/spring-action/spring_action_09_07.jpg" alt="" class="lazyload"><figcaption class="image-caption"></figcaption></figure></p>
+
+<p>访问/dba，从上面代码中，我们知道，对于/dba路径的请求，使用ADMIN和DBA角色访问都是允许的，</p>
+
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/spring-action/spring_action_09_08.jpg" alt="" class="lazyload"><figcaption class="image-caption"></figcaption></figure></p>
+
+<p>测试完成，那么，Spring Security究竟是怎么实现拦截的呢？</p>
+
+<h2 id="四-spring-security-原理分析">四、Spring Security 原理分析</h2>
+
+<p>实际上，Spring Security通过一层层基于Servlet的过滤器Filter对请求和方法调用的拦截过滤，从而实现用户身份验证和用户授权。</p>
+
+<p>我们先来分析一下Speing Security的运转流程：</p>
+
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/spring-action/spring_action_09_09.jpg" alt="" class="lazyload"><figcaption class="image-caption"></figcaption></figure></p>
+
+<p>可以看到，Speing Security的核心组件是一个名为<strong>DelegatingFilterProxy</strong>的过滤器，它将一系列的过滤器集合成FilterChain链条，进行层层过滤实现用户身份认证及授权。</p>
+
+<p>从Demo代码中可以看到Spring Security的几个核心类和接口以及注解，以下一一分析：</p>
+
+<p>①<strong>DelegatingFilterProxy</strong>类</p>
+
+<pre><code class="language-java">public class DelegatingFilterProxy extends GenericFilterBean {
+    。。。
+    //根据名称创建一个过滤器实例
+    public DelegatingFilterProxy(String targetBeanName) {
+       this(targetBeanName, null);
+    }
+
+    public DelegatingFilterProxy(String targetBeanName, @Nullable WebApplicationContext wac) {
+       Assert.hasText(targetBeanName, &quot;Target Filter bean name must not be null or empty&quot;);
+       this.setTargetBeanName(targetBeanName);
+       this.webApplicationContext = wac;
+       if (wac != null) {
+          this.setEnvironment(wac.getEnvironment());
+       }
+    }
+
+    //初始化（获取过滤器实例）
+    protected Filter initDelegate(WebApplicationContext wac) throws ServletException {
+       String targetBeanName = getTargetBeanName();
+       Assert.state(targetBeanName != null, &quot;No target bean name set&quot;);
+       Filter delegate = wac.getBean(targetBeanName, Filter.class);
+       if (isTargetFilterLifecycle()) {
+          delegate.init(getFilterConfig());
+       }
+       return delegate;
+    }
+
+    //进入过滤操作
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
+          throws ServletException, IOException {
+
+       // Lazily initialize the delegate if necessary.------delegate判空填充操作
+       Filter delegateToUse = this.delegate;
+       if (delegateToUse == null) {
+          synchronized (this.delegateMonitor) {
+             delegateToUse = this.delegate;
+             if (delegateToUse == null) {
+                WebApplicationContext wac = findWebApplicationContext();
+                if (wac == null) {
+                   throw new IllegalStateException(&quot;No WebApplicationContext found: &quot; +
+                         &quot;no ContextLoaderListener or DispatcherServlet registered?&quot;);
+                }
+                delegateToUse = initDelegate(wac);
+             }
+             this.delegate = delegateToUse;
+          }
+       }
+
+       // Let the delegate perform the actual doFilter operation.执行真正的过滤
+       invokeDelegate(delegateToUse, request, response, filterChain);
+    }
+
+    //真正执行过滤
+    protected void invokeDelegate(
+      Filter delegate, ServletRequest request, ServletResponse response, FilterChain filterChain)
+      throws ServletException, IOException {
+        //执行目标过滤方法，而不是本类内的过滤方法，相当于将过滤委派给实例
+       delegate.doFilter(request, response, filterChain);
+    }
+}
+</code></pre>
+
+<p>可以看到，DelegatingFilterProxy实际上就是一个Filter，只不过他并不会直接执行过滤操作，而是将过滤操作委托给过滤链条</p>
+
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/spring-action/spring_action_09_10.jpg" alt="" class="lazyload"><figcaption class="image-caption"></figcaption></figure></p>
+
+<p>②<strong>AbstractSecurityWebApplicationInitializer</strong>类</p>
+
+<p>关键源代码如下：</p>
+
+<pre><code class="language-java">public abstract class AbstractSecurityWebApplicationInitializer
+      implements WebApplicationInitializer {
+
+   private static final String SERVLET_CONTEXT_PREFIX = &quot;org.springframework.web.servlet.FrameworkServlet.CONTEXT.&quot;;
+
+   public static final String DEFAULT_FILTER_NAME = &quot;springSecurityFilterChain&quot;;
+
+   private final Class&lt;?&gt;[] configurationClasses;
+
+   protected AbstractSecurityWebApplicationInitializer() {
+      this.configurationClasses = null;
+   }
+
+   protected AbstractSecurityWebApplicationInitializer(
+         Class&lt;?&gt;... configurationClasses) {
+      this.configurationClasses = configurationClasses;
+   }
+
+    //初始执行，生成名为springSecurityFilterChain的Bean，是一个DelegatingFilterProxy的实例
+   public final void onStartup(ServletContext servletContext) throws ServletException {
+      beforeSpringSecurityFilterChain(servletContext);
+      if (this.configurationClasses != null) {
+         AnnotationConfigWebApplicationContext rootAppContext = new AnnotationConfigWebApplicationContext();
+         rootAppContext.register(this.configurationClasses);
+         servletContext.addListener(new ContextLoaderListener(rootAppContext));
+      }
+      if (enableHttpSessionEventPublisher()) {
+         servletContext.addListener(
+               &quot;org.springframework.security.web.session.HttpSessionEventPublisher&quot;);
+      }
+      servletContext.setSessionTrackingModes(getSessionTrackingModes());
+      //生成springSecurityFilterChain
+      insertSpringSecurityFilterChain(servletContext);
+      afterSpringSecurityFilterChain(servletContext);
+   }
+
+   /**
+    * 注册springSecurityFilterChain，Spring Security的过滤器链条
+    * Registers the springSecurityFilterChain 
+    */
+   private void insertSpringSecurityFilterChain(ServletContext servletContext) {
+      String filterName = DEFAULT_FILTER_NAME;
+      //关键代码
+      DelegatingFilterProxy springSecurityFilterChain = new DelegatingFilterProxy(filterName);
+      //获取应用上下文配置中的属性并置入springSecurityFilterChain中
+      String contextAttribute = getWebApplicationContextAttribute();
+      if (contextAttribute != null) {
+         springSecurityFilterChain.setContextAttribute(contextAttribute);
+      }
+
+      //注册过滤器链条
+      registerFilter(servletContext, true, filterName, springSecurityFilterChain);
+   }
+
+   //注册过滤器链条
+   private void registerFilters(ServletContext servletContext,boolean insertBeforeOtherFilters, Filter... filters) {
+       Assert.notEmpty(filters, &quot;filters cannot be null or empty&quot;);
+       for (Filter filter : filters) {
+           if (filter == null) {
+             throw new IllegalArgumentException(&quot;filters cannot contain null values. Got &quot;+ Arrays.asList(filters));
+           }
+           String filterName = Conventions.getVariableName(filter);
+           registerFilter(servletContext, insertBeforeOtherFilters, filterName, filter);
+       }
+    }
+
+    //注册过滤器
+    private final void registerFilter(ServletContext servletContext,boolean insertBeforeOtherFilters, String filterName, Filter filter) {
+       Dynamic registration = servletContext.addFilter(filterName, filter);
+       if (registration == null) {
+          throw new IllegalStateException(&quot;Duplicate Filter registration for '&quot; + filterName+ &quot;'. Check to ensure the Filter is only configured once.&quot;);
+       }
+       registration.setAsyncSupported(isAsyncSecuritySupported());
+       EnumSet&lt;DispatcherType&gt; dispatcherTypes = getSecurityDispatcherTypes();
+       registration.addMappingForUrlPatterns(dispatcherTypes, !insertBeforeOtherFilters,
+         &quot;/*&quot;);
+    }
+
+   //供开发者自定义Filter 
+   protected final void insertFilters(ServletContext servletContext, Filter... filters) {
+      registerFilters(servletContext, true, filters);
+   }
+
+   //供开发者自定义Filter 
+   protected final void appendFilters(ServletContext servletContext, Filter... filters) {
+      registerFilters(servletContext, false, filters);
+   }
+}
+</code></pre>
+
+<p><strong>AbstractSecurityWebApplicationInitializer</strong>实现了<strong>WebWebApplicationInitializer</strong>，所以在应用启动的时候是可以被Spring装配并进行初始化的，在进行初始化的过程中，AbstractSecurityWebApplicationInitializer读取配置并生成一个名为<strong>springSecurityFilterChain</strong>的Bean，是<strong>DelegatingFilterProxy</strong>的实例，并将配置中所定义的过滤链条进行注入</p>
+
+<p>AbstractSecurityWebApplicationInitializer还提供了两个方法供开发者自定义过滤器：<strong>insertFilters(ServletContext servletContext, Filter&hellip; filters）和appendFilters(ServletContext servletContext, Filter&hellip; filters)</strong>，但是一般来说我们不会用到，除非我们希望可以自定义过滤逻辑。</p>
+
+<p>③<strong>WebSecurityConfigurerAdapter类&amp;&amp;@EnableWebSecurity注解</strong></p>
+
+<p>当创建了一个继承了AbstractSecurityWebApplicationInitializer的初始化类后，我们只需再创建一个配置类继承<strong>WebSecurityConfigurerAdapter</strong>类且标注<strong>@EnableWebSecurity</strong>注解即可开启Web 的Security服务了。但是此时的应用是封闭的，因为没有配置任何的用户身份，也没有配置任何的过滤路径规则，应用默认封锁所有路径。</p>
+
+<p>那么，应该如何配置用户身份和过滤器规则呢？</p>
+
+<p>WebSecurityConfigurerAdapter类中有几个关键方法可以重载</p>
+
+<p>configure(HttpSecurity):配置拦截模式
+configure(AuthenticationManagerBuilder):配置用户信息
+configure(WebSecurity):配置Spring Security的Filter链</p>
+
+<p>在进行配置分析之前，我们需要先了解几个类：（摘自：<a href="https://www.cnblogs.com/xz816111/p/8528896.html" rel="nofollow noreferrer" target="_blank">https://www.cnblogs.com/xz816111/p/8528896.html</a>）</p>
+
+<p><strong>Authentication</strong></p>
+
+<p>是一个接口，用来表示用户认证信息，在用户登录认证之前相关信息会封装为一个<strong>Authentication</strong>具体实现类的对象，在登录认证成功之后又会生成一个信息更全面，包含用户权限等信息的Authentication对象，然后把它保存 <strong>SecurityContextHolder</strong>所持有的<strong>SecurityContext</strong>中，供后续的程序进行调用，如访问权限的鉴定等</p>
+
+<p><strong>AuthenticationManager</strong></p>
+
+<p>用来做验证的最主要的接口为<strong>AuthenticationManager</strong>，这个接口只有一个方法：</p>
+
+<pre><code class="language-java">public interface AuthenticationManager {
+  Authentication authenticate(Authentication authentication)
+    throws AuthenticationException;
+}
+</code></pre>
+
+<p>其中authenticate()方法运行后可能会有三种情况：</p>
+
+<ol>
+<li>验证成功，返回一个带有用户信息的Authentication。</li>
+<li>验证失败，抛出一个AuthenticationException异常。</li>
+<li>无法判断，返回null。</li>
+</ol>
+
+<p><strong>ProviderManager</strong></p>
+
+<p><strong>ProviderManager</strong>是上面的<strong>AuthenticationManager</strong>最常见的实现，<strong>它不自己处理验证，而是将验证委托给其所配置的AuthenticationProvider列表</strong>，<strong>然后会依次调用每一个 AuthenticationProvider进行认证</strong>，这个过程中只要有一个AuthenticationProvider验证成功，就不会再继续做更多验证，会直接以该认证结果作为<strong>ProviderManager</strong>的认证结果。</p>
+
+<pre><code class="language-java">public class ProviderManager implements AuthenticationManager, MessageSourceAware,
+      InitializingBean {
+
+   private static final Log logger = LogFactory.getLog(ProviderManager.class);
+
+   private AuthenticationEventPublisher eventPublisher = new NullEventPublisher();
+   private List&lt;AuthenticationProvider&gt; providers = Collections.emptyList();
+   protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
+   private AuthenticationManager parent;
+   private boolean eraseCredentialsAfterAuthentication = true;
+
+   public ProviderManager(List&lt;AuthenticationProvider&gt; providers) {
+      this(providers, null);
+   }
+
+   public ProviderManager(List&lt;AuthenticationProvider&gt; providers,
+         AuthenticationManager parent) {
+      Assert.notNull(providers, &quot;providers list cannot be null&quot;);
+      this.providers = providers;
+      this.parent = parent;
+      checkState();
+   }
+
+   public void afterPropertiesSet() throws Exception {
+      checkState();
+   }
+
+   private void checkState() {
+      if (parent == null &amp;&amp; providers.isEmpty()) {
+         throw new IllegalArgumentException(
+               &quot;A parent AuthenticationManager or a list &quot;
+                     + &quot;of AuthenticationProviders is required&quot;);
+      }
+   }
+
+   //执行认证
+   public Authentication authenticate(Authentication authentication)
+         throws AuthenticationException {
+      Class&lt;? extends Authentication&gt; toTest = authentication.getClass();
+      AuthenticationException lastException = null;
+      AuthenticationException parentException = null;
+      Authentication result = null;
+      Authentication parentResult = null;
+      boolean debug = logger.isDebugEnabled();
+      //并不直接验证，而是调用其provider列表进行验证，只要有一个验证通过，则通过
+      for (AuthenticationProvider provider : getProviders()) {
+         if (!provider.supports(toTest)) {
+            continue;
+         }
+
+         if (debug) {
+            logger.debug(&quot;Authentication attempt using &quot;
+                  + provider.getClass().getName());
+         }
+
+         try {
+            result = provider.authenticate(authentication);
+
+            if (result != null) {
+               copyDetails(authentication, result);
+               break;
+            }
+         }
+         catch (AccountStatusException e) {
+            prepareException(e, authentication);
+            // SEC-546: Avoid polling additional providers if auth failure is due to
+            // invalid account status
+            throw e;
+         }
+         catch (InternalAuthenticationServiceException e) {
+            prepareException(e, authentication);
+            throw e;
+         }
+         catch (AuthenticationException e) {
+            lastException = e;
+         }
+      }
+
+      if (result == null &amp;&amp; parent != null) {
+         // Allow the parent to try.
+         try {
+            result = parentResult = parent.authenticate(authentication);
+         }
+         catch (ProviderNotFoundException e) {
+            // ignore as we will throw below if no other exception occurred prior to
+            // calling parent and the parent
+            // may throw ProviderNotFound even though a provider in the child already
+            // handled the request
+         }
+         catch (AuthenticationException e) {
+            lastException = parentException = e;
+         }
+      }
+
+      if (result != null) {
+         if (eraseCredentialsAfterAuthentication
+               &amp;&amp; (result instanceof CredentialsContainer)) {
+            // Authentication is complete. Remove credentials and other secret data
+            // from authentication
+            ((CredentialsContainer) result).eraseCredentials();
+         }
+
+         // If the parent AuthenticationManager was attempted and successful than it will publish an AuthenticationSuccessEvent
+         // This check prevents a duplicate AuthenticationSuccessEvent if the parent AuthenticationManager already published it
+         if (parentResult == null) {
+            eventPublisher.publishAuthenticationSuccess(result);
+         }
+         return result;
+      }
+
+      // Parent was null, or didn't authenticate (or throw an exception).
+
+      if (lastException == null) {
+         lastException = new ProviderNotFoundException(messages.getMessage(
+               &quot;ProviderManager.providerNotFound&quot;,
+               new Object[] { toTest.getName() },
+               &quot;No AuthenticationProvider found for {0}&quot;));
+      }
+
+      // If the parent AuthenticationManager was attempted and failed than it will publish an AbstractAuthenticationFailureEvent
+      // This check prevents a duplicate AbstractAuthenticationFailureEvent if the parent AuthenticationManager already published it
+      if (parentException == null) {
+         prepareException(lastException, authentication);
+      }
+
+      throw lastException;
+   }
+
+}
+</code></pre>
+
+<p>了解完基本的关键类，我们开始看一下配置的技巧：</p>
+
+<ul>
+<li><strong>配置用户信息</strong></li>
+</ul>
+
+<p>两种方式：</p>
+
+<p>Ⅰ、<strong>自定义方法将用户信息存入内存</strong></p>
+
+<pre><code class="language-java">/**
+ * 使用内存设置基本人物信息
+ * @param auth
+ * @throws Exception
+ */
+@Autowired
+public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+      //使用内存添加用户名及登陆密码和身份，使用指定编码器对密码进行编码
+      auth.inMemoryAuthentication().passwordEncoder(new BCryptPasswordEncoder()).withUser(&quot;admin&quot;).password(new BCryptPasswordEncoder().encode(&quot;123456&quot;)).roles(&quot;ADMIN&quot;);
+      auth.inMemoryAuthentication().passwordEncoder(new BCryptPasswordEncoder()).withUser(&quot;dba&quot;).password(new BCryptPasswordEncoder().encode(&quot;123456&quot;)).roles(&quot;DBA&quot;);
+
+      //Spring Security 5.0之前的写法，5.0之后，如果没有指定密码编码器，将会报There is no PasswordEncoder mapped for the id &quot;null&quot;的错
+        /*auth.inMemoryAuthentication().withUser(&quot;admin&quot;).password(&quot;123456&quot;).roles(&quot;ADMIN&quot;);
+      auth.inMemoryAuthentication().withUser(&quot;dba&quot;).password(&quot;123456&quot;).roles(&quot;DBA&quot;);*/
+}
+</code></pre>
+
+<p>Ⅱ、<strong>重载configure(AuthenticationManagerBuilder)方法</strong></p>
+
+<pre><code class="language-java">@Override
+protected void configure(AuthenticationManagerBuilder auth) throws Exception
+{
+    //使用内存添加用户名及登陆密码和身份，使用指定编码器对密码进行编码
+    auth.inMemoryAuthentication().passwordEncoder(new BCryptPasswordEncoder()).withUser(&quot;admin&quot;).password(new BCryptPasswordEncoder().encode(&quot;123456&quot;)).roles(&quot;ADMIN&quot;);
+    auth.inMemoryAuthentication().passwordEncoder(new BCryptPasswordEncoder()).withUser(&quot;dba&quot;).password(new BCryptPasswordEncoder().encode(&quot;123456&quot;)).roles(&quot;DBA&quot;);
+
+    //Spring Security 5.0之前的写法，5.0之后，如果没有指定密码编码器，将会报There is no PasswordEncoder mapped for the id &quot;null&quot;的错
+    /*auth.inMemoryAuthentication().withUser(&quot;admin&quot;).password(&quot;123456&quot;).roles(&quot;ADMIN&quot;);
+    auth.inMemoryAuthentication().withUser(&quot;dba&quot;).password(&quot;123456&quot;).roles(&quot;DBA&quot;);*/
+}
+</code></pre>
+
+<ul>
+<li><p><strong>配置拦截路径</strong></p>
+
+<pre><code class="language-java">@Override
+protected void configure(HttpSecurity http) throws Exception {
+http.authorizeRequests()
+        //配置拦截路径以及认证通过的身份，此处拦截任意/admin/**路径，必须以ADMIN身份登录
+        .antMatchers(&quot;/admin/**&quot;).access(&quot;hasRole('ROLE_ADMIN')&quot;)
+        //配置拦截路径以及认证通过的身份，此处指定只有访问/dba/**的GET请求会被拦截认证，可使用DBA和ADMIN身份访问
+        .antMatchers(HttpMethod.GET,&quot;/dba/**&quot;).access(&quot;hasAnyRole('ROLE_DBA','ROLE_ADMIN')&quot;)
+        //表明除了上述路径需要拦截认证外，其余路径全部不进行认证
+        .anyRequest().permitAll()
+        //add()方法用于连接各种配置指令
+       .and() 
+       //当重写configure(HttpSecurity http)方法后，将失去Spring Security的默认登录页，可以使用formLogin()重新启用
+       .formLogin();
+}
+</code></pre></li>
+</ul>
+
+<p>其中各关键方法源码如下：</p>
+
+<p><strong>antMatchers（）&mdash;指定拦截规则</strong></p>
+
+<pre><code class="language-java">//拦截目标路径数组
+public C antMatchers(String... antPatterns) {
+   return chainRequestMatchers(RequestMatchers.antMatchers(antPatterns));
+}
+
+//拦截指定访问方式的目标路径
+public C antMatchers(HttpMethod method, String... antPatterns) {
+   return chainRequestMatchers(RequestMatchers.antMatchers(method, antPatterns));
+}
+
+//拦截应用内所有目标访问方式的请求
+public C antMatchers(HttpMethod method) {
+   return antMatchers(method, new String[] { &quot;/**&quot; });
+}
+</code></pre>
+
+<p><strong>access（）&mdash;-指定拦截通过的条件</strong></p>
+
+<pre><code class="language-java">//允许该拦截通过的条件
+public ExpressionInterceptUrlRegistry access(String attribute) {
+   if (not) {
+      attribute = &quot;!&quot; + attribute;
+   }
+   interceptUrl(requestMatchers, SecurityConfig.createList(attribute));
+   return ExpressionUrlAuthorizationConfigurer.this.REGISTRY;
+}
+</code></pre>
+
+<p><strong>hasRole()&mdash;&ndash;是否具有某个角色身份</strong></p>
+
+<pre><code class="language-java">//等同于hasRole
+public final boolean hasAuthority(String authority) {
+   return hasAnyAuthority(authority);
+}
+//等同于hasAnyRole
+public final boolean hasAnyAuthority(String... authorities) {
+   return hasAnyAuthorityName(null, authorities);
+}
+
+//当前用户是否拥有指定角色
+public final boolean hasRole(String role) {
+   return hasAnyRole(role);
+}
+
+//多个角色是一个以逗号进行分隔的字符串。如果当前用户拥有指定角色中的任意一个则返回true
+public final boolean hasAnyRole(String... roles) {
+   return hasAnyAuthorityName(defaultRolePrefix, roles);
+}
+</code></pre>
+
+<ul>
+<li><strong>自定义登陆页</strong></li>
+</ul>
+
+<p>我们看到<strong>FormLoginConfigurer</strong>()的源码：</p>
+
+<pre><code class="language-java">public FormLoginConfigurer&lt;HttpSecurity&gt; formLogin() throws Exception {
+   return getOrApply(new FormLoginConfigurer&lt;&gt;());
+}
+</code></pre>
+
+<p>如果不想做过多配置，自定义的登陆页面应该：</p>
+
+<ul>
+<li><strong>form的action应该提交到&rdquo;/login&rdquo;</strong></li>
+<li><strong>包含username的输入域且name属性为username</strong></li>
+<li><strong>包含password的输入域且name属性为password</strong></li>
+</ul>
+
+<p>loginPage.jsp</p>
+
+<pre><code class="language-jsp">&lt;%@ page contentType=&quot;text/html;charset=UTF-8&quot; language=&quot;java&quot; %&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;登陆页面&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;form method=&quot;post&quot; action=&quot;../login&quot;&gt;
+        &lt;label&gt;登陆名：&lt;/label&gt;&lt;input type=&quot;text&quot; name=&quot;username&quot;&gt;
+        &lt;label&gt;密码：&lt;/label&gt;&lt;input type=&quot;password&quot; name=&quot;password&quot;&gt;
+        &lt;button type=&quot;submit&quot;&gt;提交&lt;/button&gt;
+    &lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p>上述配置改为：</p>
+
+<pre><code class="language-java">@Override
+protected void configure(HttpSecurity http) throws Exception {
+    http.authorizeRequests()
+            //配置拦截路径以及认证通过的身份，此处拦截任意/admin/**路径，必须以ADMIN身份登录
+            .antMatchers(&quot;/admin/**&quot;).access(&quot;hasRole('ROLE_ADMIN')&quot;)
+            //配置拦截路径以及认证通过的身份，此处指定只有访问/dba/**的GET请求会被拦截认证，可使用DBA和ADMIN身份访问
+            .antMatchers(HttpMethod.GET,&quot;/dba/**&quot;).access(&quot;hasAnyRole('ROLE_DBA','ROLE_ADMIN')&quot;)
+            //表明除了上述路径需要拦截认证外，其余路径全部不进行认证
+            .anyRequest().permitAll()
+            //add()方法用于连接各种配置指令
+           .and() 
+           //当重写configure(HttpSecurity http)方法后，将失去Spring Security的默认登录页，可以使用formLogin()重新启用
+           .formLogin()
+           //将登录页指向视图名为loginPage的视图
+           .loginPage(&quot;/loginPage&quot;);
+}
+</code></pre>
+
+<p>创建LoginController作为视图指向</p>
+
+<pre><code class="language-java">@Controller
+public class LoginController {
+
+    @RequestMapping(&quot;/loginPage&quot;)
+    public String login(){
+        return &quot;loginPage&quot;;
+    }
+}
+</code></pre>
+
+<p><figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/spring-action/spring_action_09_11.jpg" alt="" class="lazyload"><figcaption class="image-caption"></figcaption></figure></p>
+
+    </div>
+
+    <div class="post-copyright">
+             
+            <p class="copyright-item">
+                <span>Author:</span>
+                <span>GF.L </span>
+                </p>
+            
+           
+             
+            <p class="copyright-item">
+                    <span>Link:</span>
+                    <a href=https://keep-zero.github.io/2019/spring_action09/>https://keep-zero.github.io/2019/spring_action09/</span>
+            </p>
+            
+             
+            <p class="copyright-item lincese">
+                本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可
+            </p>
+            
+    </div>
+
+  
+    <div class="post-tags">
+        
+            <section>
+            <i class="iconfont icon-tag"></i>Tag(s): 
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/java/">
+                    #java</a></span>
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/spring/">
+                    #spring</a></span>
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/spring-action/">
+                    #spring-action</a></span>
+            
+            </section>
+        
+        <section>
+                <a href="javascript:window.history.back();">back</a></span> · 
+                <span><a href="https://keep-zero.github.io">home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+        
+        <a href="https://keep-zero.github.io/2019/spring_action07/" class="prev" rel="prev" title="《Spring实战》-第七章:SpringMVC的高级技术"><i class="iconfont icon-left"></i>&nbsp;《Spring实战》-第七章:SpringMVC的高级技术</a>
+         
+        
+        <a href="https://keep-zero.github.io/2019/spring_action10/" class="next" rel="next" title="《Spring实战》-第十章:Spring和JDBC">《Spring实战》-第十章:Spring和JDBC&nbsp;<i class="iconfont icon-right"></i></a>
+        
+    </div>
+
+    <div class="post-comment">
+          
+                 
+          
+    </div>
+</article>
+          </div>
+		   </main>
+      <footer class="footer">
+    <div class="copyright">
+        &copy;
+        
+        <span itemprop="copyrightYear">2011 - 2019</span>
+        
+        <span class="with-love">
+    	 <i class="iconfont icon-love"></i> 
+        </span>
+         
+            <span class="author" itemprop="copyrightHolder"><a href="https://keep-zero.github.io">GF.L</a> | </span> 
+         
+
+         
+		  <span>Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow">Hugo</a> & <a href="https://github.com/liuzc/leaveit" target="_blank" rel="external nofollow">LeaveIt</a></span> 
+		<span id="busuanzi_container_site_pv">
+			本站访问量：<span id="busuanzi_value_site_pv"></span>次
+		</span>
+		&nbsp;
+		<span id="busuanzi_container_site_uv">
+			您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者
+		</span>
+    </div>
+</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+    
+     <link href="//lib.baomitu.com/lightgallery/1.6.11/css/lightgallery.min.css" rel="stylesheet">  
+      
+     <script src="/js/vendor_gallery.min.js" async="" ></script>
+    
+  
+
+
+
+     </div>
+  </body>
+</html>

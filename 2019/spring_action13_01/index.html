@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noodp"/>
+  <meta name="author" content="GF.L">
+  
+  
+  
+  <link rel="prev" href="https://keep-zero.github.io/2019/spring_action12/" />
+  <link rel="next" href="https://keep-zero.github.io/2019/spring_action13_02/" />
+  <link rel="canonical" href="https://keep-zero.github.io/2019/spring_action13_01/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <title>
+       
+       
+           《Spring实战》-第十三章：缓存数据（1）-Spring对缓存的支持 | Keep Zero
+       
+  </title>
+  <meta name="title" content="《Spring实战》-第十三章：缓存数据（1）-Spring对缓存的支持 | Keep Zero">
+    
+  
+  <link rel="stylesheet" href="/font/iconfont.css">
+  <link rel="stylesheet" href="/css/main.min.css">
+
+
+  
+  
+ 
+
+<script type="application/ld+json">
+ "@context" : "http://schema.org",
+    "@type" : "BlogPosting",
+    "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "https:\/\/keep-zero.github.io"
+    },
+    "articleSection" : "posts",
+    "name" : "《Spring实战》-第十三章：缓存数据（1）-Spring对缓存的支持",
+    "headline" : "《Spring实战》-第十三章：缓存数据（1）-Spring对缓存的支持",
+    "description" : "慢来比较快，虚心学技术\n缓存（ Caching ）可以存储经常会用到的信息，这样每次需要的时候，这些信息都是立即可用的。我们将会了解到 Spring 的缓存抽象。尽管 Spring 自身并没有实现缓存解决方案，但是它对缓存功能提供了声明式的支持，能够与多种流行的缓存实现进行集成\n Ⅰ、开启缓存支持  注解开启：@EnableCaching 配置开启： cache:annotation-driven  两种开启方法的工作方式是相同的。它们都会创建一个切面（ aspect ）并触发Spring 缓存注解的切点（ pointcut ）。根据所使用的注解以及缓存的状态，这个切面会从缓存中获取数据，将数据添加到缓存之中或者从缓存中移除某个值。\nimport org.springframework.cache.annotation.EnableCaching; @Configuration @EnableCaching public class CacheConfig { }  \x26lt;?xml version=\x26quot;1.0\x26quot; encoding=\x26quot;UTF-8\x26quot;?\x26gt; \x26lt;beans xmlns=\x26quot;http:\/\/www.springframework.org\/schema\/beans\x26quot; xmlns:xsi=\x26quot;http:\/\/www.w3.org\/2001\/XMLSchema-instance\x26quot; xmlns:cache=\x26quot;http:\/\/www.springframework.org\/schema\/cache\x26quot; xsi:schemaLocation=\x26quot;http:\/\/www.springframework.org\/schema\/beans http:\/\/www.springframework.org\/schema\/beans\/spring-beans.xsd http:\/\/www.springframework.org\/schema\/cache http:\/\/www.springframework.org\/schema\/cache\/spring-cache.xsd\x26quot;\x26gt; \x26lt;!--启用缓存注解功能，这个是必须的，否则注解不会生效--\x26gt; \x26lt;!--有一个cache-manager属性用来指定当前所使用的CacheManager对应的bean的名称，默认是cacheManager--\x26gt; \x26lt;cache:annotation-driven\/\x26gt; \x26lt;\/beans\x26gt;  Ⅱ、配置缓存管理器 缓存管理器：是 Spring 缓存抽象的核心，它能够与多个流行的缓存实现进行集成\nSpring内置了多个缓存管理器：\n SimpleCacheManager NoOpCacheManager ConcurrentMapCacheManager\x26mdash;\x26mdash;\x26mdash;-默认使用的缓存管理器 CompositeCacheManager EhCacheCacheManager\x26mdash;\x26mdash;\x26mdash;\x26mdash;\x26mdash;\x26mdash;-较常用 RedisCacheManager （来自于 Spring Data Redis 项目）\x26mdash;\x26mdash;\x26mdash;\x26mdash;\x26mdash;\x26ndash;较常用 GemfireCacheManager （来自于 Spring Data GemFire 项目）  1、配置ConcurrentMapCacheManager ①注解配置",
+    "inLanguage" : "en-us",
+    "author" : "GF.L",
+    "creator" : "GF.L",
+    "publisher": "GF.L",
+    "accountablePerson" : "GF.L",
+    "copyrightHolder" : "GF.L",
+    "copyrightYear" : "2019",
+    "datePublished": "2019-09-01 11:52:45 \x2b0800 CST",
+    "dateModified" : "2019-09-01 11:52:45 \x2b0800 CST",
+    "url" : "https:\/\/keep-zero.github.io\/2019\/spring_action13_01\/",
+    "wordCount" : "387",
+    "keywords" : [ "java","spring","spring-action", "Keep Zero"]
+}
+</script>
+
+</head>
+
+  
+
+
+  <body class="">
+    <div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo">
+        	<a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a>
+        </div>
+        <div class="menu navbar-right">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+<nav class="navbar-mobile" id="nav-mobile" style="display: none">
+     <div class="container">
+        <div class="navbar-header">
+            <div>  <a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a></div>
+            <div class="menu-toggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+     
+          <div class="menu" id="mobile-menu">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+    	 <main class="main">
+          <div class="container">
+      		
+<article class="post-warp" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">《Spring实战》-第十三章：缓存数据（1）-Spring对缓存的支持</h1>
+        <div class="post-meta">
+                Written by <a itemprop="name" href="https://keep-zero.github.io" rel="author">GF.L</a> with ♥ 
+                <span class="post-time">
+                on <time datetime=2019-09-01 itemprop="datePublished">September 1, 2019</time>
+                </span>
+                in
+                <i class="iconfont icon-folder"></i>
+                <span class="post-category">
+                        <a href="https://keep-zero.github.io/categories/spring/"> spring </a>
+                        
+                </span>
+				
+				<span id="wc" style="font-size: 1rem;text-align: center;">  共400 字|  阅读需时约 2 分|  本文总阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </div>
+    </header>
+    <div class="post-content">
+        
+
+        
+
+        
+        
+     
+          
+          
+          
+
+          
+          
+          
+
+          
+
+<blockquote>
+<p><strong>慢来比较快，虚心学技术</strong></p>
+
+<p><strong>缓存（ Caching ）</strong>可以存储经常会用到的信息，这样每次需要的时候，这些信息都是立即可用的。我们将会了解到 Spring 的缓存抽象。尽管 Spring 自身并没有实现缓存解决方案，但是它对缓存功能提供了声明式的支持，能够与多种流行的缓存实现进行集成</p>
+</blockquote>
+
+<h2 id="ⅰ-开启缓存支持">Ⅰ、开启缓存支持</h2>
+
+<ul>
+<li>注解开启：<strong>@EnableCaching</strong></li>
+<li>配置开启： <strong><a href="cache:annotation-driven" rel="nofollow noreferrer" target="_blank">cache:annotation-driven</a></strong></li>
+</ul>
+
+<p>两种开启方法的工作方式是相同的。它们都会创建一个<strong>切面（ aspect ）</strong>并触发Spring 缓存注解的<strong>切点（ pointcut ）</strong>。根据所使用的注解以及缓存的状态，这个切面会从缓存中获取数据，将数据添加到缓存之中或者从缓存中移除某个值。</p>
+
+<pre><code class="language-java">import org.springframework.cache.annotation.EnableCaching;
+@Configuration
+@EnableCaching
+public class CacheConfig {
+}
+</code></pre>
+
+<pre><code class="language-java">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:cache=&quot;http://www.springframework.org/schema/cache&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd&quot;&gt;
+     &lt;!--启用缓存注解功能，这个是必须的，否则注解不会生效--&gt;
+     &lt;!--有一个cache-manager属性用来指定当前所使用的CacheManager对应的bean的名称，默认是cacheManager--&gt;
+     &lt;cache:annotation-driven/&gt;
+&lt;/beans&gt;
+</code></pre>
+
+<h2 id="ⅱ-配置缓存管理器">Ⅱ、配置缓存管理器</h2>
+
+<p><strong>缓存管理器</strong>：是 Spring 缓存抽象的<strong>核心</strong>，它能够与多个流行的缓存实现进行集成</p>
+
+<p>Spring内置了多个缓存管理器：</p>
+
+<ul>
+<li><strong>SimpleCacheManager</strong></li>
+<li><strong>NoOpCacheManager</strong></li>
+<li><strong>ConcurrentMapCacheManager</strong>&mdash;&mdash;&mdash;-默认使用的缓存管理器</li>
+<li><strong>CompositeCacheManager</strong></li>
+<li><strong>EhCacheCacheManager</strong>&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;-较常用</li>
+<li><strong>RedisCacheManager</strong> （来自于 <strong>Spring Data Redis</strong> 项目）&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;较常用</li>
+<li><strong>GemfireCacheManager</strong> （来自于 <strong>Spring Data GemFire</strong> 项目）</li>
+</ul>
+
+<h3 id="1-配置concurrentmapcachemanager">1、配置ConcurrentMapCacheManager</h3>
+
+<p>①注解配置</p>
+
+<pre><code class="language-java">import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+@EnableCaching
+public class ConcurrentMapCacheConfig {
+    @Bean
+    public CacheManager cacheManager1(){
+        return new ConcurrentMapCacheManager();
+    }
+}
+</code></pre>
+
+<p>②XML配置</p>
+
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:cache=&quot;http://www.springframework.org/schema/cache&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd&quot;&gt;
+    &lt;cache:annotation-driven/&gt;
+    &lt;!--定义缓存管理器--&gt;
+    &lt;bean id=&quot;cacheManager&quot; class=&quot;org.springframework.cache.concurrent.ConcurrentMapCacheManager&quot;&gt;
+    &lt;/bean&gt;
+&lt;/beans&gt;
+</code></pre>
+
+<h3 id="2-配置ehcachecachemanager">2、配置EhCacheCacheManager</h3>
+
+<p>EhCache 是一个<strong>纯Java的进程内缓存框架</strong>，具有快速、精干等特点，是Hibernate中默认的CacheProvider</p>
+
+<p>缓存数据有三级：<strong>内存、堆外缓存Off-Heap、Disk缓存</strong>，因此无需担心容量问题。还可以通过RMI、可插入API等方式进行分布式缓存。</p>
+
+<p>缓存数据会在虚拟机重启的过程中写入磁盘，持久化。</p>
+
+<p>具有缓存和缓存管理器的侦听接口。</p>
+
+<p>支持多缓存管理器实例，以及一个实例的多个缓存区域。</p>
+
+<p>由于Spring只是提供了基本的管理器接口，还需要依赖于ehcache的第三方cache实现管理</p>
+
+<p>引入依赖：</p>
+
+<pre><code class="language-xml">&lt;!-- 引入Spring对cache的支持 --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-context-support&lt;/artifactId&gt;
+    &lt;version&gt;${org.springframework.version}&lt;/version&gt;
+    &lt;scope&gt;compile&lt;/scope&gt;
+&lt;/dependency&gt;
+
+&lt;!-- 引入ecache支持 --&gt;
+&lt;!-- https://mvnrepository.com/artifact/net.sf.ehcache/ehcache --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;net.sf.ehcache&lt;/groupId&gt;
+    &lt;artifactId&gt;ehcache&lt;/artifactId&gt;
+    &lt;version&gt;2.10.3&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+
+<p>①注解配置，此处使用的CacheManager是ehcache的缓存管理器</p>
+
+<pre><code class="language-java">import net.sf.ehcache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.ehcache.EhCacheCacheManager;
+import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
+
+@Configuration
+@EnableCaching
+public class EhCacheConfig {
+    /**
+     * 定义缓存管理器，EhCacheCacheManager是Spring提供的管理器支持，需要将ecache的缓存管理器注入到EhCacheCacheManager中
+     **/
+    @Bean
+    public EhCacheCacheManager cacheManager2(CacheManager cm){
+        return new EhCacheCacheManager(cm);
+    }
+
+    /**
+     * 定义缓存管理器工厂，用于生产EhCacheManager
+     **/
+    @Bean
+    public EhCacheManagerFactoryBean ehCacheManagerFactoryBean(){
+        EhCacheManagerFactoryBean factoryBean = new EhCacheManagerFactoryBean();
+        factoryBean.setConfigLocation(new ClassPathResource(&quot;ehcache.xml&quot;));
+        return factoryBean;
+    }
+}
+</code></pre>
+
+<p>②XML配置</p>
+
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:cache=&quot;http://www.springframework.org/schema/cache&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd&quot;&gt;
+    &lt;cache:annotation-driven/&gt;
+
+    &lt;!--定义缓存管理器--&gt;
+    &lt;bean id=&quot;cacheManager&quot; class=&quot;org.springframework.cache.ehcache.EhCacheCacheManager&quot;&gt;
+        &lt;property name=&quot;cacheManager&quot; ref=&quot;ehcache&quot;&gt;&lt;/property&gt;
+   &lt;/bean&gt;
+
+    &lt;!--定义缓存管理器工厂--&gt;
+    &lt;bean id=&quot;ehcache&quot; class=&quot;org.springframework.cache.ehcache.EhCacheManagerFactoryBean&quot;&gt;
+        &lt;property name=&quot;configLocation&quot; value=&quot;classpath*:ehcache.xml&quot;&gt;&lt;/property&gt;
+    &lt;/bean&gt;
+&lt;/beans&gt;
+</code></pre>
+
+<p>其中，ehcache.xml配置文件简单配置如下：</p>
+
+<pre><code class="language-xml">&lt;ehcache&gt;
+    &lt;diskStore path=&quot;java.io.tmpdir&quot;/&gt;
+    &lt;!--
+        maxElementsOnDisk：磁盘缓存中最多可以存放的元素数量,0表示无穷大  
+        maxElementsInMemory：内存缓存中最多可以存放的元素数量,若放入Cache中的元素超过这个数值,则有以下两种情况  
+                             1)若overflowToDisk=true,则会将Cache中多出的元素放入磁盘文件中  
+                             2)若overflowToDisk=false,则根据memoryStoreEvictionPolicy策略替换Cache中原有的元素  
+         eternal：缓存中对象是否永久有效,即是否永驻内存,true时将忽略timeToIdleSeconds和timeToLiveSeconds
+         timeToIdleSeconds:缓存数据在失效前的允许闲置时间(单位:秒),仅当eternal=false时使用,默认值是0表示可闲置时间无穷大,此为可选属性  
+                             即访问这个cache中元素的最大间隔时间,若超过这个时间没有访问此Cache中的某个元素,那么此元素将被从Cache中清除  
+        timeToLiveSeconds:缓存数据在失效前的允许存活时间(单位:秒),仅当eternal=false时使用,默认值是0表示可存活时间无穷大  
+                             即Cache中的某元素从创建到清楚的生存时间,也就是说从创建开始计时,当超过这个时间时,此元素将从Cache中清除
+        overflowToDisk:内存不足时,是否启用磁盘缓存(即内存中对象数量达到maxElementsInMemory时,Ehcache会将对象写到磁盘中)  
+                             会根据标签中path值查找对应的属性值,写入磁盘的文件会放在path文件夹下,文件的名称是cache的名称,后缀名是data  
+        diskPersistent:是否持久化磁盘缓存,当这个属性的值为true时,系统在初始化时会在磁盘中查找文件名为cache名称,后缀名为index的文件  
+                             这个文件中存放了已经持久化在磁盘中的cache的index,找到后会把cache加载到内存  
+                             要想把cache真正持久化到磁盘,写程序时注意执行net.sf.ehcache.Cache.put(Element element)后要调用flush()方法
+    --&gt;
+    &lt;defaultCache
+            maxElementsInMemory=&quot;1000&quot;
+            eternal=&quot;false&quot;
+            timeToIdleSeconds=&quot;120&quot;
+            timeToLiveSeconds=&quot;120&quot;
+            overflowToDisk=&quot;false&quot;/&gt;
+    &lt;!--定义一个缓存--&gt;
+    &lt;cache name=&quot;ehCache&quot;
+           maxElementsOnDisk=&quot;20000&quot;
+           maxElementsInMemory=&quot;2000&quot;
+           eternal=&quot;false&quot;
+           overflowToDisk=&quot;true&quot;
+           diskPersistent=&quot;true&quot;/&gt;
+
+&lt;/ehcache&gt;
+</code></pre>
+
+<h3 id="3-配置rediscachemanager">3、配置RedisCacheManager</h3>
+
+<p>Redis 可以用来为 Spring 缓存抽象机制存储缓存条目， Spring Data Redis 提供了 RedisCacheManager ，这是 CacheManager 的一个实现。</p>
+
+<p>RedisCacheManager 会与一个 Redis 服务器协作，并通过 RedisTemplate 将缓存条目存储到 Redis 中</p>
+
+<p>上一节已经了解过Redis，此处我们需要先引入Redis支持：</p>
+
+<pre><code class="language-xml">&lt;!--引入Spring Data Redis--&gt;
+&lt;!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-redis --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.data&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-data-redis&lt;/artifactId&gt;
+    &lt;version&gt;2.1.5.RELEASE&lt;/version&gt;
+&lt;/dependency&gt;
+
+&lt;!--引入jedis支持--&gt;
+&lt;!-- https://mvnrepository.com/artifact/redis.clients/jedis --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;redis.clients&lt;/groupId&gt;
+    &lt;artifactId&gt;jedis&lt;/artifactId&gt;
+    &lt;version&gt;2.9.1&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+
+<p>①混合配置</p>
+
+<p>application-redis.xml</p>
+
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; 
+       xmlns:cache=&quot;http://www.springframework.org/schema/cache&quot;
+       xmlns:context=&quot;http://www.springframework.org/schema/context&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd&quot;&gt;
+    &lt;cache:annotation-driven cache-manager=&quot;redisCacheManager&quot;/&gt;
+&lt;/beans&gt;
+</code></pre>
+
+<p>RedisConfig.java</p>
+
+<pre><code class="language-java">@Configuration
+@ComponentScan(basePackages = {&quot;com.my.spring.dao&quot;})
+@ImportResource(&quot;classpath:application-redis.xml&quot;)//引入配置文件
+@EnableCaching
+public class RedisCacheConfig {
+
+    /**
+     * 定义缓存管理器，注入redisConnectionFactory
+     * @param redisConnectionFactory
+     * @return
+     */
+    @Bean(&quot;redisCacheManager&quot;)
+    public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory){
+        RedisCacheManager.RedisCacheManagerBuilder builder = 
+                    RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(redisConnectionFactory);
+        Set&lt;String&gt; cacheNames = new HashSet&lt;String&gt;() {{
+            add(&quot;myCache&quot;);
+        }};
+        //设置多个缓存
+        builder.initialCacheNames(cacheNames);
+        return builder.build();
+    }
+
+    /**
+     * 定义Redis连接工厂
+     * @return
+     */
+    @Bean
+    public JedisConnectionFactory redisConnectionFactory(){
+        JedisConnectionFactory factory = new JedisConnectionFactory();
+        factory.afterPropertiesSet();
+        return factory;
+    }
+}
+</code></pre>
+
+<p>四、混合使用多种缓存CompositeCacheManager</p>
+
+<p>我们并不是只能有且仅有一个缓存管理器。如果你很难确定该使用哪个缓存管理器，或者有合法的技术理由使用超过一个缓存管理器的话，那么可以尝试使用 Spring 的 CompositeCacheManager.CompositeCacheManager 要通过一个或更多的缓存管理器来进行配置，它会迭代这些缓存管理器，以查找之前所缓存的值</p>
+
+    </div>
+
+    <div class="post-copyright">
+             
+            <p class="copyright-item">
+                <span>Author:</span>
+                <span>GF.L </span>
+                </p>
+            
+           
+             
+            <p class="copyright-item">
+                    <span>Link:</span>
+                    <a href=https://keep-zero.github.io/2019/spring_action13_01/>https://keep-zero.github.io/2019/spring_action13_01/</span>
+            </p>
+            
+             
+            <p class="copyright-item lincese">
+                本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可
+            </p>
+            
+    </div>
+
+  
+    <div class="post-tags">
+        
+            <section>
+            <i class="iconfont icon-tag"></i>Tag(s): 
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/java/">
+                    #java</a></span>
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/spring/">
+                    #spring</a></span>
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/spring-action/">
+                    #spring-action</a></span>
+            
+            </section>
+        
+        <section>
+                <a href="javascript:window.history.back();">back</a></span> · 
+                <span><a href="https://keep-zero.github.io">home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+        
+        <a href="https://keep-zero.github.io/2019/spring_action12/" class="prev" rel="prev" title="《Spring实战》-第十二章：Spring与NoSQL"><i class="iconfont icon-left"></i>&nbsp;《Spring实战》-第十二章：Spring与NoSQL</a>
+         
+        
+        <a href="https://keep-zero.github.io/2019/spring_action13_02/" class="next" rel="next" title="《Spring实战》-第十三章：缓存数据（2）-在方法上使用缓存">《Spring实战》-第十三章：缓存数据（2）-在方法上使用缓存&nbsp;<i class="iconfont icon-right"></i></a>
+        
+    </div>
+
+    <div class="post-comment">
+          
+                 
+          
+    </div>
+</article>
+          </div>
+		   </main>
+      <footer class="footer">
+    <div class="copyright">
+        &copy;
+        
+        <span itemprop="copyrightYear">2011 - 2019</span>
+        
+        <span class="with-love">
+    	 <i class="iconfont icon-love"></i> 
+        </span>
+         
+            <span class="author" itemprop="copyrightHolder"><a href="https://keep-zero.github.io">GF.L</a> | </span> 
+         
+
+         
+		  <span>Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow">Hugo</a> & <a href="https://github.com/liuzc/leaveit" target="_blank" rel="external nofollow">LeaveIt</a></span> 
+		<span id="busuanzi_container_site_pv">
+			本站访问量：<span id="busuanzi_value_site_pv"></span>次
+		</span>
+		&nbsp;
+		<span id="busuanzi_container_site_uv">
+			您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者
+		</span>
+    </div>
+</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    <script src="/js/vendor_no_gallery.min.js" async=""></script>
+    
+  
+
+
+
+     </div>
+  </body>
+</html>

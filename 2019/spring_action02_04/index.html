@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noodp"/>
+  <meta name="author" content="GF.L">
+  
+  
+  
+  <link rel="prev" href="https://keep-zero.github.io/2019/spring_action02_03/" />
+  <link rel="next" href="https://keep-zero.github.io/2019/spring_action02_05/" />
+  <link rel="canonical" href="https://keep-zero.github.io/2019/spring_action02_04/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <title>
+       
+       
+           《Spring实战》-第二章：Bean的装配（4）-混合导入装配机制 | Keep Zero
+       
+  </title>
+  <meta name="title" content="《Spring实战》-第二章：Bean的装配（4）-混合导入装配机制 | Keep Zero">
+    
+  
+  <link rel="stylesheet" href="/font/iconfont.css">
+  <link rel="stylesheet" href="/css/main.min.css">
+
+
+  
+  
+ 
+
+<script type="application/ld+json">
+ "@context" : "http://schema.org",
+    "@type" : "BlogPosting",
+    "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "https:\/\/keep-zero.github.io"
+    },
+    "articleSection" : "posts",
+    "name" : "《Spring实战》-第二章：Bean的装配（4）-混合导入装配机制",
+    "headline" : "《Spring实战》-第二章：Bean的装配（4）-混合导入装配机制",
+    "description" : "慢慢来比较快，虚心学技术\n*前言：*创建应用对象之间协作关系的行为通常称为装配（ wiring ），这也是依赖注入（ DI ）的本质\nSpring提供三种Bean装配机制：\n 在 XML 中进行显式配置。 在 Java 中进行显式配置 隐式的 bean 发现机制和自动装配   在典型的 Spring 应用中，我们可能会同时使用自动化和显式配置,幸好在 Spring 中，这些配置方案都不是互斥的\nⅠ、在 JavaConfig 中引用 XML 配置 ①将所有的bean放到一个config中配置显得十分臃肿，可以将其中的类拆分开来进行独立配置，然后使用@Import在总配置类中引入目标配置类进行统一配置\npublic class CDConfig { @Bean public CDBean cdBean(){ return new CDBean(); } @Bean public CDPlayer cdPlayer(){ return new CDPlayerImpl(cdBean()); } }  如将上述的CDConfig拆分成两个,同时创建统一配置类将两个配置类引入，实现依赖注入（因为拆分后，cdBean不存在于CDPlayerConfig中，故改用直接注入方式）\n@Configuration\/\/标明CDBean配置 public class CDBeanConfig { @Bean public CDBean cdBean(){ return new CDBean(); } } @Configuration\/\/标明CDPlayer配置 public class CDPlayerConfig { \/\/此处的cdBean必须与CDBeanConfig中配置的方法cdBean同名或与@Bean指定的id同名，否则注入失败 @Bean public CDPlayer cdPlayer(CDBean cdBean){ return new CDPlayerImpl(cdBean); } } @Configuration\/\/标明全局配置 @Import(value = {CDBeanConfig.",
+    "inLanguage" : "en-us",
+    "author" : "GF.L",
+    "creator" : "GF.L",
+    "publisher": "GF.L",
+    "accountablePerson" : "GF.L",
+    "copyrightHolder" : "GF.L",
+    "copyrightYear" : "2019",
+    "datePublished": "2019-08-31 14:18:45 \x2b0800 CST",
+    "dateModified" : "2019-08-31 14:18:45 \x2b0800 CST",
+    "url" : "https:\/\/keep-zero.github.io\/2019\/spring_action02_04\/",
+    "wordCount" : "230",
+    "keywords" : [ "java","spring","spring-action", "Keep Zero"]
+}
+</script>
+
+</head>
+
+  
+
+
+  <body class="">
+    <div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo">
+        	<a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a>
+        </div>
+        <div class="menu navbar-right">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+<nav class="navbar-mobile" id="nav-mobile" style="display: none">
+     <div class="container">
+        <div class="navbar-header">
+            <div>  <a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a></div>
+            <div class="menu-toggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+     
+          <div class="menu" id="mobile-menu">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+    	 <main class="main">
+          <div class="container">
+      		
+<article class="post-warp" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">《Spring实战》-第二章：Bean的装配（4）-混合导入装配机制</h1>
+        <div class="post-meta">
+                Written by <a itemprop="name" href="https://keep-zero.github.io" rel="author">GF.L</a> with ♥ 
+                <span class="post-time">
+                on <time datetime=2019-08-31 itemprop="datePublished">August 31, 2019</time>
+                </span>
+                in
+                <i class="iconfont icon-folder"></i>
+                <span class="post-category">
+                        <a href="https://keep-zero.github.io/categories/spring/"> spring </a>
+                        
+                </span>
+				
+				<span id="wc" style="font-size: 1rem;text-align: center;">  共300 字|  阅读需时约 2 分|  本文总阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </div>
+    </header>
+    <div class="post-content">
+        
+
+        
+
+        
+        
+     
+          
+          
+          
+
+          
+          
+          
+
+          
+
+<blockquote>
+<p><strong>慢慢来比较快，虚心学技术</strong></p>
+
+<p>*前言：*创建应用对象之间协作关系的行为通常称为装配（ wiring ），这也是依赖注入（ DI ）的本质</p>
+
+<p>Spring提供三种Bean装配机制：</p>
+
+<ol>
+<li>在 XML 中进行显式配置。</li>
+<li>在 Java 中进行显式配置</li>
+<li>隐式的 bean 发现机制和自动装配</li>
+</ol>
+</blockquote>
+
+<p>在典型的 Spring 应用中，我们可能会同时使用自动化和显式配置,幸好在 Spring 中，这些配置方案都不是互斥的</p>
+
+<h2 id="ⅰ-在-javaconfig-中引用-xml-配置">Ⅰ、在 JavaConfig 中引用 XML 配置</h2>
+
+<p>①将所有的bean放到一个config中配置显得十分臃肿，可以将其中的类拆分开来进行独立配置，然后使用<strong>@Import</strong>在总配置类中引入目标配置类进行统一配置</p>
+
+<pre><code class="language-java">public class CDConfig {
+
+    @Bean
+    public CDBean cdBean(){
+        return new CDBean();
+    }
+
+    @Bean
+    public CDPlayer cdPlayer(){
+        return new CDPlayerImpl(cdBean());
+    }
+}
+</code></pre>
+
+<p>如将上述的CDConfig拆分成两个,同时创建统一配置类将两个配置类引入，实现依赖注入（因为拆分后，cdBean不存在于CDPlayerConfig中，故改用直接注入方式）</p>
+
+<pre><code class="language-java">@Configuration//标明CDBean配置
+public class CDBeanConfig {
+    @Bean
+    public CDBean cdBean(){
+        return new CDBean();
+    }
+}
+
+@Configuration//标明CDPlayer配置
+public class CDPlayerConfig {
+
+    //此处的cdBean必须与CDBeanConfig中配置的方法cdBean同名或与@Bean指定的id同名，否则注入失败
+    @Bean
+    public CDPlayer cdPlayer(CDBean cdBean){
+        return new CDPlayerImpl(cdBean);
+    }
+}
+
+@Configuration//标明全局配置
+@Import(value = {CDBeanConfig.class,CDPlayerConfig.class})
+public class SystemConfig {
+}
+</code></pre>
+
+<p>②有时候我们需要使用JavaConfig和XML混合的方式去装配Bean,那么我们就需要使用<strong>@ImportResource</strong>将xml文件引入JavaConfig</p>
+
+<p>如上述xml配置将CDBean配置于xml，而CDPlayer配置在JAVAConfig</p>
+
+<pre><code class="language-java">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;
+    &lt;!--装配CDBean--&gt;
+    &lt;bean name=&quot;cdBean&quot; class=&quot;com.my.spring.bean.CDBean&quot;&gt;
+        &lt;property name=&quot;title&quot; value=&quot;The World!!&quot;/&gt;
+        &lt;property name=&quot;author&quot; value=&quot;Mr.D&quot;/&gt;
+    &lt;/bean&gt;
+&lt;/beans&gt;
+
+@Configuration//标明CDPlayer配置
+public class CDPlayerConfig {
+    @Bean
+    public CDPlayer cdPlayer(CDBean cdBean){
+        return new CDPlayerImpl(cdBean);
+    }
+}
+
+@Configuration//标明全局配置
+@Import(value = {CDPlayerConfig.class})
+@ImportResource(locations = {&quot;classpath:application.xml&quot;})
+public class SystemConfig {}
+</code></pre>
+
+<h2 id="ⅱ-在-xml-配置中引用-javaconfig">Ⅱ、在 XML 配置中引用 JavaConfig</h2>
+
+<p>①当xml中配置装配的Bean越来越多的时候，一样会遇到上述臃肿难以维护的问题，所以就需要将XML文件进行拆分管理，同时创建统一配置，方便管理。</p>
+
+<p>如将上述XML配置中的CDBean和CDPlayer配置拆分成两个XML文件，同时创建统一配置文件使用<strong><import></strong>节点引入两个配置</p>
+
+<p>CDBean的配置：CDBeanConfig.xml</p>
+
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;
+
+    &lt;!--定义一个名为cdBean的Bean--&gt;
+    &lt;bean name=&quot;cdBean&quot; class=&quot;com.my.spring.bean.CDBean&quot;&gt;
+        &lt;!--默认值注入--&gt;
+        &lt;property name=&quot;title&quot; value=&quot;The World!!&quot;/&gt;
+        &lt;property name=&quot;author&quot; value=&quot;Mr.D&quot;/&gt;
+    &lt;/bean&gt;
+&lt;/beans&gt;
+</code></pre>
+
+<p>CDPlayer的配置：CDPlayerConfig.xml</p>
+
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;
+
+    &lt;!--定义一个名为cdBean的Bean--&gt;
+    &lt;bean name=&quot;cdPlayer&quot; class=&quot;com.my.spring.service.impl.CDPlayerImpl&quot;&gt;
+        &lt;!--将上面配置的cdBean类通过ref属性注入到cdPlayer构造方法中名为cdBean的参数中--&gt;
+        &lt;constructor-arg name = &quot;cdBean&quot; ref = &quot;cdBean&quot;/&gt;
+    &lt;/bean&gt;
+&lt;/beans&gt;
+</code></pre>
+
+<p>统一全局配置：SystemConfig.xml(与另外两个文件同目录)</p>
+
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;
+   &lt;import resource = &quot;CDBeanConfig.xml&quot; /&gt;
+   &lt;import resource = &quot;CDPlayerConfig.xml&quot; /&gt;
+&lt;/beans&gt;
+</code></pre>
+
+<p>②如果意识到XML文件的装配配置过于复杂，想要逐渐过渡到JavaConfig的配置，我们可以实现将JavaConfig中的配置引入XML文件统一管理</p>
+
+<p>我们保持CDBean使用XML进行配置，同时使用上述CDPlayerConfig的JavaConfig装配配置，使用SystemConfig.xml将两者统一配置(但是由于CDPlayerConfig并不是XML配置文件，所以无法通过<import>节点引入，但是我们可以通过<bean>节点装配实现)</p>
+
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;
+   &lt;import resource = &quot;CDBeanConfig.xml&quot; /&gt;
+   &lt;bean class = &quot;com.xxx.CDPlayerConfig&quot; /&gt;
+&lt;/beans&gt;
+</code></pre>
+
+    </div>
+
+    <div class="post-copyright">
+             
+            <p class="copyright-item">
+                <span>Author:</span>
+                <span>GF.L </span>
+                </p>
+            
+           
+             
+            <p class="copyright-item">
+                    <span>Link:</span>
+                    <a href=https://keep-zero.github.io/2019/spring_action02_04/>https://keep-zero.github.io/2019/spring_action02_04/</span>
+            </p>
+            
+             
+            <p class="copyright-item lincese">
+                本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可
+            </p>
+            
+    </div>
+
+  
+    <div class="post-tags">
+        
+            <section>
+            <i class="iconfont icon-tag"></i>Tag(s): 
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/java/">
+                    #java</a></span>
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/spring/">
+                    #spring</a></span>
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/spring-action/">
+                    #spring-action</a></span>
+            
+            </section>
+        
+        <section>
+                <a href="javascript:window.history.back();">back</a></span> · 
+                <span><a href="https://keep-zero.github.io">home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+        
+        <a href="https://keep-zero.github.io/2019/spring_action02_03/" class="prev" rel="prev" title="《Spring实战》-第二章：Bean的装配（3）-自动化装配"><i class="iconfont icon-left"></i>&nbsp;《Spring实战》-第二章：Bean的装配（3）-自动化装配</a>
+         
+        
+        <a href="https://keep-zero.github.io/2019/spring_action02_05/" class="next" rel="next" title="《Spring实战》-第二章：Bean的装配（总目录）">《Spring实战》-第二章：Bean的装配（总目录）&nbsp;<i class="iconfont icon-right"></i></a>
+        
+    </div>
+
+    <div class="post-comment">
+          
+                 
+          
+    </div>
+</article>
+          </div>
+		   </main>
+      <footer class="footer">
+    <div class="copyright">
+        &copy;
+        
+        <span itemprop="copyrightYear">2011 - 2019</span>
+        
+        <span class="with-love">
+    	 <i class="iconfont icon-love"></i> 
+        </span>
+         
+            <span class="author" itemprop="copyrightHolder"><a href="https://keep-zero.github.io">GF.L</a> | </span> 
+         
+
+         
+		  <span>Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow">Hugo</a> & <a href="https://github.com/liuzc/leaveit" target="_blank" rel="external nofollow">LeaveIt</a></span> 
+		<span id="busuanzi_container_site_pv">
+			本站访问量：<span id="busuanzi_value_site_pv"></span>次
+		</span>
+		&nbsp;
+		<span id="busuanzi_container_site_uv">
+			您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者
+		</span>
+    </div>
+</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    <script src="/js/vendor_no_gallery.min.js" async=""></script>
+    
+  
+
+
+
+     </div>
+  </body>
+</html>

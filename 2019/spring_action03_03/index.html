@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noodp"/>
+  <meta name="author" content="GF.L">
+  
+  
+  
+  <link rel="prev" href="https://keep-zero.github.io/2019/spring_action03_02/" />
+  <link rel="next" href="https://keep-zero.github.io/2019/spring_action03_04/" />
+  <link rel="canonical" href="https://keep-zero.github.io/2019/spring_action03_03/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <title>
+       
+       
+           《Spring实战》-第三章：Bean的高级装配（3）-处理自动装配Bean的歧义性 | Keep Zero
+       
+  </title>
+  <meta name="title" content="《Spring实战》-第三章：Bean的高级装配（3）-处理自动装配Bean的歧义性 | Keep Zero">
+    
+  
+  <link rel="stylesheet" href="/font/iconfont.css">
+  <link rel="stylesheet" href="/css/main.min.css">
+
+
+  
+  
+ 
+
+<script type="application/ld+json">
+ "@context" : "http://schema.org",
+    "@type" : "BlogPosting",
+    "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "https:\/\/keep-zero.github.io"
+    },
+    "articleSection" : "posts",
+    "name" : "《Spring实战》-第三章：Bean的高级装配（3）-处理自动装配Bean的歧义性",
+    "headline" : "《Spring实战》-第三章：Bean的高级装配（3）-处理自动装配Bean的歧义性",
+    "description" : "慢慢来比较快，虚心学技术\n 1、什么是自动装配Bean的歧义性 当一个接口存在多个实现类或一个类存在多个bena定义的时候，如果使用自动装配，Spring将无法明确应该使用哪一个Bean进行装配注入，这时候就会报 NoUniqueBeanDefinitionException 的异常，这就是自动装配Bean的歧义性\n如现有一个接口BaseService，该接口有两个实现类：BaseServiceImpl1和BaseServiceImpl2，还有一个基本类BaseBean\n\/\/基本类 @Component public class BaseBean { private String name=\x26quot;BaseBean\x26quot;; public void setName(String name){ this.name = name; } } \/\/接口 public interface BaseService { void update(); } \/\/接口实现类1 @Component public class BaseServiceImpl1 implements BaseService { @Autowired private BaseBean baseBean; @Override public void update() { System.out.println(\x26quot;BaseServiceImpl1 \x26quot;\x2bbaseBean.getName()); } } \/\/接口实现类2 @Component public class BaseServiceImpl2 implements BaseService { @Autowired private BaseBean baseBean; @Override public void update() { System.",
+    "inLanguage" : "en-us",
+    "author" : "GF.L",
+    "creator" : "GF.L",
+    "publisher": "GF.L",
+    "accountablePerson" : "GF.L",
+    "copyrightHolder" : "GF.L",
+    "copyrightYear" : "2019",
+    "datePublished": "2019-08-31 22:02:13 \x2b0800 CST",
+    "dateModified" : "2019-08-31 22:02:13 \x2b0800 CST",
+    "url" : "https:\/\/keep-zero.github.io\/2019\/spring_action03_03\/",
+    "wordCount" : "359",
+    "keywords" : [ "java","spring","spring-action", "Keep Zero"]
+}
+</script>
+
+</head>
+
+  
+
+
+  <body class="">
+    <div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo">
+        	<a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a>
+        </div>
+        <div class="menu navbar-right">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+<nav class="navbar-mobile" id="nav-mobile" style="display: none">
+     <div class="container">
+        <div class="navbar-header">
+            <div>  <a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a></div>
+            <div class="menu-toggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+     
+          <div class="menu" id="mobile-menu">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+    	 <main class="main">
+          <div class="container">
+      		
+<article class="post-warp" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">《Spring实战》-第三章：Bean的高级装配（3）-处理自动装配Bean的歧义性</h1>
+        <div class="post-meta">
+                Written by <a itemprop="name" href="https://keep-zero.github.io" rel="author">GF.L</a> with ♥ 
+                <span class="post-time">
+                on <time datetime=2019-08-31 itemprop="datePublished">August 31, 2019</time>
+                </span>
+                in
+                <i class="iconfont icon-folder"></i>
+                <span class="post-category">
+                        <a href="https://keep-zero.github.io/categories/spring/"> spring </a>
+                        
+                </span>
+				
+				<span id="wc" style="font-size: 1rem;text-align: center;">  共400 字|  阅读需时约 2 分|  本文总阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </div>
+    </header>
+    <div class="post-content">
+        
+
+        
+
+        
+        
+     
+          
+          
+          
+
+          
+          
+          
+
+          
+
+<blockquote>
+<p><strong>慢慢来比较快，虚心学技术</strong></p>
+</blockquote>
+
+<h2 id="1-什么是自动装配bean的歧义性">1、什么是自动装配Bean的歧义性</h2>
+
+<p>当<strong>一个接口存在多个实现类或一个类存在多个bena定义</strong>的时候，如果使用<strong>自动装配</strong>，Spring将<strong>无法明确应该使用哪一个Bean进行装配注入</strong>，这时候就会报 <strong>NoUniqueBeanDefinitionException</strong> 的异常，这就是<strong>自动装配Bean的歧义性</strong></p>
+
+<p>如现有一个接口BaseService，该接口有两个实现类：BaseServiceImpl1和BaseServiceImpl2，还有一个基本类BaseBean</p>
+
+<pre><code class="language-java">//基本类
+@Component
+public class BaseBean {
+    private String name=&quot;BaseBean&quot;;
+
+    public void setName(String name){
+        this.name = name;
+    }
+}
+
+//接口
+public interface BaseService {
+    void update();
+}
+
+//接口实现类1
+@Component
+public class BaseServiceImpl1 implements BaseService {
+
+    @Autowired
+    private BaseBean baseBean;
+
+    @Override
+    public void update() {
+        System.out.println(&quot;BaseServiceImpl1  &quot;+baseBean.getName());
+    }
+}
+
+//接口实现类2
+@Component
+public class BaseServiceImpl2 implements BaseService {
+    @Autowired
+    private BaseBean baseBean;
+
+    @Override
+    public void update() {
+        System.out.println(&quot;BaseServiceImpl2  &quot;+baseBean.getName());
+    }
+}
+
+//测试类：
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(loader = AnnotationConfigContextLoader.class,classes = {ComponentConfig.class})
+public class AppComponentTest {
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    //注入baseService
+    @Autowired
+    private BaseService baseService;
+
+    @Test
+    public void testPrimary(){
+        baseService.update();
+    }
+}
+
+//测试结果：注入失败，BaseService不止有一个实现类
+org.springframework.beans.factory.NoUniqueBeanDefinitionException: 
+No qualifying bean of type 'com.my.spring.service.BaseService' available: 
+expected single matching bean but found 2: baseServiceImpl1,baseServiceImpl2
+</code></pre>
+
+<h2 id="2-怎么处理自动装配bean的歧义性">2、怎么处理自动装配Bean的歧义性</h2>
+
+<p>当应用内的接口存在多个实现类或一个类存在多个bean定义，我们有两个处理方式：</p>
+
+<h3 id="ⅰ-标识首选bean">Ⅰ、标识首选Bean</h3>
+
+<p>当存在歧义Bean的时候，我们可以使用 <strong>@Primary</strong>注解<strong>指定首选Bean</strong>，告诉Spring当发生歧义的时候，优先使用该Bean</p>
+
+<p>如上述代码将BaseServiceImpl1设定为首选Bean</p>
+
+<pre><code class="language-java">@Component
+@Primary
+public class BaseServiceImpl1 implements BaseService {
+
+    @Autowired
+    private BaseBean baseBean;
+
+    @Override
+    public void update() {
+        System.out.println(&quot;BaseServiceImpl1  &quot;+baseBean.getName());
+    }
+}
+</code></pre>
+
+<p>此时运行测试结果表明注入成功</p>
+
+<pre><code class="language-java">BaseServiceImpl1  BaseBean
+</code></pre>
+
+<p>那么问题来了，<strong>假如使用xml配置如何设置首选Bean</strong>？</p>
+
+<p>假设BaseBean使用xml配置，我们可以通过设置<strong><bean>节点的primary属性</strong>为true将其设置为首选bean</p>
+
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;
+        &lt;!--将第一个bean定义设置为首选bean--&gt;
+        &lt;bean id=&quot;baseBean&quot; class=&quot;com.my.spring.bean.BaseBean&quot; primary =&quot;true&quot;&gt;
+            &lt;constructor-arg name=&quot;name&quot; value=&quot;baseBeanOne&quot;&gt;&lt;/constructor-arg&gt;
+        &lt;/bean&gt;
+
+       &lt;bean id=&quot;baseBean&quot; name = &quot;dev&quot; class=&quot;com.my.spring.bean.BaseBean&quot;&gt;
+            &lt;constructor-arg name=&quot;name&quot; value=&quot;baseBeanTwo&quot;&gt;&lt;/constructor-arg&gt;
+       &lt;/bean&gt;
+&lt;/beans&gt;
+</code></pre>
+
+<h3 id="ⅱ-自定义特殊标识">Ⅱ、自定义特殊标识</h3>
+
+<p>设置首选 bean 的局限性在于 <strong>@Primary 无法将可选方案的范围限定到唯一一个无歧义性的选项中</strong>。它只能标示一个优先的可选方案。当首选bean 的数量超过一个时，我们并没有其他的方法进一步缩小可选范围。</p>
+
+<p>此时我们需要通过<strong>自定义特殊标识</strong>即Spring限定符<strong>@Qualifier</strong>来为每一个Bean指定，如我们可以为上述BaseServiceImpl1和BaseServiceImpl2分别加上特殊标识，然后结合@Autowired注解进行特定注入</p>
+
+<pre><code class="language-java">//接口实现类1
+@Component
+@Qualifier(&quot;BaseService1&quot;)
+public class BaseServiceImpl1 implements BaseService {
+
+    @Autowired
+    private BaseBean baseBean;
+
+    @Override
+    public void update() {
+        System.out.println(&quot;BaseServiceImpl1  &quot;+baseBean.getName());
+    }
+}
+
+//接口实现类2
+@Component
+@Qualifier(&quot;BaseService2&quot;)
+public class BaseServiceImpl2 implements BaseService {
+    @Autowired
+    private BaseBean baseBean;
+
+    @Override
+    public void update() {
+        System.out.println(&quot;BaseServiceImpl2  &quot;+baseBean.getName());
+    }
+}
+
+//测试类：
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(loader = AnnotationConfigContextLoader.class,classes = {ComponentConfig.class})
+public class AppComponentTest {
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    //注入baseService(限定词为BaseService1)
+    @Autowired
+    @Qualifier(&quot;BaseService1&quot;)
+    private BaseService baseService;
+
+    @Test
+    public void testPrimary(){
+        baseService.update();
+    }
+}
+
+测试结果：
+BaseServiceImpl1  BaseBean
+</code></pre>
+
+<p>实际上，我们甚至可以<strong>自定义限定符注解</strong>（当在一个bean或方法中使用多个@Qualifier注解时会编译报错），而使用自定义限定符注解和@Qualifier注解效果一致，我们需要做的只是<strong>创建一个注解，并使用@Qualifier对该注解进行标识</strong>，如我们可以将上述的BaseServiceImpl1和BaseServiceImpl2的限定符注解替换成如下样式：</p>
+
+<pre><code class="language-java">
+//创建注解@BaseService1
+@Target({ElementType.CONSTRUCTOR,ElementType.FIELD,ElementType.METHOD,ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Qualifier
+public @interface BaseService1 {
+}
+
+//在BaseServiceImpl1上使用@BaseService1
+@Component
+@BaseService1//实际上相当于@Qualifier(&quot;BaseService1&quot;)
+public class BaseServiceImpl1 implements BaseService {
+    @Autowired
+    private BaseBean baseBean;
+    @Override
+    public void update() {
+        System.out.println(&quot;BaseServiceImpl1  &quot;+baseBean.getName());
+    }
+}
+
+//创建注解@BaseService2
+@Target({ElementType.CONSTRUCTOR,ElementType.FIELD,ElementType.METHOD,ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Qualifier
+public @interface BaseService2 {
+}
+
+//在BaseServiceImpl2上使用@BaseServiceImpl2
+@Component
+@BaseService2//实际上相当于@Qualifier(&quot;BaseService2&quot;)
+public class BaseServiceImpl2 implements BaseService {
+    @Autowired
+    private BaseBean baseBean;
+    @Override
+    public void update() {
+        System.out.println(&quot;BaseServiceImpl2  &quot;+baseBean.getName());
+    }
+}
+
+//测试类注入BaseServiceImpl1
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(loader = AnnotationConfigContextLoader.class,classes = {ComponentConfig.class})
+public class AppComponentTest {
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    //注入baseService(限定词为BaseService1)
+    @Autowired
+    @BaseService1//实际上相当于@Qualifier(&quot;BaseService1&quot;)
+    private BaseService baseService;
+
+    @Test
+    public void testPrimary(){
+        baseService.update();
+    }
+}
+
+测试结果：
+BaseServiceImpl1  BaseBean
+</code></pre>
+
+<blockquote>
+<p><em>注：其中</em></p>
+
+<ol>
+<li><em>@Target限定注解可以使用的范围：ElementType.CONSTRUCTOR（构造函数）,ElementType.FIELD（字段）,ElementType.METHOD（方法）,ElementType.TYPE（类,接口等）</em></li>
+<li><em>@Retention限定了该Annotation被保留的时间长短：RetentionPolicy.SOURCE(在源文件中有效,即源文件保留),RetentionPolicy.CLASS(在class文件中有效，即class保留）,RetentionPolicy.RUNTIME（在运行时有效,即运行时保留）</em></li>
+</ol>
+</blockquote>
+
+    </div>
+
+    <div class="post-copyright">
+             
+            <p class="copyright-item">
+                <span>Author:</span>
+                <span>GF.L </span>
+                </p>
+            
+           
+             
+            <p class="copyright-item">
+                    <span>Link:</span>
+                    <a href=https://keep-zero.github.io/2019/spring_action03_03/>https://keep-zero.github.io/2019/spring_action03_03/</span>
+            </p>
+            
+             
+            <p class="copyright-item lincese">
+                本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可
+            </p>
+            
+    </div>
+
+  
+    <div class="post-tags">
+        
+            <section>
+            <i class="iconfont icon-tag"></i>Tag(s): 
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/java/">
+                    #java</a></span>
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/spring/">
+                    #spring</a></span>
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/spring-action/">
+                    #spring-action</a></span>
+            
+            </section>
+        
+        <section>
+                <a href="javascript:window.history.back();">back</a></span> · 
+                <span><a href="https://keep-zero.github.io">home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+        
+        <a href="https://keep-zero.github.io/2019/spring_action03_02/" class="prev" rel="prev" title="《Spring实战》-第三章：Bean的高级装配（2）-条件化Bean"><i class="iconfont icon-left"></i>&nbsp;《Spring实战》-第三章：Bean的高级装配（2）-条件化Bean</a>
+         
+        
+        <a href="https://keep-zero.github.io/2019/spring_action03_04/" class="next" rel="next" title="《Spring实战》-第三章：Bean的高级装配（4）-Bean的作用域">《Spring实战》-第三章：Bean的高级装配（4）-Bean的作用域&nbsp;<i class="iconfont icon-right"></i></a>
+        
+    </div>
+
+    <div class="post-comment">
+          
+                 
+          
+    </div>
+</article>
+          </div>
+		   </main>
+      <footer class="footer">
+    <div class="copyright">
+        &copy;
+        
+        <span itemprop="copyrightYear">2011 - 2019</span>
+        
+        <span class="with-love">
+    	 <i class="iconfont icon-love"></i> 
+        </span>
+         
+            <span class="author" itemprop="copyrightHolder"><a href="https://keep-zero.github.io">GF.L</a> | </span> 
+         
+
+         
+		  <span>Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow">Hugo</a> & <a href="https://github.com/liuzc/leaveit" target="_blank" rel="external nofollow">LeaveIt</a></span> 
+		<span id="busuanzi_container_site_pv">
+			本站访问量：<span id="busuanzi_value_site_pv"></span>次
+		</span>
+		&nbsp;
+		<span id="busuanzi_container_site_uv">
+			您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者
+		</span>
+    </div>
+</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    <script src="/js/vendor_no_gallery.min.js" async=""></script>
+    
+  
+
+
+
+     </div>
+  </body>
+</html>

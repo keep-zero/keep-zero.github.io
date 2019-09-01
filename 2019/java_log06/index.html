@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noodp"/>
+  <meta name="author" content="GF.L">
+  
+  
+  
+  <link rel="prev" href="https://keep-zero.github.io/2019/java_log05/" />
+  <link rel="next" href="https://keep-zero.github.io/2019/java_react01/" />
+  <link rel="canonical" href="https://keep-zero.github.io/2019/java_log06/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <title>
+       
+       
+           java日志篇（6）-slf4j | Keep Zero
+       
+  </title>
+  <meta name="title" content="java日志篇（6）-slf4j | Keep Zero">
+    
+  
+  <link rel="stylesheet" href="/font/iconfont.css">
+  <link rel="stylesheet" href="/css/main.min.css">
+
+
+  
+  
+ 
+
+<script type="application/ld+json">
+ "@context" : "http://schema.org",
+    "@type" : "BlogPosting",
+    "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "https:\/\/keep-zero.github.io"
+    },
+    "articleSection" : "posts",
+    "name" : "java日志篇（6）-slf4j",
+    "headline" : "java日志篇（6）-slf4j",
+    "description" : "慢慢来比较快，虚心学技术\n前言：SLF4J的全称是Simple Logging Facade for Java，即简单日志门面。日志门面不具备具体日志实现，只做两件事: * 提供日志接口 * 提供获取具体日志对象的方法\n所以，slf4j使得系统日志得到一个统一的输出方式，灵活替换日志实现\n 一、slf4j简单使用介绍 ①使用slf4j需要引入slf4j的api jar包，最新jar包从官网https:\/\/www.slf4j.org\/download.html下载，如果是maven项目，在pom文件中引入如下：\n\x26lt;dependency\x26gt; \x26lt;groupId\x26gt;org.slf4j\x26lt;\/groupId\x26gt; \x26lt;artifactId\x26gt;slf4j-api\x26lt;\/artifactId\x26gt; \x26lt;version\x26gt;1.7.7\x26lt;\/version\x26gt; \x26lt;\/dependency\x26gt;  ②引入日志实现，slf4j不提供日志实现，如使用jul则不用引入，logback与log4j需要引入日志实现的jar包，简单使用默认使用jul\n③代码使用\nimport org.slf4j.Logger; import org.slf4j.LoggerFactory; \/** * 简单日志获取 *\/ public class SimpleTest { public static void main(String[] args) { \/\/获取logger对象 Logger logger = LoggerFactory.getLogger(SimpleTest.class); logger.info(\x26quot;info.....\x26quot;); logger.debug(\x26quot;debug...\x26quot;); logger.error(\x26quot;error...\x26quot;); logger.warn(\x26quot;warn...\x26quot;); }  ④输出结果如下\n2019-02-04 16:48:43.703 INFO SimpleTest.SimpleTest - info..... 2019-02-04 16:48:43.703 DEBUG SimpleTest.SimpleTest - debug... 2019-02-04 16:48:43.703 ERROR SimpleTest.",
+    "inLanguage" : "en-us",
+    "author" : "GF.L",
+    "creator" : "GF.L",
+    "publisher": "GF.L",
+    "accountablePerson" : "GF.L",
+    "copyrightHolder" : "GF.L",
+    "copyrightYear" : "2019",
+    "datePublished": "2019-08-31 00:13:46 \x2b0800 CST",
+    "dateModified" : "2019-08-31 00:13:46 \x2b0800 CST",
+    "url" : "https:\/\/keep-zero.github.io\/2019\/java_log06\/",
+    "wordCount" : "207",
+    "keywords" : [ "java","log", "Keep Zero"]
+}
+</script>
+
+</head>
+
+  
+
+
+  <body class="">
+    <div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo">
+        	<a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a>
+        </div>
+        <div class="menu navbar-right">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+<nav class="navbar-mobile" id="nav-mobile" style="display: none">
+     <div class="container">
+        <div class="navbar-header">
+            <div>  <a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a></div>
+            <div class="menu-toggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+     
+          <div class="menu" id="mobile-menu">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+    	 <main class="main">
+          <div class="container">
+      		
+<article class="post-warp" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">java日志篇（6）-slf4j</h1>
+        <div class="post-meta">
+                Written by <a itemprop="name" href="https://keep-zero.github.io" rel="author">GF.L</a> with ♥ 
+                <span class="post-time">
+                on <time datetime=2019-08-31 itemprop="datePublished">August 31, 2019</time>
+                </span>
+                in
+                <i class="iconfont icon-folder"></i>
+                <span class="post-category">
+                        <a href="https://keep-zero.github.io/categories/java-log/"> java-log </a>
+                        
+                </span>
+				
+				<span id="wc" style="font-size: 1rem;text-align: center;">  共300 字|  阅读需时约 1 分|  本文总阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </div>
+    </header>
+    <div class="post-content">
+        
+
+        
+            
+        
+
+        
+        
+     
+          
+          
+          
+
+          
+          
+          
+
+          
+
+<blockquote>
+<p><strong>慢慢来比较快，虚心学技术</strong></p>
+
+<p><em>前言：SLF4J的全称是Simple Logging Facade for Java，即简单日志门面。日志门面不具备具体日志实现，只做两件事:</em>
+*   提供日志接口
+*   提供获取具体日志对象的方法</p>
+
+<p><em>所以，slf4j使得系统日志得到一个统一的输出方式，灵活替换日志实现</em></p>
+</blockquote>
+
+<h2 id="一-slf4j简单使用介绍">一、slf4j简单使用介绍</h2>
+
+<p>①使用slf4j需要引入slf4j的api jar包，最新jar包从官网<a href="https://www.slf4j.org/download.html" rel="nofollow noreferrer" target="_blank">https://www.slf4j.org/download.html</a>下载，如果是maven项目，在pom文件中引入如下：</p>
+
+<pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;org.slf4j&lt;/groupId&gt;
+    &lt;artifactId&gt;slf4j-api&lt;/artifactId&gt;
+    &lt;version&gt;1.7.7&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+
+<p>②引入日志实现，slf4j不提供日志实现，如使用jul则不用引入，logback与log4j需要引入日志实现的jar包，简单使用默认使用jul</p>
+
+<p>③代码使用</p>
+
+<pre><code class="language-java">import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * 简单日志获取
+ */
+public class SimpleTest {
+
+    public static void main(String[] args) {
+        //获取logger对象
+        Logger logger = LoggerFactory.getLogger(SimpleTest.class);
+
+        logger.info(&quot;info.....&quot;);
+        logger.debug(&quot;debug...&quot;);
+        logger.error(&quot;error...&quot;);
+        logger.warn(&quot;warn...&quot;);
+}
+</code></pre>
+
+<p>④输出结果如下</p>
+
+<pre><code class="language-properties">2019-02-04 16:48:43.703 INFO  SimpleTest.SimpleTest - info.....
+2019-02-04 16:48:43.703 DEBUG SimpleTest.SimpleTest - debug...
+2019-02-04 16:48:43.703 ERROR SimpleTest.SimpleTest - error...
+2019-02-04 16:48:43.703 WARN  SimpleTest.SimpleTest - warn...
+</code></pre>
+
+<h2 id="二-slf4j的依赖框架">二、slf4j的依赖框架</h2>
+
+<p>slf4j项目组成图如下：
+<figure><img src="/images/ring.svg" data-sizes="auto" data-src="/images/post_resource/java_log/java_log_06_01.jpg" alt="slf4j项目组成图" class="lazyload"><figcaption class="image-caption">slf4j项目组成图</figcaption></figure></p>
+
+<ul>
+<li>slf4j-api为项目基础  提供基础接口</li>
+<li>slf4j-jdk14和slf4j-log4j12分别为jdk日志框架和log4j日志框架的桥接器，负责将slf4j-api和具体的实现框架连接起来</li>
+<li>jcl-over-slf4j, log4j-over-slf4j, osgi-over-slf4j和jul-to-slf4j分别将对应的其他框架的日志桥接到slf4j上来</li>
+<li>slf4j-nop和slf4j-simple是slf4j提供的日志实现类，一般很少用到</li>
+<li>slf4j-ext和slf4j-migrator为工具模块</li>
+</ul>
+
+<h2 id="三-slf4j-log4j">三、slf4j+log4j</h2>
+
+<p>上一篇文章 <a href="https://blog.csdn.net/Laiguanfu/article/details/86760963" rel="nofollow noreferrer" target="_blank">java日志篇（5）-logback</a> 实现了slf4j与logback的结合使用，本次实现slf4j与log4j的结合使用</p>
+
+<p>①引入slf4j-api的jar包</p>
+
+<p>②引入log4j与slf4j的桥接器slf4j-log4j12</p>
+
+<pre><code class="language-xml">&lt;dependency&gt;
+     &lt;groupId&gt;org.slf4j&lt;/groupId&gt;
+     &lt;artifactId&gt;slf4j-log4j12&lt;/artifactId&gt;
+     &lt;version&gt;1.7.7&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+
+<p>③ 创建log4j.properties 配置文件，放在classpath或者maven的resource目录下</p>
+
+<pre><code class="language-properties">#配置rootLogger
+log4j.rootLogger=all,appender1,logFile,appender2
+
+#配置第一个appender
+log4j.appender.appender1=org.apache.log4j.ConsoleAppender
+#指定该appender输出所有DEBUG以上的日志
+log4j.appender.appender1.Threshold=DEBUG
+#选择比较方便的的日志输出格式-包含日志产生的时间、线程、类别等等信息
+log4j.appender.appender1.layout=org.apache.log4j.TTCCLayout
+
+#配置第二个appender
+log4j.appender.appender2=org.apache.log4j.ConsoleAppender
+#指定该appender输出所有WARN以上的日志
+log4j.appender.appender2.Threshold=WARN
+#指定该appender通过控制台的err输出日志
+log4j.appender.appender2.Target=System.err
+#配置该appender的输出格式
+log4j.appender.appender2.layout = org.apache.log4j.PatternLayout
+#其中 %d表示日志时间点的日期或时间，默认格式为 ISO8601，也可以在其后指定格，
+#    %l表示输出日志事件的发生位置，包括类目名、发生的线程，以及行数。
+#    %-5p 输出日志信息优先级,占5个字符
+#    %m 输出代码中指定的消息,产生的日志具体信息
+#    %n 输出一个回车换行符
+log4j.appender.appender2.layout.ConversionPattern =%d %l %-5p %m %n
+log4j.appender.appender2.ImmediateFlush = true
+
+#配置文件输出appender，
+log4j.appender.logFile = org.apache.log4j.FileAppender
+#配置文件输出样式
+log4j.appender.logFile.layout = org.apache.log4j.PatternLayout
+log4j.appender.logFile.layout.ConversionPattern = [%-5p][%-22d{yyyy/MM/dd HH:mm:ssS}][%l]%n%m%n
+#指定仅记录ERROR以上级别的日志
+log4j.appender.logFile.Threshold = ERROR
+log4j.appender.logFile.ImmediateFlush = TRUE
+#指定将日志累加到日志文件末尾
+log4j.appender.logFile.Append = TRUE
+#指定日志文件
+log4j.appender.logFile.File = ./Logback/src/main/logs/log4j.log
+log4j.appender.logFile.Encoding = UTF-8
+
+</code></pre>
+
+<p>④运行结果如下：</p>
+
+<pre><code class="language-properties">[main] INFO SimpleTest.SimpleTest - info.....
+[main] DEBUG SimpleTest.SimpleTest - debug...
+[main] ERROR SimpleTest.SimpleTest - error...
+2019-02-04 22:35:12,501 SimpleTest.SimpleTest.main(SimpleTest.java:19) ERROR error... 
+[main] WARN SimpleTest.SimpleTest - warn...
+2019-02-04 22:35:12,504 SimpleTest.SimpleTest.main(SimpleTest.java:20) WARN  warn... 
+</code></pre>
+
+<h2 id="四-总结">四、总结</h2>
+
+<p>1、slf4j作为日志门面担当，并不实现具体的日志功能，而是提供一组统一接口，供不同的日志组件实现相同的输出代码，实现可插拔</p>
+
+<p>2、门面模式专注于统一输出的抽象功能，而不去干预实现子系统的功能实现</p>
+
+<p><strong>参考文档</strong>：</p>
+
+<p>【1】slf4j官方文档</p>
+
+<p>【2】<a href="https://www.jianshu.com/p/ce995868dd4a" rel="nofollow noreferrer" target="_blank">https://www.jianshu.com/p/ce995868dd4a</a></p>
+
+<p>【3】<a href="https://blog.csdn.net/jiapengcs/article/details/73359918" rel="nofollow noreferrer" target="_blank">https://blog.csdn.net/jiapengcs/article/details/73359918</a></p>
+
+    </div>
+
+    <div class="post-copyright">
+             
+            <p class="copyright-item">
+                <span>Author:</span>
+                <span>GF.L </span>
+                </p>
+            
+           
+             
+            <p class="copyright-item">
+                    <span>Link:</span>
+                    <a href=https://keep-zero.github.io/2019/java_log06/>https://keep-zero.github.io/2019/java_log06/</span>
+            </p>
+            
+             
+            <p class="copyright-item lincese">
+                本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可
+            </p>
+            
+    </div>
+
+  
+    <div class="post-tags">
+        
+            <section>
+            <i class="iconfont icon-tag"></i>Tag(s): 
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/java/">
+                    #java</a></span>
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/log/">
+                    #log</a></span>
+            
+            </section>
+        
+        <section>
+                <a href="javascript:window.history.back();">back</a></span> · 
+                <span><a href="https://keep-zero.github.io">home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+        
+        <a href="https://keep-zero.github.io/2019/java_log05/" class="prev" rel="prev" title="java日志篇（5）-logback"><i class="iconfont icon-left"></i>&nbsp;java日志篇（5）-logback</a>
+         
+        
+        <a href="https://keep-zero.github.io/2019/java_react01/" class="next" rel="next" title="java学习笔记-反射(1)-Class">java学习笔记-反射(1)-Class&nbsp;<i class="iconfont icon-right"></i></a>
+        
+    </div>
+
+    <div class="post-comment">
+          
+                 
+          
+    </div>
+</article>
+          </div>
+		   </main>
+      <footer class="footer">
+    <div class="copyright">
+        &copy;
+        
+        <span itemprop="copyrightYear">2011 - 2019</span>
+        
+        <span class="with-love">
+    	 <i class="iconfont icon-love"></i> 
+        </span>
+         
+            <span class="author" itemprop="copyrightHolder"><a href="https://keep-zero.github.io">GF.L</a> | </span> 
+         
+
+         
+		  <span>Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow">Hugo</a> & <a href="https://github.com/liuzc/leaveit" target="_blank" rel="external nofollow">LeaveIt</a></span> 
+		<span id="busuanzi_container_site_pv">
+			本站访问量：<span id="busuanzi_value_site_pv"></span>次
+		</span>
+		&nbsp;
+		<span id="busuanzi_container_site_uv">
+			您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者
+		</span>
+    </div>
+</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+    
+     <link href="//lib.baomitu.com/lightgallery/1.6.11/css/lightgallery.min.css" rel="stylesheet">  
+      
+     <script src="/js/vendor_gallery.min.js" async="" ></script>
+    
+  
+
+
+
+     </div>
+  </body>
+</html>

@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noodp"/>
+  <meta name="author" content="GF.L">
+  
+  
+  
+  <link rel="prev" href="https://keep-zero.github.io/2019/spring_action02_05/" />
+  <link rel="next" href="https://keep-zero.github.io/2019/spring_action03_02/" />
+  <link rel="canonical" href="https://keep-zero.github.io/2019/spring_action03_01/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <title>
+       
+       
+           《Spring实战》-第三章：Bean的高级装配（1）-环境Profile | Keep Zero
+       
+  </title>
+  <meta name="title" content="《Spring实战》-第三章：Bean的高级装配（1）-环境Profile | Keep Zero">
+    
+  
+  <link rel="stylesheet" href="/font/iconfont.css">
+  <link rel="stylesheet" href="/css/main.min.css">
+
+
+  
+  
+ 
+
+<script type="application/ld+json">
+ "@context" : "http://schema.org",
+    "@type" : "BlogPosting",
+    "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "https:\/\/keep-zero.github.io"
+    },
+    "articleSection" : "posts",
+    "name" : "《Spring实战》-第三章：Bean的高级装配（1）-环境Profile",
+    "headline" : "《Spring实战》-第三章：Bean的高级装配（1）-环境Profile",
+    "description" : "慢慢来比较快，虚心学技术\n 1.为什么需要profile？ 实际开发中，生产环境和开发环境通常都不会是同一个，最明显的例子就是，生产环境（正式环境）的数据库和开发环境的数据库一般都是不一样的。那么为了方便配置的转换，Spring提供了profile关键字进行统一的环境配置，通过profile配置我们可以快速的切换整个应用的环境，而不需要从代码层面进行重新构建\n那么，使用profile的目的是为了更方便的配置不同的环境，指定某些具体的类或组件的作用域\n注：每个bean或组件都有默认的作用域default，如果没有限定作用域，则这些bean都会被装配，如果指定了作用域，则只有处在相应作用域（环境）中时才会被装配\n2.怎么配置profile？ JavaConfig显式装配或者自动装配可以通过注解@Profile进行环境限制，比如：\nⅠ、自动化装配，我们将类DataSource的作用域限定为只有当环境为“prod”才被装配，结合@Component注解和@Profile注解实现\n代码1.1 @Component @Profile(\x26quot;prod\x26quot;) public class DataSource { \/** * 定义名称 *\/ private String name; public DataSource(){ super(); } public DataSource(String name){ this.name = name; } }  Ⅱ、JavaConfig显式配置，有两种实现方式\n 第一种：在指定多个配置类，在配置类上指定作用域，其内所定义的所有Bean只能在该作用域下被装配，进行环境统一配置\n代码1.2 \/\/1.创建一个配置类DevConfig，并将其作用域设置为dev，则其内定义的Bean只有在环境为dev的时候才可以被装载 @Configuration @Profile(value = \x26quot;dev\x26quot;) public class DevConfig { \/\/定义一个name属性为Dev DataSource的Bean @Bean public DataSource dataSource(){ return new DataSource(\x26quot;Dev DataSource\x26quot;); } } \/\/2.创建一个配置类ProdConfig，并将其作用域设置为prod，则其内定义的Bean只有在环境为prod的时候才可以被装载 @Configuration @Profile(value = \x26quot;prod\x26quot;) public class ProdConfig { \/\/定义一个name属性为Dev DataSource的Bean @Bean public DataSource dataSource(){ return new DataSource(\x26quot;Prod DataSource\x26quot;); } } \/\/3.",
+    "inLanguage" : "en-us",
+    "author" : "GF.L",
+    "creator" : "GF.L",
+    "publisher": "GF.L",
+    "accountablePerson" : "GF.L",
+    "copyrightHolder" : "GF.L",
+    "copyrightYear" : "2019",
+    "datePublished": "2019-08-31 22:01:21 \x2b0800 CST",
+    "dateModified" : "2019-08-31 22:01:21 \x2b0800 CST",
+    "url" : "https:\/\/keep-zero.github.io\/2019\/spring_action03_01\/",
+    "wordCount" : "451",
+    "keywords" : [ "java","spring","spring-action", "Keep Zero"]
+}
+</script>
+
+</head>
+
+  
+
+
+  <body class="">
+    <div class="wrapper">
+        <nav class="navbar">
+    <div class="container">
+        <div class="navbar-header header-logo">
+        	<a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a>
+        </div>
+        <div class="menu navbar-right">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+<nav class="navbar-mobile" id="nav-mobile" style="display: none">
+     <div class="container">
+        <div class="navbar-header">
+            <div>  <a href="javascript:void(0);" class="theme-switch"><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href="https://keep-zero.github.io">Keep Zero</a></div>
+            <div class="menu-toggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+     
+          <div class="menu" id="mobile-menu">
+                
+                
+                <a class="menu-item" href="/posts/" title="">Blog</a>
+                
+                <a class="menu-item" href="/categories/" title="">Categories</a>
+                
+                <a class="menu-item" href="/tags/" title="">Tags</a>
+                
+                <a class="menu-item" href="/about/" title="">About</a>
+                
+        </div>
+    </div>
+</nav>
+    	 <main class="main">
+          <div class="container">
+      		
+<article class="post-warp" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">《Spring实战》-第三章：Bean的高级装配（1）-环境Profile</h1>
+        <div class="post-meta">
+                Written by <a itemprop="name" href="https://keep-zero.github.io" rel="author">GF.L</a> with ♥ 
+                <span class="post-time">
+                on <time datetime=2019-08-31 itemprop="datePublished">August 31, 2019</time>
+                </span>
+                in
+                <i class="iconfont icon-folder"></i>
+                <span class="post-category">
+                        <a href="https://keep-zero.github.io/categories/spring/"> spring </a>
+                        
+                </span>
+				
+				<span id="wc" style="font-size: 1rem;text-align: center;">  共500 字|  阅读需时约 3 分|  本文总阅读量<span id="busuanzi_value_page_pv"></span>次</span>
+        </div>
+    </header>
+    <div class="post-content">
+        
+
+        
+
+        
+        
+     
+          
+          
+          
+
+          
+          
+          
+
+          
+
+<blockquote>
+<p><strong>慢慢来比较快，虚心学技术</strong></p>
+</blockquote>
+
+<h2 id="1-为什么需要profile">1.为什么需要profile？</h2>
+
+<p>实际开发中，生产环境和开发环境通常都不会是同一个，最明显的例子就是，生产环境（正式环境）的数据库和开发环境的数据库一般都是不一样的。那么为了方便配置的转换，Spring提供了<strong>profile</strong>关键字进行统一的环境配置，通过profile配置我们可以快速的切换整个应用的环境，而不需要从代码层面进行重新构建</p>
+
+<p>那么，<strong>使用profile的目的是为了更方便的配置不同的环境，指定某些具体的类或组件的作用域</strong></p>
+
+<p><em>注：每个bean或组件都有默认的作用域default，如果没有限定作用域，则这些bean都会被装配，如果指定了作用域，则只有处在相应作用域（环境）中时才会被装配</em></p>
+
+<h2 id="2-怎么配置profile">2.怎么配置profile？</h2>
+
+<p>JavaConfig显式装配或者自动装配可以通过注解@Profile进行环境限制，比如：</p>
+
+<p>Ⅰ、<strong>自动化装配</strong>，我们将类DataSource的作用域限定为只有当环境为“prod”才被装配，结合@Component注解和@Profile注解实现</p>
+
+<pre><code class="language-java">代码1.1
+
+@Component
+@Profile(&quot;prod&quot;)
+public class DataSource {
+
+    /**
+     * 定义名称
+     */
+    private String name;
+
+    public DataSource(){
+        super();
+    }
+
+    public DataSource(String name){
+       this.name = name;
+    }
+}
+</code></pre>
+
+<p>Ⅱ、<strong>JavaConfig显式配置</strong>，有两种实现方式</p>
+
+<ul>
+<li><p>第一种：在指定<strong>多个配置类</strong>，在配置类上指定作用域，其内所定义的所有Bean只能在该作用域下被装配，进行环境统一配置</p>
+
+<pre><code class="language-java">代码1.2
+
+//1.创建一个配置类DevConfig，并将其作用域设置为dev，则其内定义的Bean只有在环境为dev的时候才可以被装载
+@Configuration
+@Profile(value = &quot;dev&quot;)
+public class DevConfig {
+
+//定义一个name属性为Dev DataSource的Bean
+@Bean
+public DataSource dataSource(){
+    return new DataSource(&quot;Dev DataSource&quot;);
+}
+}
+
+//2.创建一个配置类ProdConfig，并将其作用域设置为prod，则其内定义的Bean只有在环境为prod的时候才可以被装载
+@Configuration
+@Profile(value = &quot;prod&quot;)
+public class ProdConfig {
+
+//定义一个name属性为Dev DataSource的Bean
+@Bean
+public DataSource dataSource(){
+    return new DataSource(&quot;Prod DataSource&quot;);
+}
+}
+
+//3.创建一个默认配置类，当系统未指定系统环境时，将默认使用该配置
+@Configuration
+public class DefaultConfig {
+@Bean
+public DataSource dataSource(){
+    return new DataSource(&quot;Default DataSource&quot;);
+}
+}
+
+//4.创建一个统一配置类SystemConfig，并将三个配置类引入，因为各自定义了作用域（DefaultConfig未明文指定），所以引入并不会导致冲突
+@Configuration
+@Import({DevConfig.class,ProdConfig.class,DefaultConfig.class})
+public class SystemConfig {}
+</code></pre></li>
+
+<li><p>第二种：除了在类上使用@Profile指定类作用域之外，<strong>@Profile还可以在方法上使用</strong>，在JavaConfig结合@Bean进行装配环境的限制</p>
+
+<pre><code class="language-java">代码1.3
+
+@Configuration
+public class SystemConfig {
+
+@Bean
+@Profile(&quot;dev&quot;)//当系统环境为dev的时候，使用该Bean方法进行装配
+public DataSource devDataSource(){
+    return new DataSource(&quot;Dev DataSource&quot;);
+}
+
+@Bean
+@Profile(&quot;prod&quot;)//当系统环境为prod的时候，使用该Bean方法进行装配
+public DataSource prodDataSource(){
+    return new DataSource(&quot;Prod DataSource&quot;);
+}
+
+@Bean//默认装配
+public DataSource defaultDataSource(){
+    return new DataSource(&quot;Default DataSource&quot;);
+}
+}
+</code></pre></li>
+</ul>
+
+<p>Ⅲ、<strong>XML配置Profile</strong>，和JavaConfig类似也有两种方式</p>
+
+<ul>
+<li><p>第一种：为每一个配置文件的<beans>配置Profile，只有在固定对应环境下配置文件才会生效（比较常用）</p>
+
+<pre><code class="language-xml">代码1.4
+
+//1、创建配置文件DevConfig.xml，并在&lt;beans&gt;节点设置profile属性为dev，只有在环境为dev的时候本配置文件生效
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+   xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+   xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd&quot;
+profile=&quot;dev&quot;
+&gt;
+&lt;bean class=&quot;com.my.spring.bean.DataSource&quot; name=&quot;dataSource&quot;&gt;
+    &lt;constructor-arg name=&quot;name&quot; value=&quot;Dev DataSource&quot;&gt;&lt;/constructor-arg&gt;
+&lt;/bean&gt;
+&lt;/beans&gt;
+
+//2、创建配置文件ProdConfig.xml，并在&lt;beans&gt;节点设置profile属性为prod，只有在环境为prod的时候本配置文件生效
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+   xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+   xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd&quot;
+profile=&quot;prod&quot;
+ &gt;
+&lt;bean class=&quot;com.my.spring.bean.DataSource&quot; name=&quot;dataSource&quot;&gt;
+    &lt;constructor-arg name=&quot;name&quot; value=&quot;Prod DataSource&quot;&gt;&lt;/constructor-arg&gt;
+&lt;/bean&gt;
+&lt;/beans&gt;
+
+//3、创建配置文件DefaultConfig.xml，默认加载
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+   xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+   xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;
+
+&lt;bean class=&quot;com.my.spring.bean.DataSource&quot; name=&quot;dataSource&quot;&gt;
+    &lt;constructor-arg name=&quot;name&quot; value=&quot;Default DataSource&quot;&gt;&lt;/constructor-arg&gt;
+&lt;/bean&gt;
+
+&lt;/beans&gt;
+
+//4、创建系统配置文件，将上述三个配置文件引入，因为限定了环境，所以并不会冲突
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+   xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+   xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;
+
+&lt;import resource=&quot;DefaultConfig.xml&quot;/&gt;
+&lt;import resource=&quot;DevConfig.xml&quot;/&gt;
+&lt;import resource=&quot;ProdConfig.xml&quot;/&gt;
+&lt;/beans&gt;
+</code></pre></li>
+
+<li><p>第二种：在同一个配置文件中指定不同的<beans>设定profile属性,所包裹的bean只有在指定环境下才会被装配</p>
+
+<pre><code class="language-xml">代码1.5
+
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;
+   xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+   xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd&quot;&gt;
+
+&lt;description&gt;Spring配置文件&lt;/description&gt;
+
+&lt;beans&gt;
+    &lt;bean id=&quot;dataSource&quot; name=&quot;default&quot; class=&quot;com.my.spring.bean.DataSource&quot;&gt;
+        &lt;constructor-arg name=&quot;name&quot; value=&quot;Default DataSource&quot;&gt;&lt;/constructor-arg&gt;
+    &lt;/bean&gt;
+&lt;/beans&gt;
+
+&lt;beans profile=&quot;dev&quot;&gt;
+    &lt;bean id=&quot;dataSource&quot; name = &quot;dev&quot; class=&quot;com.my.spring.bean.DataSource&quot;&gt;
+        &lt;constructor-arg name=&quot;name&quot; value=&quot;Dev DataSource&quot;&gt;&lt;/constructor-arg&gt;
+    &lt;/bean&gt;
+&lt;/beans&gt;
+
+&lt;beans profile=&quot;prod&quot;&gt;
+    &lt;bean id=&quot;dataSource&quot;  name=&quot;prod&quot; class=&quot;com.my.spring.bean.DataSource&quot;&gt;
+        &lt;constructor-arg name=&quot;name&quot; value=&quot;Prod DataSource&quot;&gt;&lt;/constructor-arg&gt;
+    &lt;/bean&gt;
+&lt;/beans&gt;
+&lt;/beans&gt;
+</code></pre></li>
+</ul>
+
+<h2 id="3-如何激活profile">3、如何激活profile？</h2>
+
+<p>如上述配置每个配置文件或者JavaConfig，Bean等的profile属性后，如何设定一个系统所处的环境呢？</p>
+
+<p>Spring提供了多种方式：</p>
+
+<blockquote>
+<p><strong>作为 DispatcherServlet 的初始化参数；</strong></p>
+
+<p><strong>作为 Web 应用的上下文参数；</strong></p>
+
+<p><strong>作为 JNDI 条目；</strong></p>
+
+<p><strong>作为环境变量；</strong></p>
+
+<p><strong>作为 JVM 的系统属性；</strong></p>
+
+<p><strong>在集成测试类上，使用 @ActiveProfiles 注解设置；</strong></p>
+</blockquote>
+
+<ul>
+<li>此处先了解<strong>@ActiveProfiles</strong>注解方式</li>
+</ul>
+
+<p>在上一章中，我们了解到，Spring测试使用@RunWith(SpringJUnit4ClassRunner.class)和@ContextConfiguration注解进行应用上下文注入测试，在测试中我们可以通过结合@ActiveProfiles注解进行测试环境的配置，具体代码如下：</p>
+
+<p>以自动化装配模式为例：</p>
+
+<p>上述代码1.1中指定DataSource只有在prod环境下才会被装载，故在测试中将系统环境分别指定为prod和dev测试DataSource的Bean是否会装配</p>
+
+<pre><code class="language-java">代码1.6
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(loader = AnnotationConfigContextLoader.class,classes = {ComponentConfig.class})
+@ActiveProfiles(&quot;prod&quot;)//指定系统环境为prod
+public class AppComponentTest {
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    @Test
+    public void testGetBean(){
+        String[] beanDefinitionNames = applicationContext.getBeanDefinitionNames();
+
+        for(String  beanName : beanDefinitionNames){
+            System.out.println(beanName);
+        }
+    }
+}
+
+测试结果：
+org.springframework.context.annotation.internalConfigurationAnnotationProcessor
+org.springframework.context.annotation.internalAutowiredAnnotationProcessor
+org.springframework.context.annotation.internalCommonAnnotationProcessor
+org.springframework.context.event.internalEventListenerProcessor
+org.springframework.context.event.internalEventListenerFactory
+componentConfig
+dataSource //dataSource被装配
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(loader = AnnotationConfigContextLoader.class,classes = {ComponentConfig.class})
+@ActiveProfiles(&quot;dev&quot;)//指定系统环境为dev
+public class AppComponentTest {
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    @Test
+    public void testGetBean(){
+        String[] beanDefinitionNames = applicationContext.getBeanDefinitionNames();
+
+        for(String  beanName : beanDefinitionNames){
+            System.out.println(beanName);
+        }
+    }
+}
+
+//dataSource未被装配
+测试结果：
+org.springframework.context.annotation.internalConfigurationAnnotationProcessor
+org.springframework.context.annotation.internalAutowiredAnnotationProcessor
+org.springframework.context.annotation.internalCommonAnnotationProcessor
+org.springframework.context.event.internalEventListenerProcessor
+org.springframework.context.event.internalEventListenerFactory
+componentConfig
+</code></pre>
+
+<p>再以JavaConfig显式装配为例，设定不同的profile测试获取到的dataSource是否一致，以代码1.3作为系统配置：</p>
+
+<pre><code class="language-java">代码1.7
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(loader = AnnotationConfigContextLoader.class,classes = {SystemConfig.class})
+@ActiveProfiles(&quot;prod&quot;)//指定系统配置环境为prod
+public class AppConfigTest {
+
+    @Autowired
+    private ApplicationContext applicationContext;
+    @Test
+    public void testGetBean(){
+        String[] beanDefinitionNames = applicationContext.getBeanDefinitionNames();
+
+        for(String  beanName : beanDefinitionNames){
+            System.out.println(beanName);
+        }
+    }
+}
+
+测试结果：
+org.springframework.context.annotation.internalConfigurationAnnotationProcessor
+org.springframework.context.annotation.internalAutowiredAnnotationProcessor
+org.springframework.context.annotation.internalCommonAnnotationProcessor
+org.springframework.context.event.internalEventListenerProcessor
+org.springframework.context.event.internalEventListenerFactory
+systemConfig
+prodDataSource //证明获取的是prod环境的dataSource
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(loader = AnnotationConfigContextLoader.class,classes = {SystemConfig.class})
+@ActiveProfiles(&quot;dev&quot;)//指定系统配置环境为dev
+public class AppConfigTest {
+
+    @Autowired
+    private ApplicationContext applicationContext;
+    @Test
+    public void testGetBean(){
+        String[] beanDefinitionNames = applicationContext.getBeanDefinitionNames();
+
+        for(String  beanName : beanDefinitionNames){
+            System.out.println(beanName);
+        }
+    }
+}
+
+测试结果:
+org.springframework.context.annotation.internalConfigurationAnnotationProcessor
+org.springframework.context.annotation.internalAutowiredAnnotationProcessor
+org.springframework.context.annotation.internalCommonAnnotationProcessor
+org.springframework.context.event.internalEventListenerProcessor
+org.springframework.context.event.internalEventListenerFactory
+systemConfig
+devDataSource //证明获取的是dev环境的dataSource
+</code></pre>
+
+<ul>
+<li>由于未了解到网络模块，所以web配置方式暂不赘述</li>
+</ul>
+
+    </div>
+
+    <div class="post-copyright">
+             
+            <p class="copyright-item">
+                <span>Author:</span>
+                <span>GF.L </span>
+                </p>
+            
+           
+             
+            <p class="copyright-item">
+                    <span>Link:</span>
+                    <a href=https://keep-zero.github.io/2019/spring_action03_01/>https://keep-zero.github.io/2019/spring_action03_01/</span>
+            </p>
+            
+             
+            <p class="copyright-item lincese">
+                本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可
+            </p>
+            
+    </div>
+
+  
+    <div class="post-tags">
+        
+            <section>
+            <i class="iconfont icon-tag"></i>Tag(s): 
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/java/">
+                    #java</a></span>
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/spring/">
+                    #spring</a></span>
+            
+            <span class="tag"><a href="https://keep-zero.github.io/tags/spring-action/">
+                    #spring-action</a></span>
+            
+            </section>
+        
+        <section>
+                <a href="javascript:window.history.back();">back</a></span> · 
+                <span><a href="https://keep-zero.github.io">home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+        
+        <a href="https://keep-zero.github.io/2019/spring_action02_05/" class="prev" rel="prev" title="《Spring实战》-第二章：Bean的装配（总目录）"><i class="iconfont icon-left"></i>&nbsp;《Spring实战》-第二章：Bean的装配（总目录）</a>
+         
+        
+        <a href="https://keep-zero.github.io/2019/spring_action03_02/" class="next" rel="next" title="《Spring实战》-第三章：Bean的高级装配（2）-条件化Bean">《Spring实战》-第三章：Bean的高级装配（2）-条件化Bean&nbsp;<i class="iconfont icon-right"></i></a>
+        
+    </div>
+
+    <div class="post-comment">
+          
+                 
+          
+    </div>
+</article>
+          </div>
+		   </main>
+      <footer class="footer">
+    <div class="copyright">
+        &copy;
+        
+        <span itemprop="copyrightYear">2011 - 2019</span>
+        
+        <span class="with-love">
+    	 <i class="iconfont icon-love"></i> 
+        </span>
+         
+            <span class="author" itemprop="copyrightHolder"><a href="https://keep-zero.github.io">GF.L</a> | </span> 
+         
+
+         
+		  <span>Powered by <a href="https://gohugo.io/" target="_blank" rel="external nofollow">Hugo</a> & <a href="https://github.com/liuzc/leaveit" target="_blank" rel="external nofollow">LeaveIt</a></span> 
+		<span id="busuanzi_container_site_pv">
+			本站访问量：<span id="busuanzi_value_site_pv"></span>次
+		</span>
+		&nbsp;
+		<span id="busuanzi_container_site_uv">
+			您是本站第 <span id="busuanzi_value_site_uv"></span> 位访问者
+		</span>
+    </div>
+</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    <script src="/js/vendor_no_gallery.min.js" async=""></script>
+    
+  
+
+
+
+     </div>
+  </body>
+</html>

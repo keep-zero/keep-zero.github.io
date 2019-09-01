@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>java-log on Keep Zero</title>
+    <link>https://keep-zero.github.io/categories/java-log/</link>
+    <description>Recent content in java-log on Keep Zero</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 31 Aug 2019 00:13:46 +0800</lastBuildDate>
+    
+	<atom:link href="https://keep-zero.github.io/categories/java-log/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>java日志篇（6）-slf4j</title>
+      <link>https://keep-zero.github.io/2019/java_log06/</link>
+      <pubDate>Sat, 31 Aug 2019 00:13:46 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/java_log06/</guid>
+      <description>慢慢来比较快，虚心学技术
+前言：SLF4J的全称是Simple Logging Facade for Java，即简单日志门面。日志门面不具备具体日志实现，只做两件事: * 提供日志接口 * 提供获取具体日志对象的方法
+所以，slf4j使得系统日志得到一个统一的输出方式，灵活替换日志实现
+ 一、slf4j简单使用介绍 ①使用slf4j需要引入slf4j的api jar包，最新jar包从官网https://www.slf4j.org/download.html下载，如果是maven项目，在pom文件中引入如下：
+&amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.slf4j&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;slf4j-api&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;1.7.7&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  ②引入日志实现，slf4j不提供日志实现，如使用jul则不用引入，logback与log4j需要引入日志实现的jar包，简单使用默认使用jul
+③代码使用
+import org.slf4j.Logger; import org.slf4j.LoggerFactory; /** * 简单日志获取 */ public class SimpleTest { public static void main(String[] args) { //获取logger对象 Logger logger = LoggerFactory.getLogger(SimpleTest.class); logger.info(&amp;quot;info.....&amp;quot;); logger.debug(&amp;quot;debug...&amp;quot;); logger.error(&amp;quot;error...&amp;quot;); logger.warn(&amp;quot;warn...&amp;quot;); }  ④输出结果如下
+2019-02-04 16:48:43.703 INFO SimpleTest.SimpleTest - info..... 2019-02-04 16:48:43.703 DEBUG SimpleTest.SimpleTest - debug... 2019-02-04 16:48:43.703 ERROR SimpleTest.</description>
+    </item>
+    
+    <item>
+      <title>java日志篇（5）-logback</title>
+      <link>https://keep-zero.github.io/2019/java_log05/</link>
+      <pubDate>Sat, 31 Aug 2019 00:08:47 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/java_log05/</guid>
+      <description>慢慢来比较快，虚心学技术
+前言:Logback是由log4j创始人设计的又一个开源日志组件。logback当前分成三个模块：logback-core,logback-classic和logback-access。 logback-core :其它两个模块的基础模块 logback-classic:log4j的一个改良版本（此外logback-classic完整实现SLF4J API使你可以很方便地更换成其它日志系统如log4j或JDK14 Logging） logback-access:访问模块与Servlet容器集成提供通过Http来访问日志的功能
+ 一、logback+slf4j简单使用示例 ①获取logback的jar包，最新jar包从官网https://logback.qos.ch/download.html下载，将其放在lib包目录下，并引入项目中；如果是maven项目，在pom文件中引入如下：
+&amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;ch.qos.logback&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;logback-core&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;1.1.7&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;ch.qos.logback&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;logback-access&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;1.1.7&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;ch.qos.logback&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;logback-classic&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;1.1.7&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  ②获取slf4j的jar包，因为logback完整实现了slf4j的接口，所以需要依赖于slf4j实现功能。最新jar包从官网https://www.slf4j.org/download.html下载，如果是maven项目，在pom文件中引入如下：
+&amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;org.slf4j&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;slf4j-api&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;1.7.7&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  ③代码编写
+package SimpleTest; import org.slf4j.Logger; import org.slf4j.LoggerFactory; /** * 简单日志获取 */ public class SimpleTest { public static void main(String[] args) { //获取logger对象 Logger logger = LoggerFactory.getLogger(SimpleTest.class); logger.info(&amp;quot;info.....&amp;quot;); logger.debug(&amp;quot;debug...&amp;quot;); logger.error(&amp;quot;error...&amp;quot;); logger.warn(&amp;quot;warn...&amp;quot;); } }  ④执行结果</description>
+    </item>
+    
+    <item>
+      <title>java日志篇（4）-common-logging</title>
+      <link>https://keep-zero.github.io/2019/java_log04/</link>
+      <pubDate>Fri, 30 Aug 2019 23:27:16 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/java_log04/</guid>
+      <description>慢慢来比较快，虚心学技术
+前言：Jakarta Commons-logging（JCL）是apache最早提供的日志的门面接口。它将一些具体的日志组件抽象为接口，实现日志操作的解耦和可插拔，让众多的日志工具有一个共同的操作方式
+ 一、common-logging简单使用示例 ①引入common-logging的jar包，最新jar包从官方网站http://commons.apache.org/proper/commons-logging/download_logging.cgi进行下载，下载后将jar包放到lib中引入项目即可。
+如果是maven项目在pom文件中添加依赖如下：
+&amp;lt;!--引入common-logging--&amp;gt; &amp;lt;dependency&amp;gt; &amp;lt;groupId&amp;gt;commons-logging&amp;lt;/groupId&amp;gt; &amp;lt;artifactId&amp;gt;commons-logging&amp;lt;/artifactId&amp;gt; &amp;lt;version&amp;gt;1.2&amp;lt;/version&amp;gt; &amp;lt;/dependency&amp;gt;  ②创建common-logging.properties文件,将其放在classpath下，如果是maven项目则将其放在src/main/resource目录下，配置内容如下
+org.apache.commons.logging.Log=org.apache.commons.logging.impl.SimpleLog  ③在项目程序中使用logger开发
+import org.apache.commons.logging.Log; import org.apache.commons.logging.LogFactory; public class CommonsTest { //获取logger private final static Log logger = LogFactory.getLog(CommonsTest.class); public static void main(String[] args) { //使用logger输出日志 logger.trace(&amp;quot;TRACE...&amp;quot;); logger.debug(&amp;quot;DEBUG ...&amp;quot;); logger.info(&amp;quot;INFO ...&amp;quot;); logger.error(&amp;quot;ERROR ...&amp;quot;); logger.warn(&amp;quot;WARN...&amp;quot;); } }  运行输出结果：
+[INFO] CommonsTest - INFO ... [ERROR] CommonsTest - ERROR ... [WARN] CommonsTest - WARN...  如上实现第一个简单的common-logging程序，引发以下几个问题</description>
+    </item>
+    
+    <item>
+      <title>java日志篇（3）-Log4j(log for java)</title>
+      <link>https://keep-zero.github.io/2019/java_log03/</link>
+      <pubDate>Fri, 30 Aug 2019 23:03:40 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/java_log03/</guid>
+      <description>慢慢来比较快，虚心学技术
+前言：Log4j是Apache的一个开源项目，通过使用Log4j，我们可以控制日志信息输送的目的地是控制台、文件、GUI组件，甚至是套接口服务器、NT的事件记录器、UNIX Syslog守护进程等；我们也可以控制每一条日志的输出格式；通过定义每一条日志信息的级别，我们能够更加细致地控制日志的生成过程。最令人感兴趣的就是，这些可以通过一个配置文件来灵活地进行配置，而不需要修改应用的代码。
+ 一、Log4j基本使用示例 import org.apache.log4j.Level; import org.apache.log4j.Logger; public class Log4JTest { public static void main(String arg[]){ //获取根logger Logger rootLogger = Logger.getRootLogger(); //获取当前对象为名的logger Logger logger = Logger.getLogger(Log4JTest.class); rootLogger.info(&amp;quot;root-info&amp;quot;); logger.info(&amp;quot;Log4j-INFO&amp;quot;); logger.error(&amp;quot;Log4j-ERROR&amp;quot;); logger.debug(&amp;quot;Log4j-DEBUG&amp;quot;); rootLogger.debug(&amp;quot;root-debug&amp;quot;); logger.warn(&amp;quot;Log4j-WARN&amp;quot;); } }  log4j.properties(与Log4JTest.java同级目录)
+#配置rootLogger log4j.rootLogger=info,appender1,logFile,appender2 #配置第一个appender log4j.appender.appender1=org.apache.log4j.ConsoleAppender #指定该appender输出所有DEBUG以上的日志 log4j.appender.appender1.Threshold=DEBUG #选择比较方便的的日志输出格式-包含日志产生的时间、线程、类别等等信息 log4j.appender.appender1.layout=org.apache.log4j.TTCCLayout #配置第二个appender log4j.appender.appender2=org.apache.log4j.ConsoleAppender #指定该appender输出所有WARN以上的日志 log4j.appender.appender2.Threshold=WARN #指定该appender通过控制台的err输出日志 log4j.appender.appender2.Target=System.err #配置该appender的输出格式 log4j.appender.appender2.layout = org.apache.log4j.PatternLayout #其中 %d表示日志时间点的日期或时间，默认格式为 ISO8601，也可以在其后指定格， # %l表示输出日志事件的发生位置，包括类目名、发生的线程，以及行数。 # %-5p 输出日志信息优先级,占5个字符 # %m 输出代码中指定的消息,产生的日志具体信息 # %n 输出一个回车换行符 log4j.</description>
+    </item>
+    
+    <item>
+      <title>java日志篇（2）-JUL(java.util.logging)</title>
+      <link>https://keep-zero.github.io/2019/java_log02/</link>
+      <pubDate>Fri, 30 Aug 2019 22:51:25 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/java_log02/</guid>
+      <description>慢慢来比较快，虚心学技术
+原文链接:java日志篇（2)&amp;ndash;JUL(java.util.logging)
+前言：之所以未按照前一篇文章 java日志篇（1）-日志概述所描述的日志发展史进行文章编写，是因为JUL是jdk自带的日志实现，其他日志实现原理大同小异，理解起来也是相对简单，如有兴趣可先去看看上一篇文章
+ JUL是什么？ JUL是jdk自带的一个日志实现，使用简单，控制灵活，如果是小型系统或者测试程序，显然JUL会是比log4j等更好的选择
+JUL基本使用 使用java.util.logging.Logger的静态方法getLogger(loggerName)来获取或创建一个日志logger
+import java.io.IOException; import java.util.logging.*; public class JULTest { public static Logger log = Logger.getLogger(&amp;quot;TestLog&amp;quot;); //获取日志对象 public static void main(String[] args) throws IOException { log.info(&amp;quot;info&amp;quot;); //信息日志 log.warning(&amp;quot;warning&amp;quot;); //警告日志 log.log(Level.SEVERE,&amp;quot;server&amp;quot;); //严重日志 log.fine(&amp;quot;fine&amp;quot;); } }  使用日志我们可以使用默认的等级实现方法进行输出：如log.info(&amp;rdquo;****&amp;ldquo;)等，也可以使用特定的等级进行输出：如log.log(等级，输出信息)
+如上代码输出日志结果如下：
+一月 14, 2019 9:20:32 下午 JULTest main 信息: info 一月 14, 2019 9:20:32 下午 JULTest main 警告: warning 一月 14, 2019 9:20:32 下午 JULTest main 严重: server  JUL使用分析 一、Logger 为什么log.</description>
+    </item>
+    
+    <item>
+      <title>java日志篇（1）-日志概述</title>
+      <link>https://keep-zero.github.io/2019/java_log01/</link>
+      <pubDate>Thu, 29 Aug 2019 22:52:46 +0800</pubDate>
+      
+      <guid>https://keep-zero.github.io/2019/java_log01/</guid>
+      <description>慢慢来比较快，虚心学技术
+  原文链接： java日志篇（1）-日志概述
+ 日志  在应用程序中添加日志记录总的来说基于三个目的：
+监视代码中变量的变化情况，周期性的记录到文件中供其他应用进行统计分析工作；
+跟踪代码运行时轨迹，作为日后审计的依据；
+担当集成开发环境中的调试器的作用，向文件或控制台打印代码的调试信息
+ 概念理解 日志门面：一般采取facade设计模式（*外观设计模式*：*外观模式定义了一个高层的功能，为子系统中的多个模块协同的完成某种功能需求提供简单的对外功能调用方式，使得这一子系统更加容易被外部使用*）设计的一组接口应用。
+日志实现：接口的实现
+发展历史  转载：
+1996年早期，欧洲安全电子市场项目组决定编写它自己的程序跟踪API(Tracing API)。经过不断的完善，这个API终于成为一个十分受欢迎的Java日志软件包，即Log4j。后来Log4j成为Apache基金会项目中的一员。期间Log4j近乎成了Java社区的日志标准。据说Apache基金会还曾经建议Sun引入Log4j到java的标准库中，但Sun拒绝了。
+2002年Java1.4发布，Sun推出了自己的日志库JUL(Java Util Logging),其实现基本模仿了Log4j的实现。在JUL出来以前，Log4j就已经成为一项成熟的技术，使得Log4j在选择上占据了一定的优势。
+接着，Apache推出了Jakarta Commons Logging，JCL只是定义了一套日志接口(其内部也提供一个Simple Log的简单实现)，支持运行时动态加载日志组件的实现，也就是说，在你应用代码里，只需调用Commons Logging的接口，底层实现可以是Log4j，也可以是Java Util Logging。
+后来(2006年)，Ceki Gülcü不适应Apache的工作方式，离开了Apache。然后先后创建了Slf4j(日志门面接口，类似于Commons Logging)和Logback(Slf4j的实现)两个项目，并回瑞典创建了QOS公司，QOS官网上是这样描述Logback的：The Generic，Reliable Fast&amp;amp;Flexible Logging Framework(一个通用，可靠，快速且灵活的日志框架)。
+现今，Java日志领域被划分为两大阵营：Commons Logging阵营和Slf4j阵营。
+Commons Logging在Apache大树的笼罩下，有很大的用户基数。但有证据表明，形式正在发生变化。2013年底有人分析了GitHub上30000个项目，统计出了最流行的100个Libraries，可以看出Slf4j的发展趋势更好
+ 时间线： 由上所述可得目前主要的日志门面包括：Apache Commons-Logging、slf4j,主要的日志实现包括：log4j、jul,logback
+一般而言，使用日志实现即可实现一些简单程序需求，但是为了避免直接依赖日志实现儿导致耦合过密，一般会使用日志门面+日志实现的方式开发，其中，最经典的搭配是：Commons-logging+log4j，而虽然slf4j适配所有目前的日志实现，兼容性极强，但是最为适配的还是：SLF4j+logback 的组合，毕竟logback天然支持slf4j
+日志原理简述 日志实现五花八门，但是大道至简，其本质应属一致，日志实现底层基本组成如下：
+Loggers：Logger负责捕捉事件并将其发送给合适的Appender。
+Appenders：也被称为Handlers，负责从Logger中取出日志消息并将消息发送出去，比如发送到控制台、文件、网络上的其他日志服务或操作系统日志等
+Layouts：也被称为Formatters，它负责对日志事件中的数据进行转换和格式化。Layouts决定了数据在一条日志记录中的最终形式。
+实现如下：
+当Logger记录一个事件时，它将事件转发给适当的Appender。然后Appender使用Layout来对日志记录进行格式化，并将其发送给控制台、文件或者其它目标位置。另外，Filters可以让你进一步指定一个Appender是否可以应用在一条特定的日志记录上。在日志配置中，Filters并不是必需的，但可以让你更灵活地控制日志消息的流动。
+总结 1.日志实现与日志门面结合实现日志系统的功能
+2.日志是java开发很重要的工具，其在不断发展中也在不断地解耦和抽象化，使得日志系统更加强大便捷
+3.日志组件有logger、handler、formatters组成，利用这几个基本组件能实现很多不同的日志功能
+备注：多参考前辈总结，如有冒犯，还望担待
+如有贻误，还请评论讨论，多谢</description>
+    </item>
+    
+  </channel>
+</rss>
